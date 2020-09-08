@@ -34,7 +34,7 @@ volatile boolean pumpStatus  = true;
 volatile boolean fanStatus   = true;
 char sendMessage[100];
 char receiveMessage[100];
-byte receiveDate;
+char receiveData;
 int receiceMessagePosition = 0;
 String data = "";
 
@@ -69,15 +69,17 @@ void loop() {
   data.toCharArray(sendMessage, data.length()+1);
   BLUETOOTH.write(sendMessage);
 
-//  if (BLUETOOTH.available()) {
-//    receiceMessagePosition = BLUETOOTH.readBytes(receiveMessage, 99);
-//    receiveMessage[receiceMessagePosition] = '\n';
-//    Serial.print("ResciveMessage : ");
-//    Serial.println(receiveMessage);
-//  }
-
   changePumpStatus();
   changeFanStatus();
+
+//  if (BLUETOOTH.available()) {
+//    receiveData = BLUETOOTH.read();
+//    Serial.println(receiveData);
+//    receiveMessage[receiceMessagePosition++] = receiveData;
+//    if(receiveData == '3') {
+//      Serial.println(receiveMessage);
+//    }
+//  }
   
   delay(DELAY_MS);
 }
