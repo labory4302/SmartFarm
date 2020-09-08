@@ -33,11 +33,15 @@ Adafruit_NeoPixel myLeds = Adafruit_NeoPixel(NUM_LED_PIX, NEO_LED, NEO_GRB + NEO
 volatile boolean pumpStatus  = true;
 volatile boolean fanStatus   = true;
 char sendMessage[100];
+char receiveMessage[100];
+byte receiveDate;
+int receiceMessagePosition = 0;
 String data = "";
 
-int soilValue   = 0;
-int humidity    = 0;
-int temperature = 0;
+int soilValue         = 0;
+int convertSoilValue  = 0;
+int humidity          = 0;
+int temperature       = 0;
 
 void setup() {
   Serial.begin(9600);
@@ -56,22 +60,22 @@ void setup() {
 }
 
 void loop() {
-  soilValue   = analogRead(SOIL_MOISTURE);  //토양수분값 가져오기
-  humidity    = dht.readHumidity();         //습도값 가져오기
-  temperature = dht.readTemperature();      //온도값 가져오기
-
-  Serial.print("soilMoisture : ");
-  Serial.print(soilValue);
-  Serial.print(" / humidity : ");
-  Serial.print(humidity);
-  Serial.print("% / temperature : ");
-  Serial.print(temperature);
-  Serial.println("C");
+  soilValue         = analogRead(SOIL_MOISTURE);          //토양수분값 가져오기
+  convertSoilValue  = map(soilValue, 240, 1023, 100, 0);  //토양수분값 비율로 전환
+  humidity          = dht.readHumidity();                 //습도값 가져오기
+  temperature       = dht.readTemperature();              //온도값 가져오기
   
-  data = "{" + (String)soilValue +","+ (String)humidity + (String)temperature + "}}";
+  data = " " + (String)convertSoilValue + "," + (String)humidity + "," + (String)temperature + " ";
   data.toCharArray(sendMessage, data.length()+1);
   BLUETOOTH.write(sendMessage);
-  
+
+//  if (BLUETOOTH.available()) {
+//    receiceMessagePosition = BLUETOOTH.readBytes(receiveMessage, 99);
+//    receiveMessage[receiceMessagePosition] = '\n';
+//    Serial.print("ResciveMessage : ");
+//    Serial.println(receiveMessage);
+//  }
+
   changePumpStatus();
   changeFanStatus();
   

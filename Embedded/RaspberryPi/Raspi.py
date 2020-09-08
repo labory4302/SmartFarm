@@ -1,34 +1,56 @@
 from bluetooth import *
-import sys
-import pymysql
+from socket import *
+import threading
 import time
 
-client_socket=BluetoothSocket(RFCOMM)
-client_socket.connect(("98:D3:37:90:AF:07",1))
-#conn = pymysql.connect(host = "db-kdh-test.cr9trjzf2btf.us-east-2.rds.amazonaws.com", user = "donghyun", passwd = "1a2s3d1a2s3d", db = "raspi_db")
-conn = pymysql.connect(host = "dbinstance3.cjytw5i33eqd.us-west-2.rds.amazonaws.com", user = "luck0707", passwd = "disorder2848", db = "raspi_db_KDH")
-try:
-    with conn.cursor() as cur:
-        sql = "insert into Humi_Temp values(%s,%s)"
-
+def receiverArduinoData(sock):
+    try:
         while True:
-            msg = client_socket.recv(2048)
-            NLLFU = msg[:-2].decode('UTF-8')
-            if(NLLFU == ""):
-                print("\n")
+            recvArduinoData = sock.recv(2048)
+            arduinoData = recvArduinoData[:-1].decode('UTF-8')
+            if(arduinoData == ""):
+                pass
             else:
-                print("recived message : {}".format(NLLFU))
-                pasNLLFU = NLLFU.split(",")
-                cur.execute(sql, (pasNLLFU[0],pasNLLFU[1]))
-            conn.commit()
-            time.sleep(1)
+                print("recived Data : {}\n".format(arduinoData))
+                passingArduinoData = arduinoData.split(",")    
+    except KeyboardInterrupt:
+        print("\nFinished\n")
+        exit()
+    finally:
+        bluetoothArduino.close()
+        
 
-except KeyboardInterrupt:
-    exit()
+def receiverAndroidRequest(sock):
+    try:
+        while True:
+            recvAndroidData = sock.recv(1024)
+            print('받은 데이터 : ', recvAndroidData.decode('utf-8'))
+            sock, addr = androidSock.accept()
+    except KeyboardInterrupt:
+        print("\nFinished\n")
+        exit()
+    finally:
+        androidSock.close()
+        connectionSock.close()
 
-finally:
-    conn.close()
-print ("Finished")
+bluetoothArduino = BluetoothSocket(RFCOMM)
+bluetoothArduino.connect(("98:D3:37:90:AF:07",1))
 
-client_socket.close()
+print('블루투스 접속이 확인되었습니다.')
 
+arduinoThread = threading.Thread(target=receiverArduinoData, args=(bluetoothArduino,))
+arduinoThread.start()
+
+androidSock = socket(AF_INET, SOCK_STREAM)
+androidSock.bind(('', 9999))
+androidSock.listen(1)
+connectionSock, addr = androidSock.accept()
+
+print(str(addr),'에서 접속이 확인되었습니다.')
+
+androidThread = threading.Thread(target=receiverAndroidRequest, args=(connectionSock,))
+androidThread.start()
+
+while True:
+    time.sleep(1)
+    pass
