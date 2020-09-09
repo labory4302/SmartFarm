@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">freemeteo.kr</domain>   <!-- 날씨 API 주소  -->
+
+    </domain-config>
+</network-security-config>
