@@ -18,7 +18,7 @@ sudo reboot
 //아두이노 블루투스와 페어링
 sudo bluetoothctl
 scan on
-pair (아두이노 디바이스 아이디) (pin 번호 : 1234)
+pair 아두이노디바이스아이디 pin번호:1234(default값)
 agent on
 default-agent
 exit
