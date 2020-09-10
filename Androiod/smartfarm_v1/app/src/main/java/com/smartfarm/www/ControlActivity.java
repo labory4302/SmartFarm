@@ -17,10 +17,9 @@ import androidx.fragment.app.Fragment;
 
 public class ControlActivity extends Fragment {
 
-    LinearLayout linearLayout;
+    LinearLayout autoLayout, manualLayout;
     EditText show_temp_change, show_humidity_change, show_soil_change;
-    Switch changeAuto;
-    Button temp_up, temp_down, humidity_up, humidity_down, soil_up, soil_down, auto_change_apply;
+    Button temp_up, temp_down, humidity_up, humidity_down, soil_up, soil_down, auto_change_apply, changeAuto, changeManual;
 
     //임시 온습도 수분 디폴트값
     int temp = 20;
@@ -33,7 +32,9 @@ public class ControlActivity extends Fragment {
         View view = inflater.inflate(R.layout.control_page,container,false);
 
         changeAuto = view.findViewById(R.id.change_auto);
-        linearLayout = view.findViewById(R.id.auto_layout);
+        changeManual = view.findViewById(R.id.change_manual);
+        autoLayout = view.findViewById(R.id.auto_layout);
+        manualLayout = view.findViewById(R.id.manual_layout);
         temp_up = view.findViewById(R.id.temp_up);
         temp_down = view.findViewById(R.id.temp_down);
         humidity_up = view.findViewById(R.id.humidity_up);
@@ -45,15 +46,20 @@ public class ControlActivity extends Fragment {
         show_humidity_change = view.findViewById(R.id.show_humidity_change);
         show_soil_change = view.findViewById(R.id.show_soil_change);
 
-        //숨긴 자동모드를 보여주는 스위치 체크리스너
-        changeAuto.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        //자동 모드 버튼클릭리스너
+        changeAuto.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if(b){
-                    linearLayout.setVisibility(View.VISIBLE);
-                }else{
-                    linearLayout.setVisibility(View.GONE);
-                }
+            public void onClick(View view) {
+                autoLayout.setVisibility(View.VISIBLE); //자동모드 레이아웃을 보여줌
+                manualLayout.setVisibility(View.GONE); //수동모드 레이아웃을 없앰
+            }
+        });
+        //수동 모드 버튼클릭리스너
+        changeManual.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                autoLayout.setVisibility(View.GONE);
+                manualLayout.setVisibility(View.VISIBLE);
             }
         });
         //온도 상승 하락 버튼 리스너

@@ -21,11 +21,30 @@
                 android:layout_height="300dp"
                 tools:src="@tools:sample/avatars" />
 
-            <Switch
-                android:id="@+id/change_auto"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:text="자동모드" />
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView8"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="모드선택" />
+
+                <Button
+                    android:id="@+id/change_auto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="자동" />
+
+                <Button
+                    android:id="@+id/change_manual"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="수동" />
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/auto_layout"
@@ -179,23 +198,94 @@
                     android:text="Apply" />
             </LinearLayout>
 
-            <Switch
-                android:id="@+id/switch3"
+            <LinearLayout
+                android:id="@+id/manual_layout"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:text="환풍기" />
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:visibility="gone">
 
-            <Switch
-                android:id="@+id/switch4"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:text="스프링쿨러" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
 
-            <Switch
-                android:id="@+id/switch5"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:text="조명" />
+                    <TextView
+                        android:id="@+id/textView2"
+                        android:layout_width="30dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="스프링쿨러" />
+
+                    <Button
+                        android:id="@+id/pump_on"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="켜기" />
+
+                    <Button
+                        android:id="@+id/pump_off"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="끄기" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/textView3"
+                        android:layout_width="30dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="환풍기" />
+
+                    <Button
+                        android:id="@+id/fan_on"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="켜기" />
+
+                    <Button
+                        android:id="@+id/fan_off"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="끄기" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/textView7"
+                        android:layout_width="30dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="조명" />
+
+                    <Button
+                        android:id="@+id/LED_on"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="켜기" />
+
+                    <Button
+                        android:id="@+id/LED_off"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="끄기" />
+                </LinearLayout>
+            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>
