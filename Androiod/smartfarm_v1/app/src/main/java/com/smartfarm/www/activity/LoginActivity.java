@@ -2,64 +2,125 @@ package com.smartfarm.www.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.smartfarm.www.R;
+import com.smartfarm.www.data.LoginData;
+import com.smartfarm.www.data.LoginResponse;
+import com.smartfarm.www.network.RetrofitClient;
+import com.smartfarm.www.network.ServiceApi;
 
-//
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
-
-    EditText input_password, input_id; //아이디, 비번 입력창
-
-    ImageButton login_button, register_button; //로그인, 회원가입 페이지로 넘어가는 버튼
-
-    Button test_login; //백도어 버튼 나중에 없애야댐
+    private EditText mIdView;
+    private EditText mPasswordView;
+    private Button mLoginButton;
+    private Button mregisterButton;
+    private ProgressBar mProgressView;
+    private ServiceApi service;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_page);
+        mIdView = (EditText) findViewById(R.id.login_id);
+        mPasswordView = (EditText) findViewById(R.id.login_pwd);
+        mLoginButton = (Button) findViewById(R.id.login_button);
+        mregisterButton = (Button) findViewById(R.id.register_button);
+        mProgressView = (ProgressBar) findViewById(R.id.login_progress);
 
-        input_password = findViewById(R.id.input_password);
-        input_id = findViewById(R.id.input_id);
-        login_button = findViewById(R.id.login_button);
-        register_button = findViewById(R.id.go_register_button);
+        service = RetrofitClient.getClient().create(ServiceApi.class);
 
-        test_login = findViewById(R.id.test_login);// 없애야댐
-
-        //로그인 버튼 클릭시 이벤트
-        login_button.setOnClickListener(new View.OnClickListener() {
+        mLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String id = input_id.getText().toString();
-                String password = input_password.getText().toString();
-                Toast.makeText(LoginActivity.this, ""+id+","+password, Toast.LENGTH_SHORT).show();
+                attemptLogin();
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
+                finish();
             }
         });
-        //회원가입 버튼 클릭시 이벤트
-       register_button.setOnClickListener(new View.OnClickListener() {
+        mregisterButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), RegisterActivity.class);
                 startActivity(intent);
-                finish();
             }
         });
-       //없애야함
-        test_login.setOnClickListener(new View.OnClickListener() {
+    }
+
+    private void attemptLogin() {
+        mIdView.setError(null);
+        mPasswordView.setError(null);
+
+        String id = mIdView.getText().toString();
+        String password = mPasswordView.getText().toString();
+
+        boolean cancel = false;
+        View focusView = null;
+
+        // 패스워드의 유효성 검사
+        if (password.isEmpty()) {
+            mIdView.setError("비밀번호를 입력해주세요.");
+            focusView = mIdView;
+            cancel = true;
+        } else if (!isPasswordValid(password)) {
+            mPasswordView.setError("6자 이상의 비밀번호를 입력해주세요.");
+            focusView = mPasswordView;
+            cancel = true;
+        }
+
+        // 이메일의 유효성 검사
+        if (id.isEmpty()) {
+            mIdView.setError("아이디를 입력해주세요.");
+            focusView = mIdView;
+            cancel = true;
+        }
+
+        if (cancel) {
+            focusView.requestFocus();
+        } else {
+            startLogin(new LoginData(id, password));
+            showProgress(true);
+        }
+    }
+
+    private void startLogin(LoginData data) {
+        service.userLogin(data).enqueue(new Callback<LoginResponse>() {
             @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(),MainActivity.class);
-                startActivity(intent);
-                finish();
+            public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+                LoginResponse result = response.body();
+                Toast.makeText(LoginActivity.this, result.getMessage(), Toast.LENGTH_SHORT).show();
+                showProgress(false);
+            }
+
+            @Override
+            public void onFailure(Call<LoginResponse> call, Throwable t) {
+                Toast.makeText(LoginActivity.this, "로그인 에러 발생", Toast.LENGTH_SHORT).show();
+                Log.e("로그인 에러 발생", t.getMessage());
+                showProgress(false);
             }
         });
+    }
+
+
+    private boolean isPasswordValid(String password) {
+        return password.length() >= 6;
+    }
+
+    private void showProgress(boolean show) {
+        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 }

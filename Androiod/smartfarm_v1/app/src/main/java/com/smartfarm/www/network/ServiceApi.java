@@ -13,6 +13,6 @@ public interface ServiceApi {
     @POST("/user/login")
     Call<LoginResponse> userLogin(@Body LoginData data);
 
-    @POST("/user/join")
-    Call<RegisterResponse> userJoin(@Body RegisterData data);
+    @POST("/user/register")
+    Call<RegisterResponse> userRegister(@Body RegisterData data);
 }

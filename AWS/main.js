@@ -18,15 +18,19 @@ var connection = mysql.createConnection({
     port: 3306
 });
 
-app.post('/user/join', function (req, res) {
+app.post('/user/register', function (req, res) {
     console.log(req.body);
-    var userEmail = req.body.userEmail;
-    var userPwd = req.body.userPwd;
+
     var userName = req.body.userName;
+    var userNickName = req.body.userNickName;
+    var userEmail = req.body.userEmail;
+    var userID = req.body.userID;
+    var userPwd = req.body.userPwd;
+    var userLocation = req.body.userLocation;
 
     // 삽입을 수행하는 sql문.
-    var sql = 'INSERT INTO Users (UserEmail, UserPwd, UserName) VALUES (?, ?, ?)';
-    var params = [userEmail, userPwd, userName];
+    var sql = 'INSERT INTO Users(userName, userNickName, userEmail, userID, userPwd, userLocation) VALUES (?, ?, ?, ?, ?, ?);';
+    var params = [userName, userNickName, userEmail, userID, userPwd, userLocation];
 
     // sql 문의 ?는 두번째 매개변수로 넘겨진 params의 값으로 치환된다.
     connection.query(sql, params, function (err, result) {
@@ -48,11 +52,17 @@ app.post('/user/join', function (req, res) {
 });
 
 app.post('/user/login', function (req, res) {
-    var userEmail = req.body.userEmail;
+    var userID = req.body.userID;
     var userPwd = req.body.userPwd;
-    var sql = 'select * from Users where UserEmail = ?';
 
-    connection.query(sql, userEmail, function (err, result) {
+    //////////////////////////////////////
+    // var Soil = req.body.SoilMoisture;
+    // var Humi = req.body.Humi;
+    // var Temp = req.body.Temp;
+
+    var sql = 'SELECT * FROM Users WHERE userID = ?;';
+
+    connection.query(sql, userID, function (err, result) {
         var resultCode = 404;
         var message = '에러가 발생했습니다';
 
@@ -62,12 +72,13 @@ app.post('/user/login', function (req, res) {
             if (result.length === 0) {
                 resultCode = 204;
                 message = '아이디가 틀렸습니다.';
-            } else if (userPwd !== result[0].UserPwd) {
+            } else if (userPwd !== result[0].userPwd) {
                 resultCode = 204;
                 message = '비밀번호가 틀렸습니다!';
             } else {
                 resultCode = 200;
-                message = '로그인 성공! ' + result[0].UserName + '님 환영합니다!';
+                message = '로그인 성공! ' + result[0].userName + '님 환영합니다!' + '\n'
+                + '당신의 이름은' + result[0].userName + '이메일은' + result[0].userEmail + '주소는' + result[0].userLocation + '입니다.';
             }
         }
 
@@ -78,47 +89,48 @@ app.post('/user/login', function (req, res) {
     })
 });
 
-////////////////////////////////////////////////////////
-/////////////IS THE FUCKING CUSTOM//////////////////////
-////////////////////////////////////////////////////////
-app.post('/sensor/recent', function (req, res) {
+// ////////////////////////////////////////////////////////
+// /////////////IS THE FUCKING CUSTOM//////////////////////
+// ////////////////////////////////////////////////////////
+// app.post('/sensor/recent', function (req, res) {
 
-    //저장된 온습도 센서, 토양수분 센서 값
-    var Soil = req.body.SoilMoisture;
-    var Humi = req.body.Humi;
-    var Temp = req.body.Temp;
+//     //저장된 온습도 센서, 토양수분 센서 값
+//     var ID = req.body.raspiID
+//     var Soil = req.body.SoilMoisture;
+//     var Humi = req.body.Humi;
+//     var Temp = req.body.Temp;
 
-    //쿼리문을 통한 불러오기
-    var sql = 'SELECT SoilMoisture, Humi, Temp FROM RaspiData, Users WHERE Users.UserID = RaspiData.RaspiID;';
+//     //쿼리문을 통한 불러오기
+//     var sql = 'SELECT SoilMoisture, Humi, Temp FROM RaspiData, Users WHERE Users.UserID = RaspiData.RaspiID;';
 
-    connection.query(sql, Humi_Temp, function (err, result) {
-        var resultCode = 404;
-        var message = '에러가 발생했습니다';
+//     connection.query(sql, ID, function (err, result) {
+//         var resultCode = 404;
+//         var message = '에러가 발생했습니다';
 
-        if (err) {
-            console.log(err);
-        } else {
-            if (result.length === 0) {
-                resultCode = 204;
-                message = '정보를 불러오지 못했습니다!';
-            } else if (Soil !== result[0].Soil) {
-                resultCode = 204;
-                message = '토양 수분을 불러오지 못했습니다!';
-            } else if (Humi !== result[0].Humi) {
-                resultCode = 204;
-                message = '습도를 불러오지 못했습니다!';
-            } else if (Temp !== result[0].Temp) {
-                resultCode = 204;
-                message = '온도를 불러오지 못했습니다!';
-            } else {
-                resultCode = 200;
-                message = '불러오기 완료.';
-            }
-        }
+//         if (err) {
+//             console.log(err);
+//         } else {
+//             if (result.length === 0) {
+//                 resultCode = 204;
+//                 message = '정보를 불러오지 못했습니다!';
+//             } else if (Soil !== result[0].Soil) {
+//                 resultCode = 204;
+//                 message = '토양 수분을 불러오지 못했습니다!';
+//             } else if (Humi !== result[0].Humi) {
+//                 resultCode = 204;
+//                 message = '습도를 불러오지 못했습니다!';
+//             } else if (Temp !== result[0].Temp) {
+//                 resultCode = 204;
+//                 message = '온도를 불러오지 못했습니다!';
+//             } else {
+//                 resultCode = 200;
+//                 message = '불러오기 완료.';
+//             }
+//         }
 
-        res.json({
-            'code': resultCode,
-            'message': message
-        });
-    })
-});
+//         res.json({
+//             'code': resultCode,
+//             'message': message
+//         });
+//     })
+// });
