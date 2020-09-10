@@ -30,7 +30,7 @@
 //그 밖의 가시성을 위한 상수부
 #define DHT_TYPE DHT11        //DHT의 Type(온도오차:2, 습도오차:5%) | DHT22(온도오차:0.5, 습도오차:2%) | Type는 하드웨어의 스펙을 보고 결정
 #define NUMBER_OF_LED_PIXEL 8 //NeoPixel LED에 연결되어 있는 LED 갯수
-#define DELAY_LOOP 1000       //루프의 지연시간
+#define DELAY_LOOP 3000       //루프의 지연시간
 
 
 //전역변수부
@@ -116,7 +116,7 @@ void loop() {
   humidity          = dht.readHumidity();                 //습도값 가져오기
   temperature       = dht.readTemperature();              //온도값 가져오기
   
-  data = " " + (String)convertSoilValue + "," + (String)humidity + "," + (String)temperature + " ";
+  data = " " + (String)convertSoilValue + "," + (String)humidity + "," + (String)temperature + "  ";
   //온습도, 토양수분량을 String에 저장
   //앞뒤로 한칸씩 주는 이유는 라즈베리파이에서 블루투스를 수신할 때
   //앞 뒤로 한칸씩 잘라야 온전한 데이터가 나오기 때문임. 나중에 더 디버깅할 필요 있음
@@ -161,10 +161,10 @@ void loop() {
           androidControlsLED(inputControlBehavior);   //수동모드일 때 사용자가 NeoPixel LED를 제어
           break;
         case 4:
-          setAutoModeSoilMoistureValue(inputControlBehavior); //자동모드일 때 토양수분량을 측정하여 설정된 기대 토양수분량에 따라 워터펌프 제어
+          setAutoModeSoilMoistureValue(inputControlBehavior); //자동모드일 때 기대 토양수분량 설정
           break;
         case 5:
-          setAutoModeHumidityValue(inputControlBehavior);     //자동모드일 때 습도를 측정하여 설정된 기대 습도에 따라 환풍기 제어
+          setAutoModeHumidityValue(inputControlBehavior);     //자동모드일 때 기대 습도 설정
           break;
         case 9:
           changeAutoMode(inputControlBehavior);       //사용자가 자동모드, 수동모드 설정
