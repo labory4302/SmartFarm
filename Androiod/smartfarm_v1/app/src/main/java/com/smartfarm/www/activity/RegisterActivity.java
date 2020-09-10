@@ -1,14 +1,15 @@
-package com.smartfarm.www;
+package com.smartfarm.www.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.smartfarm.www.R;
 
 //회원가입 폼
 public class RegisterActivity extends AppCompatActivity {
