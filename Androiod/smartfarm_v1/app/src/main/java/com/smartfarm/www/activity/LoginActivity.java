@@ -12,6 +12,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.smartfarm.www.R;
 
+//
+
 public class LoginActivity extends AppCompatActivity {
 
     EditText input_password, input_id; //아이디, 비번 입력창
