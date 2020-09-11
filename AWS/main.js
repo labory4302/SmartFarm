@@ -55,6 +55,11 @@ app.post('/user/login', function (req, res) {
     var userID = req.body.userID;
     var userPwd = req.body.userPwd;
 
+    //mypage에 필요한 데이터
+    var userNickName = req.body.userNickName;
+    var userEmail = req.body.userEmail;
+    var userLocation = req.body.userLocation;
+
     //////////////////////////////////////
     // var Soil = req.body.SoilMoisture;
     // var Humi = req.body.Humi;
@@ -82,12 +87,27 @@ app.post('/user/login', function (req, res) {
             }
         }
 
+        if (err) {
+            console.log(err);
+        } else{
+            if (result.length === 0){
+                resultcode = 204;
+                message = '정보를 불러오지 못했습니다.';
+            } else {
+                resultcode = 200;
+                userNickName = result[0].userNickName;
+                userEmail = result[0].userEmail;
+                userLocation = result[0].userLocation;
+            }
+        }
+
         res.json({
             'code': resultCode,
             'message': message
         });
     })
 });
+
 
 // ////////////////////////////////////////////////////////
 // /////////////IS THE FUCKING CUSTOM//////////////////////

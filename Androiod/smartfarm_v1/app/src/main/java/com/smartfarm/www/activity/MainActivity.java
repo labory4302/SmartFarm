@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
     private FragmentTransaction ft; //
     private HomeActivity frag1; //각 프래그먼트
     private ControlActivity frag2;
-    private Fragment3 frag3;
+    private MypageActivity frag3;
 
     TextView show_temp_live, show_humidity_live, show_soil_live; //현재 온,습,수분 뷰
 
@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
         frag1=new HomeActivity();
         frag2=new ControlActivity();
-        frag3=new Fragment3();
+        frag3=new MypageActivity();
         setFrag(0); // 첫 프래그먼트 화면 지정
     }
 

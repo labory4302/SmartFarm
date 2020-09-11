@@ -1,5 +1,7 @@
 package com.smartfarm.www.network;
 
+import com.smartfarm.www.data.MypageData;
+import com.smartfarm.www.data.MypageResponse;
 import com.smartfarm.www.data.RegisterData;
 import com.smartfarm.www.data.RegisterResponse;
 import com.smartfarm.www.data.LoginData;
@@ -15,4 +17,7 @@ public interface ServiceApi {
 
     @POST("/user/register")
     Call<RegisterResponse> userRegister(@Body RegisterData data);
+
+    @POST("/user/mypage")
+    Call<LoginResponse> userMypage(@Body LoginData data);
 }
