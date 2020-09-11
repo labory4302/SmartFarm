@@ -12,12 +12,12 @@ RASPIID = '1'
 bluetoothArduino = BluetoothSocket(RFCOMM)
 bluetoothArduino.connect(("98:D3:37:90:AF:07",1))
 print('블루투스 접속이 확인되었습니다.')
-
 #RDS와 connect하기 위해 필요한 코드, host(IPv4주소), RDS Username, password , db이름 설정
 conn = pymysql.connect(host = "dbinstance3.cjytw5i33eqd.us-west-2.rds.amazonaws.com", user = "luck0707", passwd = "disorder2848", db = "example")
 
+
 #센서값이 RDS에 올라간 시간 표시
-now = datetime.datetime.now() 
+now = datetime.datetime.now()
 
 #안드로이드에서 전달받은 값을 아두이노로 send
 def sendArduino(data):
@@ -33,25 +33,35 @@ def sendRDS(soil,humi,temp):
     try:
 #with를 사용해서 connect 종료시 자동 close
         with conn.cursor() as cur:
-            sql = "insert into RaspiData values(%s, %s, %s, %s, %s)"
+            sql = "insert into raspiData values(%s, %s, %s, %s, %s)"
             cur.execute(sql,(RASPIID, now, soil, humi, temp))
             conn.commit()
     except KeyboardInterrupt:
         conn.close()
         exit()
-        
-#def saveData(soil,humi):
-        
+
+
+#안드로이드 현재 상태값을 RDS에 저장하는 함수
+def saveData(saveSoil,saveHumi):
+    try:
+        with conn.cursor() as cur:
+            sql = "insert into saveRaspiData values(%s,%s,%s,%s)"
+            cur.execute(sql,(RASPIID, now, saveSoil, saveHumi))
+            conn.commit()
+    except KeyboardInterrupt:
+        conn.close()
+        exit()
+
 
 #아두이노에서 센서값을 받아 파싱 후 sendRDS함수를 이용해 데이터 전송 (쓰레드형식)
 def receiverArduinoData(sock):
     try:
         while True:
-
 #아두이노에서 값을 수신한뒤 UTP-8로 디코딩 , 디코딩 하지 않을 시 센서값이 제대로 수신되지 않음
             recvArduinoData = sock.recv(2048)
-            arduinoData = recvArduinoData[:-1].decode('UTF-8')
-#수신한 데이터가 없을 경우 pass            
+            arduinoData = recvArduinoData.decode('utf-8').strip()
+
+#수신한 데이터가 없을 경우 pass  
             if(arduinoData == ""):
                 pass
             else:
@@ -66,13 +76,20 @@ def receiverArduinoData(sock):
     finally:
         bluetoothArduino.close()
         
+
 #안드로이드와의 소켓통신을 위한 함수(쓰레드 형식)
 def receiverAndroidRequest(sock):
     try:
         while True:
             recvAndroidData = sock.recv(1024)
-            print('받은 데이터 : ', recvAndroidData.decode('utf-8'))
-            sendArduino(recvAndroidData.decode('utf-8'))
+            decodingData = recvAndroidData.decode('utf-8').strip()
+            print('받은 데이터 : ', decodingData)
+            sendArduino(decodingData)    
+            passingAndroidData = decodingData.split(",")
+            if(int(int(passingAndroidData[0])/1000) ==4):
+                saveData(int(int(passingAndroidData[0])%1000),int(int(passingAndroidData[1])%1000))
+            else:
+                pass
             sock, addr = androidSock.accept()
     except KeyboardInterrupt:
         print("\nFinished\n")
@@ -80,10 +97,6 @@ def receiverAndroidRequest(sock):
     finally:
         androidSock.close()
         connectionSock.close()
-
-
-        
-
 
 
 #receiverArduinoData 함수를 쓰레드로 실행
@@ -106,3 +119,6 @@ while True:
     time.sleep(1)
     pass
 
+while True:
+    time.sleep(1)
+    pass
