@@ -112,11 +112,12 @@ void setup() {
 //아두이노 loop부
 void loop() {
   soilValue         = analogRead(SOIL_MOISTURE);          //토양수분값 가져오기
-  convertSoilValue  = map(soilValue, 340, 1023, 100, 0);  //토양수분값 비율로 전환
+  convertSoilValue  = map(soilValue, 220, 1023, 100, 0);  //토양수분값 비율로 전환
   humidity          = dht.readHumidity();                 //습도값 가져오기
   temperature       = dht.readTemperature();              //온도값 가져오기
   
-  data = " " + (String)convertSoilValue + "," + (String)humidity + "," + (String)temperature + "  ";
+  data = "  "+(String)convertSoilValue + "," + (String)humidity + "," + (String)temperature;
+  Serial.println(data);
   //온습도, 토양수분량을 String에 저장
   //앞뒤로 한칸씩 주는 이유는 라즈베리파이에서 블루투스를 수신할 때
   //앞 뒤로 한칸씩 잘라야 온전한 데이터가 나오기 때문임. 나중에 더 디버깅할 필요 있음
@@ -124,12 +125,12 @@ void loop() {
   data.toCharArray(sendMessage, data.length()+1); //String에 저장된 데이터를 char배열로 옮김
   BLUETOOTH.write(sendMessage);                   //블루투스 송신
 
-  changePumpStatusWithSW(); //스위치가 눌렸는지 check
-  changeFanStatusWithSW();
-  changeLEDStatusWithSW();
+  changePumpStatusWithSW(); //스위치가 눌리면 워터펌프 상태 변경
+  changeFanStatusWithSW();  //스위치가 눌리면 환풍기 상태 변경
+  changeLEDStatusWithSW();  //스위치가 눌리면 LED 상태 변경
 
   autoMode_checkSoilMoisture(convertSoilValue); //자동모드일 때 설정값 check
-  autoMode_checkHumidity(humidity);
+  autoMode_checkHumidity(humidity);             //자동모드일 때 설정값 check
 
   while(BLUETOOTH.available()) {    //라즈베리파이로부터 수신된 블루투스 값이 있을 때
     receiveData = BLUETOOTH.read(); //수신데이터를 받음(바이트단위로 받음)
@@ -146,8 +147,8 @@ void loop() {
       1001:워터펌프 활성화  | 1000:워터펌프 비활성화
       2001:환풍기 활성화    | 2000:환풍기 비활성화
       3001:LED 활성화       | 3000:LED 비활성화
-      4***:자동모드 토양수분량 설정
-      5***:자동모드 습도 조절
+      4***:자동모드 토양수분량 설정(10 ~ 99)
+      5***:자동모드 습도 조절(10 ~ 99)
       9001:자동모드 ON      | 9000:자동모드 OFF
       */
       switch(inputControlCode) {
