@@ -1,5 +1,6 @@
 package com.smartfarm.www.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,7 +24,6 @@ public class MypageActivity extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.mypage_page,container,false);
-
         mypage_nickname = view.findViewById(R.id.mypage_nickname);
         mypage_email = view.findViewById(R.id.mypage_email);
         mypage_location = view.findViewById(R.id.mypage_location);
@@ -65,7 +65,8 @@ public class MypageActivity extends Fragment {
         version_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent intent = new Intent(getActivity(), VersionActivity.class);
+                startActivity(intent);
             }
         });
 

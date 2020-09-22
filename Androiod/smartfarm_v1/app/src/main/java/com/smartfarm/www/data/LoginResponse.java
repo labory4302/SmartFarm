@@ -16,9 +16,7 @@ public class LoginResponse {
         return code;
     }
 
-    public String getMessage() {
-        return message;
-    }
+    public String getMessage() { return message; }
 
     public int getUserId() {
         return userId;

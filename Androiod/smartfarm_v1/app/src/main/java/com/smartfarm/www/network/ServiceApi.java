@@ -6,6 +6,8 @@ import com.smartfarm.www.data.RegisterData;
 import com.smartfarm.www.data.RegisterResponse;
 import com.smartfarm.www.data.LoginData;
 import com.smartfarm.www.data.LoginResponse;
+import com.smartfarm.www.data.VersionData;
+import com.smartfarm.www.data.VersionResponse;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -20,4 +22,7 @@ public interface ServiceApi {
 
     @POST("/user/mypage")
     Call<LoginResponse> userMypage(@Body LoginData data);
+
+    @POST("/mypage/version")
+    Call<VersionResponse> MypageVersion();
 }
