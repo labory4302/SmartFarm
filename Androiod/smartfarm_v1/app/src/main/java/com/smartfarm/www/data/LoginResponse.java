@@ -10,38 +10,85 @@ public class LoginResponse {
     private String message;
 
     @SerializedName("userId")
-    private int userId;
+    private String userId;
+
+    @SerializedName("userPwd")
+    private String userPwd;
+
+    //MY PAGE
+    @SerializedName("userName")
+    private String userName;
+
+    @SerializedName("userNickName")
+    private String userNickName;
+
+    @SerializedName("userEmail")
+    private String userEmail;
+
+    @SerializedName("userLocation")
+    private String userLocation;
 
     public int getCode() {
         return code;
     }
 
-    public String getMessage() { return message; }
+    public void setCode(int code) {
+        this.code = code;
+    }
 
-    public int getUserId() {
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getUserId() {
         return userId;
     }
 
-    //////////////////////////////////////////////////////mypage
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 
-    @SerializedName("userNickName")
-    private int userNickName;
+    public String getUserPwd() {
+        return userPwd;
+    }
 
-    @SerializedName("userEmail")
-    private int userEmail;
+    public void setUserPwd(String userPwd) {
+        this.userPwd = userPwd;
+    }
 
-    @SerializedName("userLocation")
-    private int userLocation;
+    public String getUserName() {
+        return userName;
+    }
 
-    public int getUserNickName() {
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getUserNickName() {
         return userNickName;
     }
 
-    public int getUserEmail() {
+    public void setUserNickName(String userNickName) {
+        this.userNickName = userNickName;
+    }
+
+    public String getUserEmail() {
         return userEmail;
     }
 
-    public int getUserLocation() {
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
+    }
+
+    public String getUserLocation() {
         return userLocation;
+    }
+
+    public void setUserLocation(String userLocation) {
+        this.userLocation = userLocation;
     }
 }

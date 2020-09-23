@@ -39,8 +39,6 @@ public class VersionActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<VersionResponse> call, Response<VersionResponse> response) {
                 VersionResponse result = response.body();
-                Log.d("no :" ,"버전 "+result.getVersion());
-                Log.d("info :" ,"버전 "+result.getVersionInformation());
                 version_no.setText(""+result.getVersion());
                 version_info.setText(""+result.getVersionInformation());
             }

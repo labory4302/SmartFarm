@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.smartfarm.www.R;
 import com.smartfarm.www.data.LoginData;
 import com.smartfarm.www.data.LoginResponse;
+import com.smartfarm.www.data.UserInformation;
 import com.smartfarm.www.network.RetrofitClient;
 import com.smartfarm.www.network.ServiceApi;
 
@@ -32,7 +33,7 @@ public class LoginActivity extends AppCompatActivity {
     private ServiceApi service;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_page);
         mIdView = (EditText) findViewById(R.id.login_id);
@@ -79,7 +80,7 @@ public class LoginActivity extends AppCompatActivity {
             cancel = true;
         }
 
-        // 이메일의 유효성 검사
+        // 아이디의 유효성 검사
         if (id.isEmpty()) {
             mIdView.setError("아이디를 입력해주세요.");
             focusView = mIdView;
@@ -101,6 +102,15 @@ public class LoginActivity extends AppCompatActivity {
                 LoginResponse result = response.body();
                 Toast.makeText(LoginActivity.this, result.getMessage(), Toast.LENGTH_SHORT).show();
                 showProgress(false);
+
+                UserInformation userInfo = UserInformation.getUserInformation();
+                userInfo.setUserName(result.getUserName());
+                userInfo.setUserNickName(result.getUserNickName());
+                userInfo.setUserEmail(result.getUserEmail());
+                userInfo.setUserID(result.getUserId());
+                userInfo.setUserPwd(result.getUserPwd());
+                userInfo.setUserLocation(result.getUserLocation());
+
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(intent);
                 finish();
@@ -114,7 +124,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
-
 
     private boolean isPasswordValid(String password) {
         return password.length() >= 6;

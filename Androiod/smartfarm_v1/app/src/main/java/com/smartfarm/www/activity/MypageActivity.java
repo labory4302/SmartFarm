@@ -37,7 +37,8 @@ public class MypageActivity extends Fragment {
         changemyinformation_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent intent = new Intent(getActivity(), ChangeMyInformationActivity.class);
+                startActivity(intent);
             }
         });
 
