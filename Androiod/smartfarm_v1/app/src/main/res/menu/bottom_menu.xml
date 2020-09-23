@@ -4,18 +4,18 @@
 
     <item
         android:id="@+id/tab1"
-        android:icon="@drawable/test_button"
+        android:icon="@drawable/home_icon"
         android:enabled="true"
-        android:title="홈" />
+        android:title="Home" />
     <item
         android:id="@+id/tab2"
-        android:icon="@drawable/test_button"
+        android:icon="@drawable/remote_icon"
         android:enabled="true"
-        android:title="제어"/>
+        android:title="Control"/>
     <item
         android:id="@+id/tab3"
-        android:icon="@drawable/test_button"
+        android:icon="@drawable/mypage_icon"
         android:enabled="true"
-        android:title="내정보"/>
+        android:title="MyPage"/>
 
 </menu>
