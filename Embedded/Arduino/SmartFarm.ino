@@ -10,21 +10,21 @@
 
 //라이브러리 호출부
 #include <SoftwareSerial.h>   //블루투스통신을 위한 라이브러리(Software로 시리얼통신을 하기 위함)
-#include <DHT.h>              //온습도센서를 위한 라이브러리
+#include "DHT.h"              //온습도센서를 위한 라이브러리
 #include <Adafruit_NeoPixel.h>//NeoPixel-8 LED를 위한 라이브러리
 
 
 //PinMapping부
-#define SW_PUMP 2       //펌프제어 Switch
-#define SW_FAN 3        //환풍기제어 Switch
-#define SW_LED 4        //8-LED제어 Switch
+#define CONTROL_PUMP 2  //펌프상태변환(릴레이 In1)
+#define CONTROL_FAN 3   //환풍기상태변환(릴레이 In2)
+#define NEO_LED 4       //NeoPixel-8 LED
 #define TEMP_HUM 5      //온습도센서
-#define SOIL_MOISTURE A0//토양수분센서
-#define NEO_LED 6       //NeoPixel-8 LED
-#define CONTROL_PUMP 7  //펌프상태변환(릴레이 In1)
-#define CONTROL_FAN 8   //환풍기상태변환(릴레이 In2)
+#define SW_LED 6        //8-LED제어 Switch
+#define SW_FAN 7        //환풍기제어 Switch
+#define SW_PUMP 8       //펌프제어 Switch
 #define BLUETOOTH_TX 9  //블루투스 송신
 #define BLUETOOTH_RX 10 //블루투스 수신
+///////////////////////////////////////////////////////////////////////////////////////#define SOIL_MOISTURE A0//토양수분센서
 
 
 //그 밖의 가시성을 위한 상수부
@@ -34,12 +34,12 @@
 
 
 //전역변수부
-boolean pumpStatus  = false;  //워터펌프의 상태
-boolean fanStatus   = false;  //환풍기의 상태
-boolean LEDStatus   = false;  //LED의 상태
+int pumpStatus  = 0;  //워터펌프의 상태
+int fanStatus   = 0;  //환풍기의 상태
+int LEDStatus   = 0;  //LED의 상태
 
-int soilValue         = 0;    //토양수분량의 아날로그 값
-int convertSoilValue  = 0;    //토양수분량을 백분율로 변환한 값
+///////////////////////////////////////////////////////////////////////////////////////int soilValue         = 0;    //토양수분량의 아날로그 값
+///////////////////////////////////////////////////////////////////////////////////////int convertSoilValue  = 0;    //토양수분량을 백분율로 변환한 값
 int humidity          = 0;    //습도값
 int temperature       = 0;    //온도값
 
@@ -51,7 +51,7 @@ String receiveMessage = "";   //바이트단위로 받은 데이터를 저장하
 int inputControlCode      = 0;//안드로이드가 보낸 제어코드의 제어종류부분
 int inputControlBehavior  = 0;//안드로이드가 보낸 제어코드의 제어량부분
 
-int autoModeSoilMoistureValue = 0;  //자동모드에서의 기대 토양수분량 설정 값
+///////////////////////////////////////////////////////////////////////////////////////int autoModeSoilMoistureValue = 0;  //자동모드에서의 기대 토양수분량 설정 값
 int autoModeHumidityValue     = 90; //자동모드에서의 기대 습도 설정 값
 int autoMode                  = 0;  //자동모드의 상태(1:ON, 0:OFF)
 
@@ -64,9 +64,9 @@ void changeAutoMode(int input);               //사용자가 자동모드, 수�
 void androidControlsPump(int input);          //수동모드일 때 사용자가 워터펌프를 제어
 void androidControlsFan(int input);           //수동모드일 때 사용자가 환풍기를 제어
 void androidControlsLED(int input);           //수동모드일 때 사용자가 NeoPixel LED를 제어
-void autoMode_checkSoilMoisture(int input);   //자동모드일 때 토양수분량을 측정하여 설정된 기대 토양수분량에 따라 워터펌프 제어
+///////////////////////////////////////////////////////////////////////////////////////void autoMode_checkSoilMoisture(int input);   //자동모드일 때 토양수분량을 측정하여 설정된 기대 토양수분량에 따라 워터펌프 제어
 void autoMode_checkHumidity(int input);       //자동모드일 때 습도를 측정하여 설정된 기대 습도에 따라 환풍기 제어
-void setAutoModeSoilMoistureValue(int input); //사용자가 자동모드에서의 기대 토양수분량 설정
+///////////////////////////////////////////////////////////////////////////////////////void setAutoModeSoilMoistureValue(int input); //사용자가 자동모드에서의 기대 토양수분량 설정
 void setAutoModeHumidityValue(int input);     //사용자가 자동모드에서의 기대 습도 설정
 
 
@@ -92,11 +92,7 @@ void setup() {
   Serial.begin(9600);     //시리얼모니터 시작
   BLUETOOTH.begin(9600);  //블루투스 시작
   neoLED.begin();         //LED 시작
-
-  for(int i=0;i<NUMBER_OF_LED_PIXEL;i++) {  //LED 활성화
-    neoLED.setPixelColor(i, 255, 255, 255); //각 핀의 RGB값 설정
-    neoLED.show();                          //LED에 설정값 적용
-  }
+  dht.begin();
 
   pinMode(CONTROL_PUMP, OUTPUT);
   pinMode(CONTROL_FAN, OUTPUT);
@@ -111,25 +107,28 @@ void setup() {
 
 //아두이노 loop부
 void loop() {
-  soilValue         = analogRead(SOIL_MOISTURE);          //토양수분값 가져오기
-  convertSoilValue  = map(soilValue, 220, 1023, 100, 0);  //토양수분값 비율로 전환
+  ///////////////////////////////////////////////////////////////////////////////////////soilValue         = analogRead(SOIL_MOISTURE);          //토양수분값 가져오기
+  ///////////////////////////////////////////////////////////////////////////////////////convertSoilValue  = map(soilValue, 220, 1023, 100, 0);  //토양수분값 비율로 전환
   humidity          = dht.readHumidity();                 //습도값 가져오기
   temperature       = dht.readTemperature();              //온도값 가져오기
   
-  data = "  "+(String)convertSoilValue + "," + (String)humidity + "," + (String)temperature;
-  Serial.println(data);
-  //온습도, 토양수분량을 String에 저장
-  //앞뒤로 한칸씩 주는 이유는 라즈베리파이에서 블루투스를 수신할 때
-  //앞 뒤로 한칸씩 잘라야 온전한 데이터가 나오기 때문임. 나중에 더 디버깅할 필요 있음
+  ///////////////////////////////////////////////////////////////////////////////////////data = "  "+(String)convertSoilValue + "," + (String)humidity + "," + (String)temperature + "," + (String)autoMode + "," + (String)pumpStatus + "," + (String)fanStatus + "," + (String)LEDStatus;
 
-  data.toCharArray(sendMessage, data.length()+1); //String에 저장된 데이터를 char배열로 옮김
-  BLUETOOTH.write(sendMessage);                   //블루투스 송신
-
+  if((humidity != 0)&&(temperature != 0)) {
+    data = "  " + (String)humidity + "," + (String)temperature + "," + (String)autoMode + "," + (String)pumpStatus + "," + (String)fanStatus + "," + (String)LEDStatus + "  ";
+    //온습도, 토양수분량을 String에 저장
+    //앞뒤로 한칸씩 주는 이유는 라즈베리파이에서 블루투스를 수신할 때
+    //앞 뒤로 한칸씩 잘라야 온전한 데이터가 나오기 때문임. 나중에 더 디버깅할 필요 있음
+    Serial.println(data);
+    data.toCharArray(sendMessage, data.length()+1); //String에 저장된 데이터를 char배열로 옮김
+    BLUETOOTH.write(sendMessage);                   //블루투스 송신
+  }
+  
   changePumpStatusWithSW(); //스위치가 눌리면 워터펌프 상태 변경
   changeFanStatusWithSW();  //스위치가 눌리면 환풍기 상태 변경
   changeLEDStatusWithSW();  //스위치가 눌리면 LED 상태 변경
 
-  autoMode_checkSoilMoisture(convertSoilValue); //자동모드일 때 설정값 check
+  ///////////////////////////////////////////////////////////////////////////////////////autoMode_checkSoilMoisture(convertSoilValue); //자동모드일 때 설정값 check
   autoMode_checkHumidity(humidity);             //자동모드일 때 설정값 check
 
   while(BLUETOOTH.available()) {    //라즈베리파이로부터 수신된 블루투스 값이 있을 때
@@ -161,9 +160,9 @@ void loop() {
         case 3:
           androidControlsLED(inputControlBehavior);   //수동모드일 때 사용자가 NeoPixel LED를 제어
           break;
-        case 4:
-          setAutoModeSoilMoistureValue(inputControlBehavior); //자동모드일 때 기대 토양수분량 설정
-          break;
+          ///////////////////////////////////////////////////////////////////////////////////////case 4:
+            ///////////////////////////////////////////////////////////////////////////////////////setAutoModeSoilMoistureValue(inputControlBehavior); //자동모드일 때 기대 토양수분량 설정
+            ///////////////////////////////////////////////////////////////////////////////////////break;
         case 5:
           setAutoModeHumidityValue(inputControlBehavior);     //자동모드일 때 기대 습도 설정
           break;
@@ -203,12 +202,12 @@ void changeLEDStatusWithSW() {
     LEDStatus = !LEDStatus;
     if(LEDStatus == true) {
        for(int i=0;i<NUMBER_OF_LED_PIXEL;i++) {
-        neoLED.setPixelColor(i, 0, 0, 0);
+        neoLED.setPixelColor(i, 255, 255, 255);
         neoLED.show();
        }
     } else {
       for(int i=0;i<NUMBER_OF_LED_PIXEL;i++) {
-        neoLED.setPixelColor(i, 255, 255, 255);
+        neoLED.setPixelColor(i, 0, 0, 0);
         neoLED.show();
       }
     }
@@ -259,7 +258,8 @@ void androidControlsLED(int input) {
   }
 }
 
-//자동모드일 때 토양수분량을 측정하여 설정된 기대 토양수분량에 따라 워터펌프 제어
+  /////////////////////////////////////////////////////////////////////////////////////////자동모드일 때 토양수분량을 측정하여 설정된 기대 토양수분량에 따라 워터펌프 제어
+  /*
 void autoMode_checkSoilMoisture(int input) {
   if(autoMode == 1) {
     if(input < autoModeSoilMoistureValue) {
@@ -269,6 +269,7 @@ void autoMode_checkSoilMoisture(int input) {
     } 
   }
 }
+*/
 
 //자동모드일 때 습도를 측정하여 설정된 기대 습도에 따라 환풍기 제어
 void autoMode_checkHumidity(int input) {
@@ -281,10 +282,12 @@ void autoMode_checkHumidity(int input) {
   }
 }
 
-//사용자가 자동모드에서의 기대 토양수분량 설정
+  /////////////////////////////////////////////////////////////////////////////////////////사용자가 자동모드에서의 기대 토양수분량 설정
+  /*
 void setAutoModeSoilMoistureValue(int input) {
   autoModeSoilMoistureValue = input;
 }
+*/
 
 //사용자가 자동모드에서의 기대 습도 설정
 void setAutoModeHumidityValue(int input) {
