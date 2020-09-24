@@ -219,6 +219,8 @@ public class ControlActivity extends Fragment {
 
         return view;
     }
+
+
 //임시로 로그인 무시하기
 //    public void onStop() {
 //        super.onStop();
