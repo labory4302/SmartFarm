@@ -225,7 +225,7 @@ public class ControlActivity extends Fragment {
 //        try {
 //            socket.close();     //종료시 소켓도 닫아주어야한다.
 //        } catch (IOException e) {
-//            e.printStackTrace();
+//            e.      printStackTrace();
 //        }
 //    }
 
