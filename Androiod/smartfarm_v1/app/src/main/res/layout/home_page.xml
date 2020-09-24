@@ -20,11 +20,10 @@
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="247dp"
-        android:layout_marginTop="300dp"
         android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintStart_toStartOf="parent">
 
         <ScrollView
             android:layout_width="156dp"
@@ -151,5 +150,77 @@
         app:layout_constraintBottom_toBottomOf="@+id/today5"
         app:layout_constraintStart_toEndOf="@+id/today5"
         app:layout_constraintTop_toTopOf="@+id/today5" />
+
+    <TextView
+        android:id="@+id/textView17"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView"
+        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintTop_toTopOf="@+id/imageView" />
+
+    <TextView
+        android:id="@+id/weather0"
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="TextView"
+        app:layout_constraintStart_toStartOf="@+id/today0"
+        app:layout_constraintTop_toBottomOf="@+id/today0" />
+
+    <TextView
+        android:id="@+id/weather1"
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="TextView"
+        app:layout_constraintStart_toEndOf="@+id/weather0"
+        app:layout_constraintTop_toBottomOf="@+id/today1" />
+
+    <TextView
+        android:id="@+id/weather2"
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="TextView"
+        app:layout_constraintStart_toEndOf="@+id/weather1"
+        app:layout_constraintTop_toBottomOf="@+id/today2" />
+
+    <TextView
+        android:id="@+id/weather3"
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="TextView"
+        app:layout_constraintStart_toEndOf="@+id/weather2"
+        app:layout_constraintTop_toBottomOf="@+id/today3" />
+
+    <TextView
+        android:id="@+id/weather4"
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="TextView"
+        app:layout_constraintStart_toEndOf="@+id/weather3"
+        app:layout_constraintTop_toBottomOf="@+id/today4" />
+
+    <TextView
+        android:id="@+id/weather5"
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="TextView"
+        app:layout_constraintStart_toEndOf="@+id/weather4"
+        app:layout_constraintTop_toBottomOf="@+id/today5" />
+
+    <TextView
+        android:id="@+id/weather6"
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="TextView"
+        app:layout_constraintStart_toEndOf="@+id/weather5"
+        app:layout_constraintTop_toBottomOf="@+id/today6" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

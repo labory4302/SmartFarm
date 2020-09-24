@@ -219,15 +219,13 @@ public class ControlActivity extends Fragment {
 
         return view;
     }
-
-
 //임시로 로그인 무시하기
 //    public void onStop() {
 //        super.onStop();
 //        try {
 //            socket.close();     //종료시 소켓도 닫아주어야한다.
 //        } catch (IOException e) {
-//            e.      printStackTrace();
+//            e.printStackTrace();
 //        }
 //    }
 

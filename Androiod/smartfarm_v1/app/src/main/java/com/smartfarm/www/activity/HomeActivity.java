@@ -17,6 +17,7 @@ import com.smartfarm.www.R;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
@@ -29,6 +30,7 @@ public class HomeActivity extends Fragment {
     private ListViewAdapter listViewAdapter;
 
     TextView tb1[] = new TextView[7];
+    TextView tb2[] = new TextView[7];
 
     @Nullable
     @Override
@@ -43,7 +45,10 @@ public class HomeActivity extends Fragment {
             int resId = getResources().getIdentifier("today"+i,"id", getContext().getPackageName());
             tb1[i] = (TextView) view.findViewById(resId);
         }
-
+        for(int i=0; i<=6; i++){
+            int resId = getResources().getIdentifier("weather"+i,"id", getContext().getPackageName());
+            tb2[i] = (TextView) view.findViewById(resId);
+        }
 
 
 
@@ -56,7 +61,7 @@ public class HomeActivity extends Fragment {
         listView.setAdapter(listViewAdapter);
 
 
-//        new GetWeatherTask().execute();  밤에 최고기온 받아올 수 없어서 오류남 해결하면 열자
+        new GetWeatherTask().execute();
 
 
 //        listViewAdapter.notifyDataSetChanged();
@@ -78,22 +83,30 @@ public class HomeActivity extends Fragment {
 
 
                 //오늘 포함해서 7일 날씨 가져오기
+                Elements test_em = document.select(".table .today.sevendays .day .icon span");
 
                 // 최고기온 최저기온 가져오기
                 Elements temp_em = document.select(".table .today.sevendays .day > .temps");
 
                 // 강수량 가져오기기
                 Elements rain_em = document.select(".day .extra b");
-
+                //
 
                 // 일주일치 날씨 최고 온도 최저 온도
                 String temp_7day = temp_em.text();
+
+                String test_7 = test_em.toString();
 
                 // 파싱한 문자열에서 온도 빼고 필요없는 부분 지우기
                 temp_7day = temp_7day.replaceAll("최저: ","");
                 temp_7day = temp_7day.replaceAll("최고: ","");
 
+                String delete = "<span class=\"wicon w78x73 \" data-icon=\"";
+                String delete2 = "\"></span>";
+                test_7 = test_7.replaceAll(delete,"");
+                test_7 = test_7.replaceAll(delete2,"");
                 //
+                String testDay[] = test_7.split("\n");
 
                 // 띄어쓰기로 일주일치 온도를 분류
                 String tempDay[]  = temp_7day.split(" ");
@@ -107,11 +120,14 @@ public class HomeActivity extends Fragment {
                     //Log.d("text : ", "content : "+tempDay[i]);
                     result.put("temp"+i, tempDay[i]);
                 }
-
                 // 강수량 파싱한 내용 담기
                 for(int i=0; i<rainfallDay.length; i++){
                     //Log.d("text : ", "content : "+rainfallDay[i]);
                     result.put("rainfall"+i, rainfallDay[i]);
+                }
+                //
+                for(int i=0; i<testDay.length; i++){
+                    result.put("test"+i, testDay[i]);
                 }
 
 
@@ -127,14 +143,36 @@ public class HomeActivity extends Fragment {
             // 온도/강수량  가져오기
             Double rainfall_day[] = new Double[7];
             for (int i = 0; i < 7; i++) {
-//                Log.d("text : ", i+"일차 온도 : "+map.get("temp"+i)+" 강수량 : "+map.get("rainfall"+i));
+                Log.i("text : ", i+"일차 날씨 : "+map.get("test"+(i*2)));
                 String temp_temp = map.get("temp" + i);
                 rainfall_day[i] = Double.parseDouble(map.get("rainfall" + i));
 
                 String temp_temp_hl[] = temp_temp.split("°C");
                 float avg_temp = (Float.parseFloat(temp_temp_hl[0])+Float.parseFloat(temp_temp_hl[1]))/2;
-                Log.d("text",""+avg_temp);
+//                Log.d("찍히냐?",""+avg_temp+", "+map.get("test"+i));
                 tb1[i].setText(""+avg_temp+"℃");
+
+                if(Integer.parseInt(map.get("test"+(i*2))) <= 1){
+                    tb2[i].setText("맑음");
+                }else if(Integer.parseInt(map.get("test"+(i*2))) <= 2){
+                    tb2[i].setText("구름 조금");
+                }else if(Integer.parseInt(map.get("test"+(i*2))) <= 3){
+                    tb2[i].setText("구름 많음");
+                }else if(Integer.parseInt(map.get("test"+(i*2))) <= 4){
+                    tb2[i].setText("흐림");
+                }else if(Integer.parseInt(map.get("test"+(i*2))) <= 5){
+                    tb2[i].setText("많이 흐림");
+                }else if(Integer.parseInt(map.get("test"+(i*2))) <= 6){
+                    tb2[i].setText("비 조금");
+                }else if(Integer.parseInt(map.get("test"+(i*2))) <= 7){
+                    tb2[i].setText("비옴");
+                }else if(Integer.parseInt(map.get("test"+(i*2))) <= 8){
+                    tb2[i].setText("비 많이옴");
+                }else if(Integer.parseInt(map.get("test"+(i*2))) <= 9) {
+                    tb2[i].setText("폭우");
+                }else{
+                    tb2[i].setText("오류");
+                }
             }
         }
     }
