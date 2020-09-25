@@ -25,11 +25,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
-    private EditText mIdView;
-    private EditText mPasswordView;
-    private Button mLoginButton;
-    private Button mregisterButton;
-    private ProgressBar mProgressView;
+    private EditText mIdView, mPasswordView;
+    private Button mLoginButton, mregisterButton, testLoginbt;
     private ServiceApi service;
 
     @Override
@@ -38,11 +35,14 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.login_page);
         mIdView = (EditText) findViewById(R.id.login_id);
         mPasswordView = (EditText) findViewById(R.id.login_pwd);
-        mLoginButton = (Button) findViewById(R.id.login_button);
-        mregisterButton = (Button) findViewById(R.id.register_button);
-        mProgressView = (ProgressBar) findViewById(R.id.login_progress);
+        mLoginButton = (Button) findViewById(R.id.Login_Button);
+        mregisterButton = (Button) findViewById(R.id.Register_Button);
+        testLoginbt = findViewById(R.id.test_login_bt);
 
         service = RetrofitClient.getClient().create(ServiceApi.class);
+
+        mIdView.setPadding(100,0,0,0);
+        mPasswordView.setPadding(100,0,0,0);
 
         mLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -54,6 +54,13 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), RegisterActivity.class);
+                startActivity(intent);
+            }
+        });
+        testLoginbt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(intent);
             }
         });
@@ -91,7 +98,6 @@ public class LoginActivity extends AppCompatActivity {
             focusView.requestFocus();
         } else {
             startLogin(new LoginData(id, password));
-            showProgress(true);
         }
     }
 
@@ -101,7 +107,6 @@ public class LoginActivity extends AppCompatActivity {
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                 LoginResponse result = response.body();
                 Toast.makeText(LoginActivity.this, result.getMessage(), Toast.LENGTH_SHORT).show();
-                showProgress(false);
 
                 //싱글톤 패턴에 유저정보 저장
                 UserInformation userInfo = UserInformation.getUserInformation();
@@ -122,16 +127,11 @@ public class LoginActivity extends AppCompatActivity {
             public void onFailure(Call<LoginResponse> call, Throwable t) {
                 Toast.makeText(LoginActivity.this, "로그인 에러 발생", Toast.LENGTH_SHORT).show();
                 Log.e("로그인 에러 발생", t.getMessage());
-                showProgress(false);
             }
         });
     }
 
     private boolean isPasswordValid(String password) {
         return password.length() >= 6;
-    }
-
-    private void showProgress(boolean show) {
-        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 }

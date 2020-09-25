@@ -1,21 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/tab1"
-        android:icon="@drawable/test_button"
         android:enabled="true"
-        android:title="홈" />
+        android:icon="@drawable/home_icon"
+        tools:ignore="MenuTitle"/>
     <item
         android:id="@+id/tab2"
-        android:icon="@drawable/test_button"
         android:enabled="true"
-        android:title="제어"/>
+        android:icon="@drawable/remote_icon"
+        tools:ignore="MenuTitle"/>
     <item
         android:id="@+id/tab3"
-        android:icon="@drawable/test_button"
+        android:icon="@drawable/mypage_icon"
         android:enabled="true"
-        android:title="내정보"/>
+        tools:ignore="MenuTitle" />
 
 </menu>
