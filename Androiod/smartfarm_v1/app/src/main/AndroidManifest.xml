@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <uses-permission android:name="android.permission.INTERNET" />  <!-- 인터넷 권한 설정 -->
+    <uses-permission android:name="android.permission.CAMERA"/>     <!-- 카메라 권한 설정 -->
 
     <application
         android:allowBackup="true"
@@ -31,6 +32,18 @@
         <activity android:name=".activity.ChangeMyInformationActivity"/>
         <activity android:name=".activity.ChangeMyInformationChangeActivity"/>
         <activity android:name=".activity.VersionActivity"/>
+
+        <!-- 카메라 파일 저장 경로 설정 -->
+        <provider
+            android:authorities="com.smartfarm.www"
+            android:name="androidx.core.content.FileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths"/>
+        </provider>
 
     </application>
 
