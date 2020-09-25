@@ -70,6 +70,15 @@ public class ChangeMyInformationChangeActivity extends AppCompatActivity {
 
                 changeInformation(new RegisterData(name, nickname, email, id, pwd, location, no));
 
+                UserInformation userInfo2 = UserInformation.getUserInformation();
+
+                userInfo2.setUserName(name);
+                userInfo2.setUserNickName(nickname);
+                userInfo2.setUserEmail(email);
+                userInfo2.setUserID(id);
+                userInfo2.setUserPwd(pwd);
+                userInfo2.setUserLocation(location);
+
                 Intent intent = new Intent(getApplicationContext(), ChangeMyInformationActivity.class);
                 startActivity(intent);
                 finish();
@@ -82,15 +91,6 @@ public class ChangeMyInformationChangeActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<RegisterResponse> call, Response<RegisterResponse> response) {
                 RegisterResponse result = response.body();
-
-                UserInformation userInfo2 = UserInformation.getUserInformation();
-
-                userInfo2.setUserName(result.getUserName());
-                userInfo2.setUserNickName(result.getUserNickName());
-                userInfo2.setUserEmail(result.getUserEmail());
-                userInfo2.setUserID(result.getUserID());
-                userInfo2.setUserPwd(result.getUserPwd());
-                userInfo2.setUserLocation(result.getUserLocation());
 
                 Toast.makeText(ChangeMyInformationChangeActivity.this, "개인정보가 수정되었습니다.", Toast.LENGTH_SHORT).show();
                 if (result.getCode() == 200) {
