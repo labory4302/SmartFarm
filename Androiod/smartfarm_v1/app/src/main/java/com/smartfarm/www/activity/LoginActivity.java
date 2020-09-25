@@ -103,13 +103,15 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(LoginActivity.this, result.getMessage(), Toast.LENGTH_SHORT).show();
                 showProgress(false);
 
+                //싱글톤 패턴에 유저정보 저장
                 UserInformation userInfo = UserInformation.getUserInformation();
                 userInfo.setUserName(result.getUserName());
                 userInfo.setUserNickName(result.getUserNickName());
                 userInfo.setUserEmail(result.getUserEmail());
-                userInfo.setUserID(result.getUserId());
+                userInfo.setUserID(result.getUserID());
                 userInfo.setUserPwd(result.getUserPwd());
                 userInfo.setUserLocation(result.getUserLocation());
+                userInfo.setUserNo(result.getUserNo());
 
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(intent);

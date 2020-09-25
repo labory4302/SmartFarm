@@ -1,7 +1,10 @@
 package com.smartfarm.www.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,14 +23,15 @@ import retrofit2.Response;
 public class ChangeMyInformationActivity extends AppCompatActivity {
 
     TextView changemyinformation_name, changemyinformation_nickname, changemyinformation_email, changemyinformation_id, changemyinformation_pwd, changemyinformation_location;
+    Button changemyinformation_button;
     private ServiceApi service;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.changemyinformation_page);
-
         service = RetrofitClient.getClient().create(ServiceApi.class);
+        UserInformation userInfo = UserInformation.getUserInformation();
 
         changemyinformation_name = findViewById(R.id.changemyinformation_name);
         changemyinformation_nickname = findViewById(R.id.changemyinformation_nickname);
@@ -36,12 +40,21 @@ public class ChangeMyInformationActivity extends AppCompatActivity {
         changemyinformation_pwd = findViewById(R.id.changemyinformation_pwd);
         changemyinformation_location = findViewById(R.id.changemyinformation_location);
 
-        UserInformation userInfo = UserInformation.getUserInformation();
         changemyinformation_name.setText(userInfo.getUserName());
         changemyinformation_nickname.setText(userInfo.getUserNickName());
         changemyinformation_email.setText(userInfo.getUserEmail());
         changemyinformation_id.setText(userInfo.getUserID());
         changemyinformation_pwd.setText(userInfo.getUserPwd());
         changemyinformation_location.setText(userInfo.getUserLocation());
+
+        changemyinformation_button = (Button) findViewById(R.id.changemyinformation_button);
+        changemyinformation_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), ChangeMyInformationChangeActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
     }
 }

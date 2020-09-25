@@ -28,6 +28,7 @@
 
         <!--MY PAGE ACTIVITY-->
         <activity android:name=".activity.ChangeMyInformationActivity"/>
+        <activity android:name=".activity.ChangeMyInformationChangeActivity"/>
         <activity android:name=".activity.VersionActivity"/>
 
     </application>

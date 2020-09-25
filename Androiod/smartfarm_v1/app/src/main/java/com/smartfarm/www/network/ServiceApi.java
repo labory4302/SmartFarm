@@ -21,6 +21,9 @@ public interface ServiceApi {
     @POST("/user/register")
     Call<RegisterResponse> userRegister(@Body RegisterData data);
 
+    @POST("/mypage/changemyinformation")
+    Call<RegisterResponse> MypageChangeMyInformation(@Body RegisterData data);
+
     @POST("/mypage/version")
     Call<VersionResponse> MypageVersion();
 }

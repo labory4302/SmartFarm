@@ -21,6 +21,10 @@ public class RegisterData {
     @SerializedName("userLocation")
     private String userLocation;
 
+    //PRIMARY KEY
+    @SerializedName("userNo")
+    private int userNo;
+
     public RegisterData(String userName, String userNickName, String userEmail, String userID, String userPwd, String userLocation) {
         this.userName = userName;
         this.userNickName = userNickName;
@@ -28,5 +32,16 @@ public class RegisterData {
         this.userID = userID;
         this.userPwd = userPwd;
         this.userLocation = userLocation;
+    }
+
+    //CHANGEMYINFORMATION
+    public RegisterData(String userName, String userNickName, String userEmail, String userID, String userPwd, String userLocation, int userNo) {
+        this.userName = userName;
+        this.userNickName = userNickName;
+        this.userEmail = userEmail;
+        this.userID = userID;
+        this.userPwd = userPwd;
+        this.userLocation = userLocation;
+        this.userNo = userNo;
     }
 }

@@ -10,6 +10,7 @@ public class UserInformation {
     private String userID;
     private String userPwd;
     private String userLocation;
+    private int userNo;
 
     private UserInformation(){
         userName = null ;
@@ -18,6 +19,7 @@ public class UserInformation {
         userID = null ;
         userPwd = null ;
         userLocation = null ;
+        userNo = 0;
     }
 
     public static UserInformation getUserInformation(){
@@ -74,5 +76,13 @@ public class UserInformation {
 
     public void setUserLocation(String userLocation) {
         this.userLocation = userLocation;
+    }
+
+    public int getUserNo() {
+        return userNo;
+    }
+
+    public void setUserNo(int userNo) {
+        this.userNo = userNo;
     }
 }

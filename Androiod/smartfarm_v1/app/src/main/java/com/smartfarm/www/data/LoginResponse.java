@@ -9,8 +9,8 @@ public class LoginResponse {
     @SerializedName("message")
     private String message;
 
-    @SerializedName("userId")
-    private String userId;
+    @SerializedName("userID")
+    private String userID;
 
     @SerializedName("userPwd")
     private String userPwd;
@@ -28,6 +28,12 @@ public class LoginResponse {
     @SerializedName("userLocation")
     private String userLocation;
 
+    //PRIMARY KEY
+    @SerializedName("userNo")
+    private int userNo;
+    public int getUserNo() { return userNo; }
+    public void setUserNo(int userNo) { this.userNo = userNo; }
+
     public int getCode() {
         return code;
     }
@@ -44,12 +50,12 @@ public class LoginResponse {
         this.message = message;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getUserID() {
+        return userID;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUserID(String userID) {
+        this.userID = userID;
     }
 
     public String getUserPwd() {
