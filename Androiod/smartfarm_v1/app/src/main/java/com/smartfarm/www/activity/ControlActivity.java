@@ -47,22 +47,22 @@ import java.net.InetAddress;
 import java.net.Socket;
 
 public class ControlActivity extends Fragment {
-
-    LinearLayout autoLayout, manualLayout;
-    EditText show_temp_change, show_humidity_change, show_soil_change;
-    Button temp_up, temp_down, humidity_up, humidity_down, soil_up, soil_down, auto_change_apply, changeAuto, changeManual, pump_on, pump_off, fan_on, fan_off, LED_on, LED_off;
-
-    //임시 온습도 수분 디폴트값
-    int temp = 20;
-    int humidity = 30;
-    int soil = 20;
-
-    Socket socket;      //소켓 객체 생성
-    ConnectRaspi connectRaspi;    //소켓통신을 위한 쓰레드객체
-
+    private LinearLayout autoLayout, manualLayout;
+    private EditText show_temp_change, show_humidity_change, show_soil_change;
+    private Button temp_up, temp_down, humidity_up, humidity_down, soil_up, soil_down, auto_change_apply;
+    private Switch changeMode, manuel_pump_status, manual_fan_status, manual_LED_status;
     private WebView cctvView;           //웹뷰객체
     private WebSettings webSettings;    //웹뷰세팅
+
     private String cctvUrl = "http://192.168.0.19:8081/video.mjpg";    //웹뷰의 주소
+
+    //자동모드 임시 온습도,토양수분 디폴트값
+    private int temp = 20;
+    private int humidity = 30;
+    private int soil = 20;
+
+    Socket socket;              //소켓 객체 생성
+    ConnectRaspi connectRaspi;  //소켓통신을 위한 스레드객체
 
     @Nullable
     @Override
@@ -85,48 +85,75 @@ public class ControlActivity extends Fragment {
         webSettings.setDomStorageEnabled(true);             //로컬저장소 허용 여부
         cctvView.loadUrl(cctvUrl);  //웹뷰에 표시할 웹사이트 주소, 웹뷰 시작
 
+        changeMode = view.findViewById(R.id.changeMode);                    //모드 변경 스위치
+        manuel_pump_status = view.findViewById(R.id.manuel_pump_status);    //수동모드에서의 펌프 상태선택
+        manual_fan_status = view.findViewById(R.id.manuel_fan_status);      //수동모드에서의 환풍기 상태선택
+        manual_LED_status = view.findViewById(R.id.manuel_LED_status);      //수동모드에서의 조명 상태선택
 
-        changeAuto = view.findViewById(R.id.change_auto);
-        changeManual = view.findViewById(R.id.change_manual);
-        autoLayout = view.findViewById(R.id.auto_layout);
-        manualLayout = view.findViewById(R.id.manual_layout);
-        temp_up = view.findViewById(R.id.temp_up);
-        temp_down = view.findViewById(R.id.temp_down);
-        humidity_up = view.findViewById(R.id.humidity_up);
-        humidity_down = view.findViewById(R.id.humidity_down);
-        soil_up = view.findViewById(R.id.soil_up);
-        soil_down = view.findViewById(R.id.soil_down);
-        auto_change_apply = view.findViewById(R.id.auto_change_apply);
-        show_temp_change = view.findViewById(R.id.show_temp_change);
-        show_humidity_change = view.findViewById(R.id.show_humidity_change);
-        show_soil_change = view.findViewById(R.id.show_soil_change);
-        pump_on = view.findViewById(R.id.pump_on);
-        pump_off = view.findViewById(R.id.pump_off);
-        fan_on = view.findViewById(R.id.fan_on);
-        fan_off = view.findViewById(R.id.fan_off);
-        LED_on = view.findViewById(R.id.LED_on);
-        LED_off = view.findViewById(R.id.LED_off);
+        autoLayout = view.findViewById(R.id.auto_layout);       //자동모드 화면
+        manualLayout = view.findViewById(R.id.manual_layout);   //수동모드 화면
 
-        //자동 모드 버튼클릭리스너
-        changeAuto.setOnClickListener(new View.OnClickListener() {
+        temp_up = view.findViewById(R.id.temp_up);              //자동모드 온도값 상승
+        temp_down = view.findViewById(R.id.temp_down);          //자동모드 온도값 하강
+        humidity_up = view.findViewById(R.id.humidity_up);      //자동모드 습도값 상승
+        humidity_down = view.findViewById(R.id.humidity_down);  //자동모드 습도값 하강
+        soil_up = view.findViewById(R.id.soil_up);              //자동모드 토양수분값 상승
+        soil_down = view.findViewById(R.id.soil_down);          //자동모드 토양수분값 하강
+        auto_change_apply = view.findViewById(R.id.auto_change_apply);  //자동모드 설정값 전송
+
+        show_temp_change = view.findViewById(R.id.show_temp_change);        //자동모드 온도값 표시
+        show_humidity_change = view.findViewById(R.id.show_humidity_change);//자동모드 습도값 표시
+        show_soil_change = view.findViewById(R.id.show_soil_change);        //자동모드 토양수분값 표시
+
+        //자동, 수동모드 선택
+        changeMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onClick(View view) {
-                autoLayout.setVisibility(View.VISIBLE); //자동모드 레이아웃을 보여줌
-                manualLayout.setVisibility(View.GONE); //수동모드 레이아웃을 없앰
-                connectRaspi = new ConnectRaspi("9001");    //소켓통신 송신
-                connectRaspi.start();
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked) {
+                    setAutoMode();
+                } else {
+                    setMenualMode();
+                }
             }
         });
-        //수동 모드 버튼클릭리스너
-        changeManual.setOnClickListener(new View.OnClickListener() {
+
+        //수동모드에서의 펌프 상태 제어
+        manuel_pump_status.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onClick(View view) {
-                autoLayout.setVisibility(View.GONE);
-                manualLayout.setVisibility(View.VISIBLE);
-                connectRaspi = new ConnectRaspi("9000");    //소켓통신 송신
-                connectRaspi.start();
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked) {
+                    turnOnPump();
+                } else {
+                    turnOffPump();
+                }
             }
         });
+
+        //수동모드에서의 환풍기 상태 제어
+        manual_fan_status.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked) {
+                    turnOnFan();
+                } else {
+                    turnOffFan();
+                }
+            }
+        });
+
+        //수동모드에서의 조명 상태 제어
+        manual_LED_status.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked) {
+                    turnOnLED();
+                } else {
+                    turnOffLED();
+                }
+            }
+        });
+
+
         //온도 상승 하락 버튼 리스너
         temp_up.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -180,59 +207,13 @@ public class ControlActivity extends Fragment {
             }
         });
 
-        //스프링쿨러 on/off
-        pump_on.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                connectRaspi = new ConnectRaspi("1001");    //소켓통신 송신
-                connectRaspi.start();
-            }
-        });
-        pump_off.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                connectRaspi = new ConnectRaspi("1000");    //소켓통신 송신
-                connectRaspi.start();
-            }
-        });
 
-        //팬 on/off
-        fan_on.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                connectRaspi = new ConnectRaspi("2001");    //소켓통신 송신
-                connectRaspi.start();
-            }
-        });
-        fan_off.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                connectRaspi = new ConnectRaspi("2000");    //소켓통신 송신
-                connectRaspi.start();
-            }
-        });
-
-        //조명 on/off
-        LED_on.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                connectRaspi = new ConnectRaspi("3001");    //소켓통신 송신
-                connectRaspi.start();
-            }
-        });
-        LED_off.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                connectRaspi = new ConnectRaspi("3000");    //소켓통신 송신
-                connectRaspi.start();
-            }
-        });
 
         //소켓으로 쏘세요 쏘는부분임
         auto_change_apply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                String temp_str = show_temp_change.getText().toString(); //온도 값 가져오기
+                String temp_str = show_temp_change.getText().toString(); //온도 값 가져오기
                 String humidity_str = show_humidity_change.getText().toString();    //습도 값 가져오기
                 String soil_str = show_soil_change.getText().toString();            //수분 값 가져오기
 
@@ -253,6 +234,7 @@ public class ControlActivity extends Fragment {
         return view;
     }
 
+    
     //웹뷰의 화면을 캡쳐하여 저장
     private void screenshotSharing() {
         //스크린샷 찍어 Bitmap 객체로 변환
@@ -297,6 +279,58 @@ public class ControlActivity extends Fragment {
 //            e.printStackTrace();
 //        }
 //    }
+
+    private void setAutoMode() {
+        changeMode.setText("자동모드");
+        autoLayout.setVisibility(View.VISIBLE);
+        manualLayout.setVisibility(View.GONE);
+        connectRaspi = new ConnectRaspi("9001");
+        connectRaspi.start();   //스레드 시작
+    }
+
+    private void setMenualMode() {
+        changeMode.setText("수동모드");
+        manualLayout.setVisibility(View.VISIBLE);
+        autoLayout.setVisibility(View.GONE);
+        connectRaspi = new ConnectRaspi("9000");
+        connectRaspi.start();
+    }
+
+    private void turnOnPump() {
+        manuel_pump_status.setText("켜짐");
+        connectRaspi = new ConnectRaspi("1001");    //소켓통신 송신
+        connectRaspi.start();
+    }
+
+    private void turnOffPump() {
+        manuel_pump_status.setText("꺼짐");
+        connectRaspi = new ConnectRaspi("1000");    //소켓통신 송신
+        connectRaspi.start();
+    }
+
+    private void turnOnFan() {
+        manual_fan_status.setText("켜짐");
+        connectRaspi = new ConnectRaspi("2001");    //소켓통신 송신
+        connectRaspi.start();
+    }
+
+    private void turnOffFan() {
+        manual_fan_status.setText("꺼짐");
+        connectRaspi = new ConnectRaspi("2000");    //소켓통신 송신
+        connectRaspi.start();
+    }
+
+    private void turnOnLED() {
+        manual_LED_status.setText("켜짐");
+        connectRaspi = new ConnectRaspi("3001");    //소켓통신 송신
+        connectRaspi.start();
+    }
+
+    private void turnOffLED() {
+        manual_LED_status.setText("꺼짐");
+        connectRaspi = new ConnectRaspi("3000");    //소켓통신 송신
+        connectRaspi.start();
+    }
 
     class ConnectRaspi extends Thread {     //소켓통신을 위한 스레드
         private String ip = "192.168.0.7";  // 서버의 IP 주소

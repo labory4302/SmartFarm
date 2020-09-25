@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:scrollbarThumbHorizontal="@color/Black"
     tools:context=".activity.ControlActivity">
 
     <ScrollView
@@ -13,7 +14,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <WebView
                 android:id="@+id/webView"
@@ -30,19 +31,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="모드선택" />
+                    android:text="모드선택"
+                    android:textColor="@color/Black" />
 
-                <Button
-                    android:id="@+id/change_auto"
+                <Switch
+                    android:id="@+id/changeMode"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="자동" />
+                    android:layout_weight="1"
+                    android:text="NULL"/>
 
-                <Button
-                    android:id="@+id/change_manual"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="수동" />
             </LinearLayout>
 
             <LinearLayout
@@ -202,6 +200,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
+                android:layout_marginTop="20dp"
                 android:visibility="gone">
 
                 <LinearLayout
@@ -216,25 +215,19 @@
                         android:layout_weight="1"
                         android:text="스프링쿨러" />
 
-                    <Button
-                        android:id="@+id/pump_on"
+                    <Switch
+                        android:id="@+id/manuel_pump_status"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="켜기" />
-
-                    <Button
-                        android:id="@+id/pump_off"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="끄기" />
+                        android:text="펌프상태"/>
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:layout_marginTop="10dp">
 
                     <TextView
                         android:id="@+id/textView3"
@@ -243,25 +236,19 @@
                         android:layout_weight="1"
                         android:text="환풍기" />
 
-                    <Button
-                        android:id="@+id/fan_on"
+                    <Switch
+                        android:id="@+id/manuel_fan_status"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="켜기" />
-
-                    <Button
-                        android:id="@+id/fan_off"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="끄기" />
+                        android:text="환풍기상태"/>
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:layout_marginTop="10dp">
 
                     <TextView
                         android:id="@+id/textView7"
@@ -270,19 +257,12 @@
                         android:layout_weight="1"
                         android:text="조명" />
 
-                    <Button
-                        android:id="@+id/LED_on"
+                    <Switch
+                        android:id="@+id/manuel_LED_status"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="켜기" />
-
-                    <Button
-                        android:id="@+id/LED_off"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="끄기" />
+                        android:text="조명상태"/>
                 </LinearLayout>
             </LinearLayout>
 
