@@ -31,7 +31,6 @@ public class ChangeMyInformationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.changemyinformation_page);
         service = RetrofitClient.getClient().create(ServiceApi.class);
-        UserInformation userInfo = UserInformation.getUserInformation();
 
         changemyinformation_name = findViewById(R.id.changemyinformation_name);
         changemyinformation_nickname = findViewById(R.id.changemyinformation_nickname);
@@ -39,6 +38,8 @@ public class ChangeMyInformationActivity extends AppCompatActivity {
         changemyinformation_id = findViewById(R.id.changemyinformation_id);
         changemyinformation_pwd = findViewById(R.id.changemyinformation_pwd);
         changemyinformation_location = findViewById(R.id.changemyinformation_location);
+
+        UserInformation userInfo = UserInformation.getUserInformation();
 
         changemyinformation_name.setText(userInfo.getUserName());
         changemyinformation_nickname.setText(userInfo.getUserNickName());
