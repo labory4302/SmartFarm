@@ -9,11 +9,20 @@ package com.smartfarm.www.activity;
 9001:자동모드 ON      | 9000:자동모드 OFF
 */
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -28,7 +37,10 @@ import androidx.fragment.app.Fragment;
 import com.smartfarm.www.R;
 
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.InetAddress;
@@ -48,10 +60,31 @@ public class ControlActivity extends Fragment {
     Socket socket;      //소켓 객체 생성
     ConnectRaspi connectRaspi;    //소켓통신을 위한 쓰레드객체
 
+    private WebView cctvView;           //웹뷰객체
+    private WebSettings webSettings;    //웹뷰세팅
+    private String cctvUrl = "http://192.168.0.19:8081/video.mjpg";    //웹뷰의 주소
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.control_page,container,false);
+
+        //웹뷰 세팅 및 웹뷰 시작 부분
+        cctvView = view.findViewById(R.id.webView);         //웹뷰 인스턴스
+        cctvView.setWebViewClient(new WebViewClient());     //클릭시 새창 안뜨게 하기
+        webSettings = cctvView.getSettings();               //세부 세팅 등록
+        webSettings.setJavaScriptEnabled(true);             //웹페이지 자바스클비트 허용 여부
+        webSettings.setSupportMultipleWindows(false);       //새창 띄우기 허용 여부
+        webSettings.setJavaScriptCanOpenWindowsAutomatically(false);    //자바스크립트 새창 띄우기(멀티뷰) 허용 여부
+        webSettings.setLoadWithOverviewMode(true);          //메타태그 허용 여부
+        webSettings.setUseWideViewPort(true);               //화면 사이즈 맞추기 허용 여부
+        webSettings.setSupportZoom(true);                   //화면 줌 허용 여부
+        webSettings.setBuiltInZoomControls(true);           //화면 확대 축소 허용 여부
+        webSettings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);  //컨텐츠 사이즈 맞추기
+        webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);//브라우저 캐시 허용 여부
+        webSettings.setDomStorageEnabled(true);             //로컬저장소 허용 여부
+        cctvView.loadUrl(cctvUrl);  //웹뷰에 표시할 웹사이트 주소, 웹뷰 시작
+
 
         changeAuto = view.findViewById(R.id.change_auto);
         changeManual = view.findViewById(R.id.change_manual);
@@ -219,6 +252,42 @@ public class ControlActivity extends Fragment {
 
         return view;
     }
+
+    //웹뷰의 화면을 캡쳐하여 저장
+    private void screenshotSharing() {
+        //스크린샷 찍어 Bitmap 객체로 변환
+        cctvView.setDrawingCacheEnabled(true);
+
+        Bitmap screenshot = Bitmap. createBitmap(cctvView.getWidth(), cctvView.getHeight(), Bitmap.Config.ARGB_8888);   //캡쳐화면을 저장할 비트맵을 생성
+        Canvas c = new Canvas(screenshot);      //캔버스를 생성
+        cctvView.draw(c);                       //웹뷰의 화면을 캔버스에 그림
+
+        //Bitmap객체를 파일로 저장
+        String filename = "screenShot.png";
+        Uri imageUri = null;
+
+        try {
+            File f = new File(getActivity().getExternalCacheDir(), filename);
+
+            f.createNewFile();
+            imageUri = Uri. fromFile(f);
+            OutputStream outStream = new FileOutputStream(f);
+
+            screenshot.compress(Bitmap.CompressFormat.PNG, 100, outStream);
+            outStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        cctvView.setDrawingCacheEnabled(false);
+    }
+
+//    //웹뷰에서 찍은 사진을 불러오기
+//    private void uploadImage() {
+//        String path = getActivity().getExternalCacheDir() + "/screenShot.png";
+//        Bitmap bitmap = BitmapFactory.decodeFile(path);
+//        Drawable drawable = (Drawable)(new BitmapDrawable(bitmap));
+//        mImageView.setImageDrawable(drawable);
+//    }
 
 //    public void onStop() {
 //        super.onStop();

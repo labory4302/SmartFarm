@@ -9,6 +9,8 @@
         <domain includeSubdomains="true">ec2-54-203-187-33.us-west-2.compute.amazonaws.com</domain>
         <!-- 날씨 API 주소  -->
         <domain includeSubdomains="true">freemeteo.kr</domain>
+        <!-- 웹뷰 주소 -->
+        <domain includeSubdomains="true">192.168.0.19</domain>
     </domain-config>
 
 </network-security-config>
