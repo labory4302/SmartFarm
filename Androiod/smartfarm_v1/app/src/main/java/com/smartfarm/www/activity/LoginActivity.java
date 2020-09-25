@@ -4,11 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,7 +13,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.smartfarm.www.R;
 import com.smartfarm.www.data.LoginData;
 import com.smartfarm.www.data.LoginResponse;
-import com.smartfarm.www.data.UserInformation;
 import com.smartfarm.www.network.RetrofitClient;
 import com.smartfarm.www.network.ServiceApi;
 
@@ -27,20 +23,21 @@ import retrofit2.Response;
 public class LoginActivity extends AppCompatActivity {
     private EditText mIdView;
     private EditText mPasswordView;
-    private Button mLoginButton;
-    private Button mregisterButton;
-    private ProgressBar mProgressView;
     private ServiceApi service;
+    private Button mLoginButton, mregisterButton;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_page);
         mIdView = (EditText) findViewById(R.id.login_id);
         mPasswordView = (EditText) findViewById(R.id.login_pwd);
-        mLoginButton = (Button) findViewById(R.id.login_button);
-        mregisterButton = (Button) findViewById(R.id.register_button);
-        mProgressView = (ProgressBar) findViewById(R.id.login_progress);
+        mLoginButton = findViewById(R.id.Login_Button);
+        mregisterButton = findViewById(R.id.Register_Button);
+        Button test_login_bt = findViewById(R.id.test_login_bt);
+
+        mIdView.setPadding(100, 0, 0, 0);
+        mPasswordView.setPadding(100,0,0,0);
 
         service = RetrofitClient.getClient().create(ServiceApi.class);
 
@@ -55,6 +52,14 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), RegisterActivity.class);
                 startActivity(intent);
+            }
+        });
+        test_login_bt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
+                finish();
             }
         });
     }
@@ -80,7 +85,7 @@ public class LoginActivity extends AppCompatActivity {
             cancel = true;
         }
 
-        // 아이디의 유효성 검사
+        // 이메일의 유효성 검사
         if (id.isEmpty()) {
             mIdView.setError("아이디를 입력해주세요.");
             focusView = mIdView;
@@ -91,7 +96,6 @@ public class LoginActivity extends AppCompatActivity {
             focusView.requestFocus();
         } else {
             startLogin(new LoginData(id, password));
-            showProgress(true);
         }
     }
 
@@ -101,17 +105,6 @@ public class LoginActivity extends AppCompatActivity {
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                 LoginResponse result = response.body();
                 Toast.makeText(LoginActivity.this, result.getMessage(), Toast.LENGTH_SHORT).show();
-                showProgress(false);
-
-                //싱글톤 패턴에 유저정보 저장
-                UserInformation userInfo = UserInformation.getUserInformation();
-                userInfo.setUserName(result.getUserName());
-                userInfo.setUserNickName(result.getUserNickName());
-                userInfo.setUserEmail(result.getUserEmail());
-                userInfo.setUserID(result.getUserID());
-                userInfo.setUserPwd(result.getUserPwd());
-                userInfo.setUserLocation(result.getUserLocation());
-                userInfo.setUserNo(result.getUserNo());
 
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(intent);
@@ -122,16 +115,13 @@ public class LoginActivity extends AppCompatActivity {
             public void onFailure(Call<LoginResponse> call, Throwable t) {
                 Toast.makeText(LoginActivity.this, "로그인 에러 발생", Toast.LENGTH_SHORT).show();
                 Log.e("로그인 에러 발생", t.getMessage());
-                showProgress(false);
             }
         });
     }
+
 
     private boolean isPasswordValid(String password) {
         return password.length() >= 6;
     }
 
-    private void showProgress(boolean show) {
-        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-    }
 }

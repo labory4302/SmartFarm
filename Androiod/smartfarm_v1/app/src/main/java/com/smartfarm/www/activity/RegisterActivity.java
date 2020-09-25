@@ -1,14 +1,10 @@
 package com.smartfarm.www.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -33,7 +29,6 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText mPasswordView;
     private EditText mLocationView;
     private Button mRegisterButton;
-    private ProgressBar mProgressView;
     private ServiceApi service;
 
     @Override
@@ -47,8 +42,7 @@ public class RegisterActivity extends AppCompatActivity {
         mIdView = (EditText) findViewById(R.id.register_id);
         mPasswordView = (EditText) findViewById(R.id.register_pwd);
         mLocationView = (EditText) findViewById(R.id.register_location);
-        mRegisterButton = (Button) findViewById(R.id.register_button);
-        mProgressView = (ProgressBar) findViewById(R.id.register_progress);
+        mRegisterButton = (Button) findViewById(R.id.register_Button);
 
         service = RetrofitClient.getClient().create(ServiceApi.class);
 
@@ -111,7 +105,6 @@ public class RegisterActivity extends AppCompatActivity {
             focusView.requestFocus();
         } else {
             startregister(new RegisterData(name, nickname, email, id, password, location));
-            showProgress(true);
         }
     }
 
@@ -121,7 +114,6 @@ public class RegisterActivity extends AppCompatActivity {
             public void onResponse(Call<RegisterResponse> call, Response<RegisterResponse> response) {
                 RegisterResponse result = response.body();
                 Toast.makeText(RegisterActivity.this, result.getMessage(), Toast.LENGTH_SHORT).show();
-                showProgress(false);
 
                 if (result.getCode() == 200) {
                     finish();
@@ -132,7 +124,6 @@ public class RegisterActivity extends AppCompatActivity {
             public void onFailure(Call<RegisterResponse> call, Throwable t) {
                 Toast.makeText(RegisterActivity.this, "회원가입 에러 발생", Toast.LENGTH_SHORT).show();
                 Log.e("회원가입 에러 발생", t.getMessage());
-                showProgress(false);
             }
         });
     }
@@ -145,7 +136,5 @@ public class RegisterActivity extends AppCompatActivity {
         return password.length() >= 6;
     }
 
-    private void showProgress(boolean show) {
-        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-    }
+
 }

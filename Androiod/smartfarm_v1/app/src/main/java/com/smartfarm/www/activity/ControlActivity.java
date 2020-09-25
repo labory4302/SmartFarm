@@ -219,15 +219,15 @@ public class ControlActivity extends Fragment {
 
         return view;
     }
-
-    public void onStop() {
-        super.onStop();
-        try {
-            socket.close();     //종료시 소켓도 닫아주어야한다.
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+//임시로 로그인 무시하기
+//    public void onStop() {
+//        super.onStop();
+//        try {
+//            socket.close();     //종료시 소켓도 닫아주어야한다.
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     class ConnectRaspi extends Thread {     //소켓통신을 위한 스레드
         private String ip = "192.168.0.7";  // 서버의 IP 주소

@@ -1,13 +1,9 @@
 package com.smartfarm.www.network;
 
-import com.smartfarm.www.activity.LoginActivity;
-import com.smartfarm.www.data.MypageData;
-import com.smartfarm.www.data.MypageResponse;
 import com.smartfarm.www.data.RegisterData;
 import com.smartfarm.www.data.RegisterResponse;
 import com.smartfarm.www.data.LoginData;
 import com.smartfarm.www.data.LoginResponse;
-import com.smartfarm.www.data.VersionData;
 import com.smartfarm.www.data.VersionResponse;
 
 import retrofit2.Call;
