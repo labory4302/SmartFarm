@@ -21,6 +21,7 @@ public class GetWeatherTask extends AsyncTask<Void, Void, Map<String,String>> {
         Map<String,String> result = new HashMap<String,String>();
         try {
 
+
             // 날씨 URL 가져오기
             Document document = Jsoup.connect("https://freemeteo.kr/weather/seoul/7-days/list/?gid=1835848&language=korean&country=south-korea").get();
 
