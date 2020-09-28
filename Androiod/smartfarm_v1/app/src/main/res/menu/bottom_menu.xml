@@ -18,5 +18,10 @@
         android:icon="@drawable/mypage_icon"
         android:enabled="true"
         tools:ignore="MenuTitle" />
+    <item
+        android:id="@+id/tab4"
+        android:icon="@drawable/mypage_icon"
+        android:enabled="true"
+        tools:ignore="MenuTitle" />
 
 </menu>
