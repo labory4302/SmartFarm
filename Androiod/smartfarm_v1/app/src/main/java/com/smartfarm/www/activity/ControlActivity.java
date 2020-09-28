@@ -90,7 +90,7 @@ public class ControlActivity extends Fragment {
         setControlValue();
 
         Toast.makeText(getActivity(), "세팅한 습도값 : " + setHumidity + "\n자동모드상태 : " + automodeStatus + "\n펌프상태 : " + pumpStatus +
-                "\n환풍기상태 : " + fanStatus + "\n조명상태 : " + LedStatus, Toast.LENGTH_LONG).show();
+                "\n환풍기상태 : " + fanStatus + "\n조명상태 : " + LedStatus, Toast.LENGTH_SHORT).show();
 
         //웹뷰 세팅 및 웹뷰 시작 부분
         cctvView = view.findViewById(R.id.webView);         //웹뷰 인스턴스
