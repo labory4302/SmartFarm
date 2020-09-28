@@ -11,15 +11,18 @@ public class EmbeddedData {
     @SerializedName("userNo")
     int userNo;
 
+    //현재 계측한 센서값들
     @SerializedName("recentHumi")
     int recentHumi;
 
     @SerializedName("Temp")
     int Temp;
 
+    //사전에 세팅한 값들
     @SerializedName("Humi")
     int Humi;
 
+    //현재 아두이노의 상태
     @SerializedName("automode")
     int automode;
 

@@ -29,12 +29,17 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.smartfarm.www.R;
+import com.smartfarm.www.data.EmbeddedResponse;
+import com.smartfarm.www.data.VersionResponse;
+import com.smartfarm.www.network.RetrofitClient;
+import com.smartfarm.www.network.ServiceApi;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -46,6 +51,10 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class ControlActivity extends Fragment {
     private LinearLayout autoLayout, manualLayout;
     private EditText show_temp_change, show_humidity_change, show_soil_change;
@@ -53,13 +62,20 @@ public class ControlActivity extends Fragment {
     private Switch changeMode, manuel_pump_status, manual_fan_status, manual_LED_status;
     private WebView cctvView;           //웹뷰객체
     private WebSettings webSettings;    //웹뷰세팅
+    private ServiceApi service;
 
     private String cctvUrl = "http://192.168.0.19:8081/video.mjpg";    //웹뷰의 주소
 
-    //자동모드 임시 온습도,토양수분 디폴트값
-    private int temp = 20;
-    private int humidity = 30;
-    private int soil = 20;
+    //사전에 세팅한 값
+    private int setTemp = 0;
+    private int setHumidity = 0;
+    private int setSoil = 0;
+
+    //현재 센서들의 상태
+    private int automodeStatus = 0;
+    private int pumpStatus = 0;
+    private int fanStatus = 0;
+    private int LedStatus = 0;
 
     Socket socket;              //소켓 객체 생성
     ConnectRaspi connectRaspi;  //소켓통신을 위한 스레드객체
@@ -68,6 +84,13 @@ public class ControlActivity extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.control_page,container,false);
+
+        service = RetrofitClient.getClient().create(ServiceApi.class);
+
+        setControlValue();
+
+        Toast.makeText(getActivity(), "세팅한 습도값 : " + setHumidity + "\n자동모드상태 : " + automodeStatus + "\n펌프상태 : " + pumpStatus +
+                "\n환풍기상태 : " + fanStatus + "\n조명상태 : " + LedStatus, Toast.LENGTH_LONG).show();
 
         //웹뷰 세팅 및 웹뷰 시작 부분
         cctvView = view.findViewById(R.id.webView);         //웹뷰 인스턴스
@@ -158,51 +181,51 @@ public class ControlActivity extends Fragment {
         temp_up.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                temp++;
-                show_temp_change.setText(String.valueOf(temp));
+                setTemp++;
+                show_temp_change.setText(String.valueOf(setTemp));
             }
         });
         temp_down.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(temp <=0) {
+                if(setTemp <=0) {
                 } else{
-                    temp--;
-                    show_temp_change.setText(String.valueOf(temp));
+                    setTemp--;
+                    show_temp_change.setText(String.valueOf(setTemp));
                 }
             }
         });
         humidity_up.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                humidity++;
-                show_humidity_change.setText(String.valueOf(humidity));
+                setHumidity++;
+                show_humidity_change.setText(String.valueOf(setHumidity));
             }
         });
         humidity_down.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(humidity <= 0){
+                if(setHumidity <= 0){
                 } else{
-                    humidity--;
-                    show_humidity_change.setText(String.valueOf(humidity));
+                    setHumidity--;
+                    show_humidity_change.setText(String.valueOf(setHumidity));
                 }
             }
         });
         soil_up.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                soil++;
-                show_soil_change.setText(String.valueOf(soil));
+                setSoil++;
+                show_soil_change.setText(String.valueOf(setSoil));
             }
         });
         soil_down.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(soil <= 0){
+                if(setSoil <= 0){
                 }else{
-                    soil--;
-                    show_soil_change.setText(String.valueOf(soil));
+                    setSoil--;
+                    show_soil_change.setText(String.valueOf(setSoil));
                 }
             }
         });
@@ -234,35 +257,35 @@ public class ControlActivity extends Fragment {
         return view;
     }
 
-    
-    //웹뷰의 화면을 캡쳐하여 저장
-    private void screenshotSharing() {
-        //스크린샷 찍어 Bitmap 객체로 변환
-        cctvView.setDrawingCacheEnabled(true);
 
-        Bitmap screenshot = Bitmap. createBitmap(cctvView.getWidth(), cctvView.getHeight(), Bitmap.Config.ARGB_8888);   //캡쳐화면을 저장할 비트맵을 생성
-        Canvas c = new Canvas(screenshot);      //캔버스를 생성
-        cctvView.draw(c);                       //웹뷰의 화면을 캔버스에 그림
-
-        //Bitmap객체를 파일로 저장
-        String filename = "screenShot.png";
-        Uri imageUri = null;
-
-        try {
-            File f = new File(getActivity().getExternalCacheDir(), filename);
-
-            f.createNewFile();
-            imageUri = Uri. fromFile(f);
-            OutputStream outStream = new FileOutputStream(f);
-
-            screenshot.compress(Bitmap.CompressFormat.PNG, 100, outStream);
-            outStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        cctvView.setDrawingCacheEnabled(false);
-    }
-
+//    //웹뷰의 화면을 캡쳐하여 저장
+//    private void screenshotSharing() {
+//        //스크린샷 찍어 Bitmap 객체로 변환
+//        cctvView.setDrawingCacheEnabled(true);
+//
+//        Bitmap screenshot = Bitmap. createBitmap(cctvView.getWidth(), cctvView.getHeight(), Bitmap.Config.ARGB_8888);   //캡쳐화면을 저장할 비트맵을 생성
+//        Canvas c = new Canvas(screenshot);      //캔버스를 생성
+//        cctvView.draw(c);                       //웹뷰의 화면을 캔버스에 그림
+//
+//        //Bitmap객체를 파일로 저장
+//        String filename = "screenShot.png";
+//        Uri imageUri = null;
+//
+//        try {
+//            File f = new File(getActivity().getExternalCacheDir(), filename);
+//
+//            f.createNewFile();
+//            imageUri = Uri. fromFile(f);
+//            OutputStream outStream = new FileOutputStream(f);
+//
+//            screenshot.compress(Bitmap.CompressFormat.PNG, 100, outStream);
+//            outStream.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        cctvView.setDrawingCacheEnabled(false);
+//    }
+//
 //    //웹뷰에서 찍은 사진을 불러오기
 //    private void uploadImage() {
 //        String path = getActivity().getExternalCacheDir() + "/screenShot.png";
@@ -270,7 +293,7 @@ public class ControlActivity extends Fragment {
 //        Drawable drawable = (Drawable)(new BitmapDrawable(bitmap));
 //        mImageView.setImageDrawable(drawable);
 //    }
-
+//
 //    public void onStop() {
 //        super.onStop();
 //        try {
@@ -354,5 +377,25 @@ public class ControlActivity extends Fragment {
                 e.printStackTrace();
             }
         }
+    }
+
+    private void setControlValue() {
+        service.EmbeddedSensorData().enqueue(new Callback<EmbeddedResponse>() {
+            @Override
+            public void onResponse(Call<EmbeddedResponse> call, Response<EmbeddedResponse> response) {
+                EmbeddedResponse result = response.body();
+                setHumidity = result.getHumi();
+                automodeStatus = result.getAutomode();
+                pumpStatus = result.getPump();
+                fanStatus = result.getFan();
+                LedStatus = result.getLed();
+            }
+
+            @Override
+            public void onFailure(Call<EmbeddedResponse> call, Throwable t) {
+                Toast.makeText(getActivity(), "세팅 정보를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show();
+                Log.e("세팅 정보를 불러오지 못했습니다.", t.getMessage());
+            }
+        });
     }
 }
