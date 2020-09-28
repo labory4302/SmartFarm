@@ -17,4 +17,10 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:text="버전정보디폴트" />
+
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1" />
+
 </LinearLayout>

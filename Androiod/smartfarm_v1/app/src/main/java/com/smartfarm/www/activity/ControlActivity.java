@@ -53,6 +53,8 @@ public class ControlActivity extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.control_page,container,false);
 
+
+
         changeAuto = view.findViewById(R.id.change_auto);
         changeManual = view.findViewById(R.id.change_manual);
         autoLayout = view.findViewById(R.id.auto_layout);
