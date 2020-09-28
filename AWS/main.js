@@ -18,6 +18,9 @@ var connection = mysql.createConnection({
     port: 3306
 });
 
+// 안드로이드
+// 회원
+// 회원가입
 app.post('/user/register', function (req, res) {
     console.log(req.body);
 
@@ -51,19 +54,18 @@ app.post('/user/register', function (req, res) {
     });
 });
 
+
+//로그인
 app.post('/user/login', function (req, res) {
     var userID = req.body.userID;
     var userPwd = req.body.userPwd;
 
     //mypage에 필요한 데이터
+    var userName = req.body.userName;
     var userNickName = req.body.userNickName;
     var userEmail = req.body.userEmail;
     var userLocation = req.body.userLocation;
-
-    //////////////////////////////////////
-    // var Soil = req.body.SoilMoisture;
-    // var Humi = req.body.Humi;
-    // var Temp = req.body.Temp;
+    var userNo = req.body.userNo;
 
     var sql = 'SELECT * FROM Users WHERE userID = ?;';
 
@@ -82,8 +84,7 @@ app.post('/user/login', function (req, res) {
                 message = '비밀번호가 틀렸습니다!';
             } else {
                 resultCode = 200;
-                message = '로그인 성공! ' + result[0].userName + '님 환영합니다!' + '\n'
-                + '당신의 이름은' + result[0].userName + '이메일은' + result[0].userEmail + '주소는' + result[0].userLocation + '입니다.';
+                message = result[0].userNickName + '님 환영합니다!';
             }
         }
 
@@ -95,62 +96,230 @@ app.post('/user/login', function (req, res) {
                 message = '정보를 불러오지 못했습니다.';
             } else {
                 resultcode = 200;
-                userNickName = result[0].userNickName;
-                userEmail = result[0].userEmail;
-                userLocation = result[0].userLocation;
             }
         }
-
         res.json({
-            'code': resultCode,
-            'message': message
+            code : resultCode,
+            message : message,
+            userName : result[0].userName,
+            userNickName : result[0].userNickName,
+            userEmail : result[0].userEmail,
+            userID : result[0].userID,
+            userPwd : result[0].userPwd,
+            userLocation : result[0].userLocation,
+            userNo : result[0].userNo
         });
     })
 });
 
+// 안드로이드
+// 마이페이지
+// 개인정보수정
+app.post('/mypage/changemyinformation', function (req, res) {
 
-// ////////////////////////////////////////////////////////
-// /////////////IS THE FUCKING CUSTOM//////////////////////
-// ////////////////////////////////////////////////////////
-// app.post('/sensor/recent', function (req, res) {
+    var userName = req.body.userName;
+    var userNickName = req.body.userNickName;
+    var userEmail = req.body.userEmail;
+    var userID = req.body.userID;
+    var userPwd = req.body.userPwd;
+    var userLocation = req.body.userLocation;
+    var userNo = req.body.userNo;
 
-//     //저장된 온습도 센서, 토양수분 센서 값
-//     var ID = req.body.raspiID
-//     var Soil = req.body.SoilMoisture;
-//     var Humi = req.body.Humi;
-//     var Temp = req.body.Temp;
+    // 갱신을 수행하는 sql문.
+    var sql = 'UPDATE Users SET userName = ?, userNickName = ?, userEmail = ?, userID = ?, userPwd = ?, userLocation = ? WHERE userNo = ?;';
+    var params = [userName, userNickName, userEmail, userID, userPwd, userLocation, userNo];
 
-//     //쿼리문을 통한 불러오기
-//     var sql = 'SELECT SoilMoisture, Humi, Temp FROM RaspiData, Users WHERE Users.UserID = RaspiData.RaspiID;';
+    // sql 문의 ?는 두번째 매개변수로 넘겨진 params의 값으로 치환된다.
+    connection.query(sql, params, function (err, result) {
+        var resultCode = 404;
+        var message = '에러가 발생했습니다';
+    
+        if (err) {
+            console.log(err);
+        } else {
+            resultCode = 200;
+            message = '개인정보가 수정되었습니다.';
+            console.log(message);  
+        }
 
-//     connection.query(sql, ID, function (err, result) {
+        res.json({
+            code : resultCode,
+            message : message
+        });
+    });
+});
+
+// 공지사항
+app.post('/mypage/notification', function (req, res) {
+
+    var notificationTitle = req.body.notificationTitle;
+    var notificationContents = req.body.notificationContents;
+    var params = [notificationTitle, notificationContents];
+
+    var sql = 'SELECT notificationTitle, notificationContents FROM Notifications;';
+
+    connection.query(sql, params, function (err, result) {
+        var resultCode = 404;
+        if (err) {
+            console.log(err);
+        } else {
+            resultCode = 200;
+            res.json({
+                code : resultCode,
+                notificationTitle : result[0].notificationTitle,
+                notificationContents : result[0].notificationContents
+            });
+        }
+    });
+});
+
+// 이벤트
+app.post('/mypage/event', function (req, res) {
+
+    var eventTitle = req.body.eventTitle;
+    var eventContents = req.body.eventContents;
+    var params = [eventTitle, eventContents];
+
+    var sql = 'SELECT eventTitle, eventContents FROM Events;';
+
+    connection.query(sql, params, function (err, result) {
+        var resultCode = 404;
+        if (err) {
+            console.log(err);
+        } else {
+            resultCode = 200;
+            res.json({
+                code : resultCode,
+                eventTitle : result[0].eventTitle,
+                eventContents : result[0].eventContents
+            });
+        }
+    });
+});
+
+// 버전 정보
+app.post('/mypage/version', function (req, res) {
+
+    var version = req.body.version;
+    var versionInformation = req.body.versionInformation;
+    var params = [version, versionInformation];
+
+    var sql = 'SELECT version, versionInformation FROM Versions';
+
+    connection.query(sql, params, function (err, result) {
+        var resultCode = 404;
+        if (err) {
+            console.log(err);
+        } else {
+            resultCode = 200;
+            res.json({
+                code : resultCode,
+                version : result[0].version,
+                versionInformation : result[0].versionInformation
+            });
+        }
+    });
+});
+
+
+// 임베디드
+// 블루투스로 전달 받은 센서값을 안드로이드에 표시
+app.post('/embedded/data', function (req, res) {
+
+    var userNo = req.body.userNo;
+    var recentHumi = req.body.recentHumi;
+    var Temp = req.body.Temp;
+
+    var sql = 'SELECT userNo, recentHumi, Temp FROM RaspiData;';
+    var params = [userNo, recentHumi, Temp];
+
+    connection.query(sql, params, function (err, result) {
+        var resultCode = 404;
+        if (err) {
+            console.log(err);
+        } else {
+            resultCode = 200;
+            res.json({
+                code : resultCode,
+                userNo : result[0].userNo,
+                Humi : result[0].recentHumi,
+                Temp : result[0].Temp
+            });
+        }
+    });
+});
+
+// 아두이노의 현재 세팅값을 저장, 표시
+app.post('/embedded/recentdata', function (req, res) {
+
+    var userNo = req.body.userNo;
+    var Humi = req.body.Humi;
+
+    var sql = 'SELECT userNo, Humi FROM saveRaspiData;';
+    var params = [userNo, Humi];
+
+    connection.query(sql, params, function (err, result) {
+        var resultCode = 404;
+        if (err) {
+            console.log(err);
+        } else {
+            resultCode = 200;
+            res.json({
+                code : resultCode,
+                userNo : result[0].userNo,
+                Humi : result[0].Humi
+            });
+        }
+    });
+});
+
+// 어플 종료해도 실행 했을 시 세팅값을 유지하기 위한 값
+app.post('/embedded/status', function (req, res) {
+
+    var userNo = req.body.userNo;
+    var automode = req.body.automode;
+    var pump = req.body.pump;
+    var fan = req.body.fan;
+    var led = req.body.led;
+
+    var sql = 'SELECT userNo, automode, pump, fan, led FROM arduinoStatus;';
+    var params = [userNo, automode, pump, fan, led];
+
+    connection.query(sql, params, function (err, result) {
+        var resultCode = 404;
+        if (err) {
+            console.log(err);
+        } else {
+            resultCode = 200;
+            res.json({
+                code : resultCode,
+                userNo : result[0].userNo,
+                automode : result[0].automode,
+                pump : result[0].pump,
+                fan : result[0].fan,
+                led : result[0].led
+            });
+        }
+    });
+});
+
+// //모든 기능의 원형
+// app.post('/embedded/recentdata', function (req, res) {
+
+//     var params = [];
+
+//     var sql = 'SELECT userNo, Humi FROM saveRaspiData;';
+
+//     connection.query(sql, params, function (err, result) {
 //         var resultCode = 404;
-//         var message = '에러가 발생했습니다';
-
 //         if (err) {
 //             console.log(err);
 //         } else {
-//             if (result.length === 0) {
-//                 resultCode = 204;
-//                 message = '정보를 불러오지 못했습니다!';
-//             } else if (Soil !== result[0].Soil) {
-//                 resultCode = 204;
-//                 message = '토양 수분을 불러오지 못했습니다!';
-//             } else if (Humi !== result[0].Humi) {
-//                 resultCode = 204;
-//                 message = '습도를 불러오지 못했습니다!';
-//             } else if (Temp !== result[0].Temp) {
-//                 resultCode = 204;
-//                 message = '온도를 불러오지 못했습니다!';
-//             } else {
-//                 resultCode = 200;
-//                 message = '불러오기 완료.';
-//             }
+//             resultCode = 200;
+//             res.json({
+//                 code : resultCode,
+                
+//             });
 //         }
-
-//         res.json({
-//             'code': resultCode,
-//             'message': message
-//         });
-//     })
+//     });
 // });
