@@ -78,9 +78,7 @@ public class EmbeddedResponse {
         this.automode = automode;
     }
 
-    public int getPump() {
-        return pump;
-    }
+    public int getPump() { return pump; }
 
     public void setPump(int pump) {
         this.pump = pump;
