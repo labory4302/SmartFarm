@@ -4,7 +4,23 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <ListView
+    <TextView
+        android:id="@+id/event_title"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:text="event_title_default" />
+
+    <TextView
+        android:id="@+id/event_contents"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:text="event_contents_default" />
+
+    <ListView
+        android:id="@+id/event_listview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"/>
 </LinearLayout>

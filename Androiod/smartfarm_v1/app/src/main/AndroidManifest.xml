@@ -32,6 +32,8 @@
         <!--MYPAGE-->
         <activity android:name=".activity.ChangeMyInformationActivity"/>
         <activity android:name=".activity.ChangeMyInformationChangeActivity"/>
+        <activity android:name=".activity.NotificationActivity"/>
+        <activity android:name=".activity.EventActivity"/>
         <activity android:name=".activity.VersionActivity"/>
 
         <!-- 카메라 파일 저장 경로 설정 -->

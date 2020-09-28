@@ -1,6 +1,8 @@
 package com.smartfarm.www.network;
 
 import com.smartfarm.www.activity.LoginActivity;
+import com.smartfarm.www.data.EventResponse;
+import com.smartfarm.www.data.NotificationResponse;
 import com.smartfarm.www.data.RegisterData;
 import com.smartfarm.www.data.RegisterResponse;
 import com.smartfarm.www.data.LoginData;
@@ -26,6 +28,12 @@ public interface ServiceApi {
     //mypage
     @POST("/mypage/changemyinformation")
     Call<RegisterResponse> MypageChangeMyInformation(@Body RegisterData data);
+
+    @POST("/mypage/notification")
+    Call<NotificationResponse> MypageNotification();
+
+    @POST("/mypage/event")
+    Call<EventResponse> MypageEvent();
 
     @POST("/mypage/version")
     Call<VersionResponse> MypageVersion();

@@ -64,6 +64,9 @@ public class ControlActivity extends Fragment {
     private WebSettings webSettings;    //웹뷰세팅
     private ServiceApi service;
 
+    //
+    private TextView test1;
+
     private String cctvUrl = "http://192.168.0.19:8081/video.mjpg";    //웹뷰의 주소
 
     //사전에 세팅한 값
@@ -127,6 +130,9 @@ public class ControlActivity extends Fragment {
         show_temp_change = view.findViewById(R.id.show_temp_change);        //자동모드 온도값 표시
         show_humidity_change = view.findViewById(R.id.show_humidity_change);//자동모드 습도값 표시
         show_soil_change = view.findViewById(R.id.show_soil_change);        //자동모드 토양수분값 표시
+
+        //
+        test1 = view.findViewById(R.id.test1);
 
         //자동, 수동모드 선택
         changeMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -380,15 +386,13 @@ public class ControlActivity extends Fragment {
     }
 
     private void setControlValue() {
-        service.EmbeddedSensorData().enqueue(new Callback<EmbeddedResponse>() {
+        service.EmbeddedSensorStatus().enqueue(new Callback<EmbeddedResponse>() {
             @Override
             public void onResponse(Call<EmbeddedResponse> call, Response<EmbeddedResponse> response) {
                 EmbeddedResponse result = response.body();
-                setHumidity = result.getHumi();
-                automodeStatus = result.getAutomode();
-                pumpStatus = result.getPump();
-                fanStatus = result.getFan();
-                LedStatus = result.getLed();
+
+                test1.setText(""+result.getFan());
+
             }
 
             @Override

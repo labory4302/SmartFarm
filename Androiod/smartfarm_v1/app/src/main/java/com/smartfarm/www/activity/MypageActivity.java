@@ -46,14 +46,16 @@ public class MypageActivity extends Fragment {
         notification_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent intent = new Intent(getActivity(), NotificationActivity.class);
+                startActivity(intent);
             }
         });
 
         event_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent intent = new Intent(getActivity(), EventActivity.class);
+                startActivity(intent);
             }
         });
 
