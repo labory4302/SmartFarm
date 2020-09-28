@@ -1,3 +1,4 @@
+
 from bluetooth import *
 from socket import *
 import threading
@@ -11,6 +12,8 @@ RASPIID = '1'
 #아두이노 블루투스와 connect
 bluetoothArduino = BluetoothSocket(RFCOMM)
 bluetoothArduino.connect(("98:D3:37:90:AF:07",1))
+#bluetoothArduino.connect(("98:D3:91:FD:C5:5A",1))
+#bluetoothArduino.baud = 38400
 print('블루투스 접속이 확인되었습니다.')
 #RDS와 connect하기 위해 필요한 코드, host(IPv4주소), RDS Username, password , db이름 설정
 conn = pymysql.connect(host = "dbinstance3.cjytw5i33eqd.us-west-2.rds.amazonaws.com", user = "luck0707", passwd = "disorder2848", db = "example")
@@ -29,24 +32,36 @@ def sendArduino(data):
         exit()
 
 #아두에노에서 받은 센서값을 RDS로 send
-def sendRDS(soil,humi,temp):
+def sendRDS(humi,temp):
     try:
 #with를 사용해서 connect 종료시 자동 close
         with conn.cursor() as cur:
-            sql = "insert into raspiData values(%s, %s, %s, %s, %s)"
-            cur.execute(sql,(RASPIID, now, soil, humi, temp))
+            sql = "INSERT INTO RaspiData VALUES(%s, %s, %s, %s)"
+            cur.execute(sql,(RASPIID, now, humi, temp))
             conn.commit()
     except KeyboardInterrupt:
         conn.close()
         exit()
 
-
-#안드로이드 현재 상태값을 RDS에 저장하는 함수
-def saveData(saveSoil,saveHumi):
+#아두이노의 현재상태(on,off 여부) 를 RDS에 올리는 함수
+def arduinoStatus(automode,pump,fan,led):
     try:
         with conn.cursor() as cur:
-            sql = "insert into saveRaspiData values(%s,%s,%s,%s)"
-            cur.execute(sql,(RASPIID, now, saveSoil, saveHumi))
+            sql = "UPDATE arduinoStatus SET automode  = %s , pump = %s, fan = %s, led = %s WHERE userNo = %s"
+            #sql = "insert into arduinoStatus values(%s, %s, %s, %s, %s)"
+            cur.execute(sql,(automode, pump, fan, led, RASPIID))
+            conn.commit()
+    except KeyboardInterrupt:
+        conn.close()
+        exit()
+
+#안드로이드 세팅값을 RDS에 저장하는 함수
+def saveData(saveHumi):
+    try:
+        with conn.cursor() as cur:
+            sql = "UPDATE saveRaspiData SET recvDate = %s, Humi = %s WHERE userNo = %s"
+          #  sql = "INSERT INTO saveRaspiData VALUES(%s, %s, %s)"
+            cur.execute(sql,(now, saveHumi, RASPIID))
             conn.commit()
     except KeyboardInterrupt:
         conn.close()
@@ -58,7 +73,7 @@ def receiverArduinoData(sock):
     try:
         while True:
 #아두이노에서 값을 수신한뒤 UTP-8로 디코딩 , 디코딩 하지 않을 시 센서값이 제대로 수신되지 않음
-            recvArduinoData = sock.recv(2048)
+            recvArduinoData = sock.recv(4096)
             arduinoData = recvArduinoData.decode('utf-8').strip()
 
 #수신한 데이터가 없을 경우 pass  
@@ -66,10 +81,19 @@ def receiverArduinoData(sock):
                 pass
             else:
                 print("recived Data : {}\n".format(arduinoData))
+             
 # , 를 기준으로 데이터 파싱
                 passingArduinoData = arduinoData.split(",")
 #파싱된 데이터 RDS에 전송
-#                sendRDS(passingArduinoData[0],passingArduinoData[1],passingArduinoData[2])
+                if(passingArduinoData[0] == "1"):
+  #                  arduinoStatus(passingArduinoData[1],passingArduinoData[2],passingArduinoData[3],passingArduinoData[4])
+ #                   print("{} , {}".format(passingArduinoData[1], passingArduinoData[2]))
+                else:
+   #                 sendRDS(passingArduinoData[0],passingArduinoData[1])
+    #                print("{} , {}".format(passingArduinoData[0],passingArduinoData[1]))
+
+
+ 
     except KeyboardInterrupt:
         print("\nFinished\n")
         exit()
@@ -87,7 +111,7 @@ def receiverAndroidRequest(sock):
             sendArduino(decodingData)    
             passingAndroidData = decodingData.split(",")
             if(int(int(passingAndroidData[0])/1000) ==4):
-                saveData(int(int(passingAndroidData[0])%1000),int(int(passingAndroidData[1])%1000))
+                saveData(int(int(passingAndroidData[0])%1000))
             else:
                 pass
             sock, addr = androidSock.accept()
