@@ -151,24 +151,34 @@ public class HomeActivity extends Fragment {
 //                Log.d("찍히냐?",""+avg_temp+", "+map.get("test"+i));
                 tb1[i].setText(""+avg_temp+"℃");
 
-                if(Integer.parseInt(map.get("test"+(i*2))) <= 1){
+                if(Integer.parseInt(map.get("test"+(i*2))) == 1){
                     tb2[i].setText("맑음");
-                }else if(Integer.parseInt(map.get("test"+(i*2))) <= 2){
+                }else if(Integer.parseInt(map.get("test"+(i*2))) == 2){
                     tb2[i].setText("구름 조금");
-                }else if(Integer.parseInt(map.get("test"+(i*2))) <= 3){
+                }else if(Integer.parseInt(map.get("test"+(i*2))) == 3){
                     tb2[i].setText("구름 많음");
-                }else if(Integer.parseInt(map.get("test"+(i*2))) <= 4){
+                }else if(Integer.parseInt(map.get("test"+(i*2))) == 4){
                     tb2[i].setText("흐림");
-                }else if(Integer.parseInt(map.get("test"+(i*2))) <= 5){
+                }else if(Integer.parseInt(map.get("test"+(i*2))) == 5){
                     tb2[i].setText("비 확률");
-                }else if(Integer.parseInt(map.get("test"+(i*2))) <= 6){
+                }else if(Integer.parseInt(map.get("test"+(i*2))) == 6){
                     tb2[i].setText("비 조금");
-                }else if(Integer.parseInt(map.get("test"+(i*2))) <= 7){
+                }else if(Integer.parseInt(map.get("test"+(i*2))) == 7){
                     tb2[i].setText("비옴");
-                }else if(Integer.parseInt(map.get("test"+(i*2))) <= 8){
+                }else if(Integer.parseInt(map.get("test"+(i*2))) == 8){
                     tb2[i].setText("폭우");
-                }else if(Integer.parseInt(map.get("test"+(i*2))) <= 9) {
+                }else if(Integer.parseInt(map.get("test"+(i*2))) == 9) {
                     tb2[i].setText("모름");
+                }else if(Integer.parseInt(map.get("test"+(i*2))) == 30) {
+                    tb2[i].setText("비올듯");
+                }else if(Integer.parseInt(map.get("test"+(i*2))) == 31) {
+                    tb2[i].setText("약한 비");
+                }else if(Integer.parseInt(map.get("test"+(i*2))) == 32) {
+                    tb2[i].setText("비옴");
+                }else if(Integer.parseInt(map.get("test"+(i*2))) == 33) {
+                    tb2[i].setText("큰 소나기");
+                }else if(Integer.parseInt(map.get("test"+(i*2))) == 34) {
+                    tb2[i].setText("비오고 천둥도 침");
                 }else{
                     tb2[i].setText("오류");
                 }
