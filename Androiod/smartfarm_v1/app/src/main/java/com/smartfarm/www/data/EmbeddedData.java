@@ -6,33 +6,36 @@ import okhttp3.internal.Version;
 
 public class EmbeddedData {
     @SerializedName("code")
-    private int code;
+    int code;
 
     @SerializedName("userNo")
-    private int userNo;
+    int userNo;
 
-    @SerializedName("Humi")
-    private int Humi;
+    @SerializedName("recentHumi")
+    int recentHumi;
 
     @SerializedName("Temp")
-    private int Temp;
+    int Temp;
+
+    @SerializedName("Humi")
+    int Humi;
 
     @SerializedName("automode")
-    private int automode;
+    int automode;
 
     @SerializedName("pump")
-    private int pump;
+    int pump;
 
     @SerializedName("fan")
-    private int fan;
+    int fan;
 
     @SerializedName("led")
-    private int led;
+    int led;
 
-    public EmbeddedData(int code, int userNo, int humi, int temp) {
+    public EmbeddedData(int code, int userNo, int recentHumi, int temp) {
         this.code = code;
         this.userNo = userNo;
-        Humi = humi;
+        this.recentHumi = recentHumi;
         Temp = temp;
     }
 

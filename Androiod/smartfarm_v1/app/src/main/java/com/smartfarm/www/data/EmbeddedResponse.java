@@ -9,6 +9,9 @@ public class EmbeddedResponse {
     @SerializedName("userNo")
     private int userNo;
 
+    @SerializedName("recentHumi")
+    private int recentHumi;
+
     @SerializedName("Humi")
     private int Humi;
 
@@ -41,6 +44,14 @@ public class EmbeddedResponse {
 
     public void setUserNo(int userNo) {
         this.userNo = userNo;
+    }
+
+    public int getRecentHumi() {
+        return recentHumi;
+    }
+
+    public void setRecentHumi(int recentHumi) {
+        this.recentHumi = recentHumi;
     }
 
     public int getHumi() {

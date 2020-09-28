@@ -43,7 +43,5 @@ public class VersionResponse {
         this.version = version;
     }
 
-    public void setVersionInformation(String versionInformation) {
-        this.versionInformation = versionInformation;
-    }
+    public void setVersionInformation(String versionInformation) { this.versionInformation = versionInformation; }
 }
