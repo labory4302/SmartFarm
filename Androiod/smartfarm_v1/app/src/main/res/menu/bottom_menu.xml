@@ -4,19 +4,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:title="홈"
         android:id="@+id/tab1"
         android:enabled="true"
-        android:icon="@drawable/home_icon"
-        tools:ignore="MenuTitle"/>
+        android:icon="@drawable/home_icon" />
     <item
+        android:title="조작"
         android:id="@+id/tab2"
         android:enabled="true"
-        android:icon="@drawable/remote_icon"
-        tools:ignore="MenuTitle"/>
+        android:icon="@drawable/setting_icon" />
     <item
+        android:title="검색"
         android:id="@+id/tab3"
+        android:icon="@drawable/search_icon"
+        android:enabled="true" />
+    <item
+        android:id="@+id/tab4"
+        android:title="마이페이지"
         android:icon="@drawable/mypage_icon"
-        android:enabled="true"
-        tools:ignore="MenuTitle" />
+        android:enabled="true" />
 
 </menu>

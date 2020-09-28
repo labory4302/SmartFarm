@@ -66,6 +66,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         app:itemBackground="@android:color/white"
+        app:labelVisibilityMode="selected"
         app:itemIconTint="@drawable/bottom_menu_selector"
         app:itemTextColor="@drawable/bottom_menu_selector"
         app:layout_constraintBottom_toBottomOf="parent"

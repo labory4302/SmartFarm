@@ -64,21 +64,12 @@ public class ControlActivity extends Fragment {
     private WebSettings webSettings;    //웹뷰세팅
     private ServiceApi service;
 
-    //
-    private TextView test1;
-
     private String cctvUrl = "http://192.168.0.19:8081/video.mjpg";    //웹뷰의 주소
 
     //사전에 세팅한 값
-    private int setTemp = 0;
+//    private int setTemp = 0;
     private int setHumidity = 0;
-    private int setSoil = 0;
-
-    //현재 센서들의 상태
-    private int automodeStatus = 0;
-    private int pumpStatus = 0;
-    private int fanStatus = 0;
-    private int LedStatus = 0;
+//    private int setSoil = 0;
 
     Socket socket;              //소켓 객체 생성
     ConnectRaspi connectRaspi;  //소켓통신을 위한 스레드객체
@@ -89,11 +80,6 @@ public class ControlActivity extends Fragment {
         View view = inflater.inflate(R.layout.control_page,container,false);
 
         service = RetrofitClient.getClient().create(ServiceApi.class);
-
-        setControlValue();
-
-        Toast.makeText(getActivity(), "세팅한 습도값 : " + setHumidity + "\n자동모드상태 : " + automodeStatus + "\n펌프상태 : " + pumpStatus +
-                "\n환풍기상태 : " + fanStatus + "\n조명상태 : " + LedStatus, Toast.LENGTH_LONG).show();
 
         //웹뷰 세팅 및 웹뷰 시작 부분
         cctvView = view.findViewById(R.id.webView);         //웹뷰 인스턴스
@@ -131,8 +117,8 @@ public class ControlActivity extends Fragment {
         show_humidity_change = view.findViewById(R.id.show_humidity_change);//자동모드 습도값 표시
         show_soil_change = view.findViewById(R.id.show_soil_change);        //자동모드 토양수분값 표시
 
-        //
-        test1 = view.findViewById(R.id.test1);
+        setWithArduinoStatus();
+        setWithSetttingValue();
 
         //자동, 수동모드 선택
         changeMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -183,24 +169,24 @@ public class ControlActivity extends Fragment {
         });
 
 
-        //온도 상승 하락 버튼 리스너
-        temp_up.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setTemp++;
-                show_temp_change.setText(String.valueOf(setTemp));
-            }
-        });
-        temp_down.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(setTemp <=0) {
-                } else{
-                    setTemp--;
-                    show_temp_change.setText(String.valueOf(setTemp));
-                }
-            }
-        });
+//        //온도 상승 하락 버튼 리스너
+//        temp_up.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                setTemp++;
+//                show_temp_change.setText(String.valueOf(setTemp));
+//            }
+//        });
+//        temp_down.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if(setTemp <=0) {
+//                } else{
+//                    setTemp--;
+//                    show_temp_change.setText(String.valueOf(setTemp));
+//                }
+//            }
+//        });
         humidity_up.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -218,23 +204,23 @@ public class ControlActivity extends Fragment {
                 }
             }
         });
-        soil_up.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setSoil++;
-                show_soil_change.setText(String.valueOf(setSoil));
-            }
-        });
-        soil_down.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(setSoil <= 0){
-                }else{
-                    setSoil--;
-                    show_soil_change.setText(String.valueOf(setSoil));
-                }
-            }
-        });
+//        soil_up.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                setSoil++;
+//                show_soil_change.setText(String.valueOf(setSoil));
+//            }
+//        });
+//        soil_down.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if(setSoil <= 0){
+//                }else{
+//                    setSoil--;
+//                    show_soil_change.setText(String.valueOf(setSoil));
+//                }
+//            }
+//        });
 
 
 
@@ -385,20 +371,63 @@ public class ControlActivity extends Fragment {
         }
     }
 
-    private void setControlValue() {
+    private void setWithArduinoStatus() {
         service.EmbeddedSensorStatus().enqueue(new Callback<EmbeddedResponse>() {
             @Override
             public void onResponse(Call<EmbeddedResponse> call, Response<EmbeddedResponse> response) {
                 EmbeddedResponse result = response.body();
+                if(result.getAutomode() == 1) {
+                    changeMode.setChecked(true);
+                } else {
+                    changeMode.setChecked(false);
+                }
 
-                test1.setText(""+result.getFan());
+                if(result.getPump() == 1) {
+                    manuel_pump_status.setChecked(true);
+                } else {
+                    manuel_pump_status.setChecked(false);
+                }
 
+                if(result.getFan() == 1) {
+                    manual_fan_status.setChecked(true);
+                } else {
+                    manual_fan_status.setChecked(false);
+                }
+
+                if(result.getLed() == 1) {
+                    manual_LED_status.setChecked(true);
+                } else {
+                    manual_LED_status.setChecked(false);
+                }
             }
 
             @Override
             public void onFailure(Call<EmbeddedResponse> call, Throwable t) {
-                Toast.makeText(getActivity(), "세팅 정보를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show();
-                Log.e("세팅 정보를 불러오지 못했습니다.", t.getMessage());
+                Toast.makeText(getActivity(), "아두이노 정보를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show();
+                Log.e("아두이노 정보를 불러오지 못했습니다.", t.getMessage());
+            }
+        });
+    }
+
+    private void setWithSetttingValue() {
+        service.EmbeddedSensorRecentData().enqueue(new Callback<EmbeddedResponse>() {
+
+            @Override
+            public void onResponse(Call<EmbeddedResponse> call, Response<EmbeddedResponse> response) {
+                EmbeddedResponse result = response.body();
+                show_temp_change.setText("준비중");
+                show_humidity_change.setText("" + result.getHumi());
+                show_soil_change.setText("준비중");
+
+//                setTemp;
+                setHumidity = result.getHumi();
+//                setSoil;
+            }
+
+            @Override
+            public void onFailure(Call<EmbeddedResponse> call, Throwable t) {
+                Toast.makeText(getActivity(), "사전세팅 정보를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show();
+                Log.e("사전세팅 정보를 불러오지 못했습니다.", t.getMessage());
             }
         });
     }

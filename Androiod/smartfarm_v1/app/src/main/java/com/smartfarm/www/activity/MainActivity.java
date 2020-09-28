@@ -18,7 +18,9 @@ public class MainActivity extends AppCompatActivity {
     private FragmentTransaction ft; //
     private HomeActivity frag1; //각 프래그먼트
     private ControlActivity frag2;
-    private MypageActivity frag3;
+    private CropActivity frag3;
+    private MypageActivity frag4;
+
 
     TextView show_temp_live, show_humidity_live, show_soil_live; //현재 온,습,수분 뷰
 
@@ -50,6 +52,9 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.tab3:
                         setFrag(2);
                         break;
+                    case R.id.tab4:
+                        setFrag(3);
+                        break;
                 }
                 return true;
             }
@@ -57,7 +62,8 @@ public class MainActivity extends AppCompatActivity {
 
         frag1=new HomeActivity();
         frag2=new ControlActivity();
-        frag3=new MypageActivity();
+        frag3=new CropActivity();
+        frag4=new MypageActivity();
         setFrag(0); // 첫 프래그먼트 화면 지정
     }
 
@@ -82,7 +88,9 @@ public class MainActivity extends AppCompatActivity {
                 ft.replace(R.id.Main_Frame,frag3);
                 ft.commit();
                 break;
-
+            case 3:
+                ft.replace(R.id.Main_Frame,frag4);
+                ft.commit();
 
         }
     }
