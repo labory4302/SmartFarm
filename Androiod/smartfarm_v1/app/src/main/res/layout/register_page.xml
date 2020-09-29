@@ -33,9 +33,9 @@
         android:hint="NickName"
         android:inputType="textPersonName"
         android:textColorHint="@color/colorPrimary"
-        app:layout_constraintEnd_toEndOf="@+id/register_pwd"
-        app:layout_constraintStart_toStartOf="@+id/register_pwd"
-        app:layout_constraintTop_toBottomOf="@+id/register_pwd" />
+        app:layout_constraintEnd_toEndOf="@+id/confirm_password"
+        app:layout_constraintStart_toStartOf="@+id/confirm_password"
+        app:layout_constraintTop_toBottomOf="@+id/confirm_password" />
 
     <EditText
         android:id="@+id/register_email"
@@ -57,7 +57,7 @@
         android:id="@+id/register_id"
         android:layout_width="250dp"
         android:layout_height="40dp"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="70dp"
         android:background="@drawable/stroke"
         android:ems="10"
         android:fontFamily="@font/my_font"
@@ -70,13 +70,13 @@
         app:layout_constraintTop_toBottomOf="@+id/title_bar" />
 
     <EditText
-        android:fontFamily="@font/my_font"
         android:id="@+id/register_pwd"
         android:layout_width="250dp"
         android:layout_height="40dp"
         android:layout_marginTop="30dp"
         android:background="@drawable/stroke"
         android:ems="10"
+        android:fontFamily="@font/my_font"
         android:hint="Pwd"
         android:inputType="textPassword"
         android:textColorHint="@color/colorPrimary"
@@ -84,6 +84,22 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/register_id"
         app:layout_constraintTop_toBottomOf="@+id/register_id" />
+
+    <EditText
+        android:id="@+id/confirm_password"
+        android:layout_width="250dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/stroke"
+        android:ems="10"
+        android:fontFamily="@font/my_font"
+        android:hint="Confirm Pwd"
+        android:inputType="textPassword"
+        android:textColorHint="@color/colorPrimary"
+        app:layout_constraintEnd_toEndOf="@+id/register_pwd"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/register_pwd"
+        app:layout_constraintTop_toBottomOf="@+id/register_pwd" />
 
     <EditText
         android:id="@+id/register_location"
@@ -128,6 +144,14 @@
         android:text="비밀번호"
         app:layout_constraintBottom_toTopOf="@+id/register_pwd"
         app:layout_constraintStart_toStartOf="@+id/register_pwd" />
+
+    <TextView
+        android:id="@+id/textView24"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="비밀번호 확인"
+        app:layout_constraintBottom_toTopOf="@+id/confirm_password"
+        app:layout_constraintStart_toStartOf="@+id/confirm_password"/>
 
     <TextView
         android:id="@+id/textView20"
