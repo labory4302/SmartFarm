@@ -2,6 +2,7 @@ package com.smartfarm.www.activity;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,6 +23,7 @@ public class NotificationActivity extends AppCompatActivity {
     private ServiceApi service;
 
     TextView notification_title, notification_contents;
+    ListView notification_listview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +35,8 @@ public class NotificationActivity extends AppCompatActivity {
         notification_title = findViewById(R.id.notification_title);
         notification_contents = findViewById(R.id.notification_contents);
 
+        notification_listview = findViewById(R.id.notification_listview);
+
         checkNotification();
     }
     private void checkNotification() {
@@ -42,6 +46,8 @@ public class NotificationActivity extends AppCompatActivity {
                 NotificationResponse result = response.body();
                 notification_title.setText(""+result.getNotificationTitle());
                 notification_contents.setText(""+result.getNotificationContents());
+
+                notification_listview.additem();
             }
 
             @Override

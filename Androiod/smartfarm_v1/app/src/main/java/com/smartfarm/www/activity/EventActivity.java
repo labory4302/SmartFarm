@@ -2,6 +2,7 @@ package com.smartfarm.www.activity;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,6 +23,7 @@ public class EventActivity extends AppCompatActivity {
     private ServiceApi service;
 
     TextView event_title, event_contents;
+    ListView event_listview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +34,8 @@ public class EventActivity extends AppCompatActivity {
 
         event_title = findViewById(R.id.event_title);
         event_contents = findViewById(R.id.event_contents);
+
+        event_listview = findViewById(R.id.event_listview);
 
         checkEvent();
     }
