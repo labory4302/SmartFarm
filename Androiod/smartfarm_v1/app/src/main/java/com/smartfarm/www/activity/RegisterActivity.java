@@ -48,6 +48,13 @@ public class RegisterActivity extends AppCompatActivity {
         mLocationView = (EditText) findViewById(R.id.register_location);
         mRegisterButton = (Button) findViewById(R.id.register_Button);
 
+        mNameView.setPadding(20,0,0,0);
+        mNickNameView.setPadding(20, 0,0,0);
+        mEmailView.setPadding(20,0,0,0);
+        mIdView.setPadding(20,0,0,0);
+        mPasswordView.setPadding(20,0,0,0);
+        mLocationView.setPadding(20,0,0,0);
+
         service = RetrofitClient.getClient().create(ServiceApi.class);
 
         mRegisterButton.setOnClickListener(new View.OnClickListener() {

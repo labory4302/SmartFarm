@@ -46,4 +46,6 @@ dependencies {
     implementation 'com.amazonaws:aws-android-sdk-s3:2.13.5'      // AWS s3 서비스 접근
     implementation 'com.amazonaws:aws-android-sdk-core:2.2.+'     // AWS 람다 호출을 위한 라이브러리 2개
     implementation 'com.amazonaws:aws-android-sdk-lambda:2.2.+'
+    implementation 'gun0912.ted:tedpermission:2.0.0' // 권한 설정
+
 }
