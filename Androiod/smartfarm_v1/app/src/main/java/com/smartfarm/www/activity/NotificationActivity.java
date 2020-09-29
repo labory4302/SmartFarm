@@ -1,7 +1,9 @@
+
 package com.smartfarm.www.activity;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,6 +24,7 @@ public class NotificationActivity extends AppCompatActivity {
     private ServiceApi service;
 
     TextView notification_title, notification_contents;
+    ListView notification_listview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,22 +36,26 @@ public class NotificationActivity extends AppCompatActivity {
         notification_title = findViewById(R.id.notification_title);
         notification_contents = findViewById(R.id.notification_contents);
 
-        checkNotification();
+        notification_listview = findViewById(R.id.notification_listview);
+//
+//        checkNotification();
     }
-    private void checkNotification() {
-        service.MypageNotification().enqueue(new Callback<NotificationResponse>() {
-            @Override
-            public void onResponse(Call<NotificationResponse> call, Response<NotificationResponse> response) {
-                NotificationResponse result = response.body();
-                notification_title.setText(""+result.getNotificationTitle());
-                notification_contents.setText(""+result.getNotificationContents());
-            }
-
-            @Override
-            public void onFailure(Call<NotificationResponse> call, Throwable t) {
-                Toast.makeText(NotificationActivity.this, "공지사항을 불러오지 못했습니다.", Toast.LENGTH_SHORT).show();
-                Log.e("공지사항을 불러오지 못했습니다.", t.getMessage());
-            }
-        });
-    }
+//    private void checkNotification() {
+//        service.MypageNotification().enqueue(new Callback<NotificationResponse>() {
+//            @Override
+//            public void onResponse(Call<NotificationResponse> call, Response<NotificationResponse> response) {
+//                NotificationResponse result = response.body();
+//                notification_title.setText(""+result.getNotificationTitle());
+//                notification_contents.setText(""+result.getNotificationContents());
+//
+//                notification_listview.additem();
+//            }
+//
+//            @Override
+//            public void onFailure(Call<NotificationResponse> call, Throwable t) {
+//                Toast.makeText(NotificationActivity.this, "공지사항을 불러오지 못했습니다.", Toast.LENGTH_SHORT).show();
+//                Log.e("공지사항을 불러오지 못했습니다.", t.getMessage());
+//            }
+//        });
+//    }
 }
