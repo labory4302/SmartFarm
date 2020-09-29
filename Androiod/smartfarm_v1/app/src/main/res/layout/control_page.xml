@@ -190,6 +190,12 @@
                 </LinearLayout>
 
                 <Button
+                    android:id="@+id/test11"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="fire" />
+
+                <Button
                     android:id="@+id/auto_change_apply"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

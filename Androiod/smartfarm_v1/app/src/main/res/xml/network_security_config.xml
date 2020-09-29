@@ -11,6 +11,10 @@
         <domain includeSubdomains="true">freemeteo.kr</domain>
         <!-- 웹뷰 주소 -->
         <domain includeSubdomains="true">192.168.0.19</domain>
+
+        <!-- 웹뷰 주소 -->
+        <domain includeSubdomains="true">192.168.0.35</domain>
+
     </domain-config>
 
 </network-security-config>
