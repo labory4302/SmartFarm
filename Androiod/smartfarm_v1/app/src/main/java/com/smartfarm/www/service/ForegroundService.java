@@ -118,9 +118,10 @@ public class ForegroundService extends Service {
     class test implements Runnable {
         @Override
         public void run() {
-            while (true)
-            {
+//            while (true)
+//            {
                 NotificationSomethings(444);
+                test();
                 Log.d("test","tttttttttttt");
                 try {
                     Thread.sleep(5000) ;
@@ -128,7 +129,7 @@ public class ForegroundService extends Service {
                     e.printStackTrace() ;
                 }
 
-            }
+//            }
 
         }
     }
@@ -174,7 +175,7 @@ public class ForegroundService extends Service {
 
 
 
-        startForeground(123, builder.build());
+//        startForeground(123, builder.build());
 
         // foregorundservice시 강제로 생기는 푸쉬 알림 cancel
         NotificationSomethings(123);
@@ -431,6 +432,7 @@ public class ForegroundService extends Service {
 // Lambda 함수 호출은 네트워크 호출을 발생시킵니다.
 // 메인 스레드에서 호출되지 않았는지 확인합니다.
         new AsyncTask<RequestClass, Void, ResponseClass>() {
+
             @Override
             protected ResponseClass doInBackground(RequestClass... params) {
                 // invoke "echo" method. In case it fails, it will throw a
@@ -457,6 +459,11 @@ public class ForegroundService extends Service {
 
             }
         }.execute(request);
+    }
+
+    // DB 작업
+    private void test(){
+
     }
 
 

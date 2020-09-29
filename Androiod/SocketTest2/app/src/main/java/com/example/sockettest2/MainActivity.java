@@ -16,9 +16,10 @@ import java.net.Socket;
 public class MainActivity extends AppCompatActivity {
     private Handler mHandler;
     Socket socket;
-    private String ip = "192.168.0.7"; // 서버의 IP 주소
+    private String ip = "192.168.0.5"; // 서버의 IP 주소
     private int port = 9999; // PORT번호를 꼭 맞추어 주어야한다.
     EditText et;
+    ConnectThread th;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
         btn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (et.getText().toString() != null || !et.getText().toString().equals("")) {
-                    ConnectThread th =new ConnectThread();
+                    th = new ConnectThread();
                     th.start();
                 }
             }
@@ -57,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
                 PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())),true);
                 out.println(sndMsg);
                 socket.close();
-
             }catch(Exception e){
                 e.printStackTrace();
             }

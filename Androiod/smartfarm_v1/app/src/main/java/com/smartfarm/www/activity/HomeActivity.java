@@ -147,7 +147,7 @@ public class HomeActivity extends Fragment {
                 rainfall_day[i] = Double.parseDouble(map.get("rainfall" + i));
 
                 String temp_temp_hl[] = temp_temp.split("°C");
-                float avg_temp = (Float.parseFloat(temp_temp_hl[0])+Float.parseFloat(temp_temp_hl[1]))/2;
+                int avg_temp = (int)(Float.parseFloat(temp_temp_hl[0])+Float.parseFloat(temp_temp_hl[1]))/2;
 //                Log.d("찍히냐?",""+avg_temp+", "+map.get("test"+i));
                 tb1[i].setText("" + avg_temp + "℃");
 
@@ -172,9 +172,9 @@ public class HomeActivity extends Fragment {
                 }else if(Integer.parseInt(map.get("test"+(i*2))) == 30) {
                     tb2[i].setImageResource(R.drawable.soft_rain_icon);//               tb2[i].setText("비올듯");
                 }else if(Integer.parseInt(map.get("test"+(i*2))) == 31) {
-                    tb2[i].setImageResource(R.drawable.rain_icon);//                    tb2[i].setText("약한 비");
+                    tb2[i].setImageResource(R.drawable.rain_icon);//                    tb2[i].setText("약한 비 잠시 맑음");
                 }else if(Integer.parseInt(map.get("test"+(i*2))) == 32) {
-                    tb2[i].setImageResource(R.drawable.hard_rain_icon);//               tb2[i].setText("비옴");
+                    tb2[i].setImageResource(R.drawable.hard_rain_icon);//               tb2[i].setText("비옴 잠시 맑음");
                 }else if(Integer.parseInt(map.get("test"+(i*2))) == 33) {
                     tb2[i].setImageResource(R.drawable.hard_rain_icon);//               tb2[i].setText("큰 소나기");
                 }else if(Integer.parseInt(map.get("test"+(i*2))) == 34) {

@@ -4,25 +4,25 @@
     xmlns:tools="http://schemas.android.com/tools">
     <!--regular-->
     <font
-        android:font="@font/my_font_l"
+        android:font="@font/my_font_g"
         android:fontStyle="normal"
         android:fontWeight="400"
-        app:font="@font/my_font_l"
+        app:font="@font/my_font_g"
         app:fontStyle="normal"
         app:fontWeight="500"
-        tools:font="@font/my_font_l"
+        tools:font="@font/my_font_g"
         tools:fontStyle="normal"
         tools:fontWeight="500"/>
 
     <!--bold-->
     <font
-        android:font="@font/my_font_l"
+        android:font="@font/my_font_g"
         android:fontStyle="normal"
         android:fontWeight="700"
-        app:font="@font/my_font_l"
+        app:font="@font/my_font_g"
         app:fontStyle="normal"
         app:fontWeight="1000"
-        tools:font="@font/my_font_l"
+        tools:font="@font/my_font_g"
         tools:fontStyle="normal"
         tools:fontWeight="1000"/>
 
