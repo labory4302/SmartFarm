@@ -1,3 +1,4 @@
+
 package com.smartfarm.www.activity;
 
 import android.os.Bundle;
@@ -47,7 +48,7 @@ public class NotificationActivity extends AppCompatActivity {
                 notification_title.setText(""+result.getNotificationTitle());
                 notification_contents.setText(""+result.getNotificationContents());
 
-                notification_listview.additem();
+               // notification_listview.additem();
             }
 
             @Override

@@ -56,8 +56,8 @@ public class NotificationAdapter extends BaseAdapter {
     public void addItem(String notificationTitle, String notificationContents){
         NotificationItem item = new NotificationItem();
 
-        item.setNotificationTitle(title);
-        item.setNotificationContents(contents);
+       // item.setNotificationTitle(title);
+       // item.setNotificationContents(contents);
 
         notificationItemList.add(item);
     }
