@@ -351,7 +351,7 @@ public class ForegroundService extends Service {
         return file;
     }
 
-//  S3 사진 업로드 함수
+    //  S3 사진 업로드 함수
     private void awsS3Upload(File webImg_file, String img_name){
         // AWS 자격인증을 얻는 코드
         // Cognito를 이용하면 개발자 인증서를 앱에 직접 심지 않아도 되어 apk가 털려서 인증서가 유출 될 위험이 없다.
