@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -29,7 +30,7 @@ public class HomeActivity extends Fragment {
     private ListViewAdapter listViewAdapter;
 
     TextView tb1[] = new TextView[7];
-    TextView tb2[] = new TextView[7];
+    ImageView tb2[] = new ImageView[7];
 
     @Nullable
     @Override
@@ -46,7 +47,7 @@ public class HomeActivity extends Fragment {
         }
         for(int i=0; i<=6; i++){
             int resId = getResources().getIdentifier("weather"+i,"id", getContext().getPackageName());
-            tb2[i] = (TextView) view.findViewById(resId);
+            tb2[i] = (ImageView) view.findViewById(resId);
         }
 
 
@@ -148,38 +149,38 @@ public class HomeActivity extends Fragment {
                 String temp_temp_hl[] = temp_temp.split("°C");
                 float avg_temp = (Float.parseFloat(temp_temp_hl[0])+Float.parseFloat(temp_temp_hl[1]))/2;
 //                Log.d("찍히냐?",""+avg_temp+", "+map.get("test"+i));
-                tb1[i].setText(""+avg_temp+"℃");
+                tb1[i].setText("" + avg_temp + "℃");
 
                 if(Integer.parseInt(map.get("test"+(i*2))) == 1){
-                    tb2[i].setText("맑음");
+                    tb2[i].setImageResource(R.drawable.sun_icon);//                     tb2[i].setText("맑음");
                 }else if(Integer.parseInt(map.get("test"+(i*2))) == 2){
-                    tb2[i].setText("구름 조금");
+                    tb2[i].setImageResource(R.drawable.cloudy_icon);//                  tb2[i].setText("구름 조금");
                 }else if(Integer.parseInt(map.get("test"+(i*2))) == 3){
-                    tb2[i].setText("구름 많음");
+                    tb2[i].setImageResource(R.drawable.cloud_icon);//                   tb2[i].setText("구름 많음");
                 }else if(Integer.parseInt(map.get("test"+(i*2))) == 4){
-                    tb2[i].setText("흐림");
+                    tb2[i].setImageResource(R.drawable.cloud_icon);//                   tb2[i].setText("흐림");
                 }else if(Integer.parseInt(map.get("test"+(i*2))) == 5){
-                    tb2[i].setText("비 확률");
+                    tb2[i].setImageResource(R.drawable.soft_rain_icon);//               tb2[i].setText("비 확률");
                 }else if(Integer.parseInt(map.get("test"+(i*2))) == 6){
-                    tb2[i].setText("비 조금");
+                    tb2[i].setImageResource(R.drawable.rain_icon);//                    tb2[i].setText("비 조금");
                 }else if(Integer.parseInt(map.get("test"+(i*2))) == 7){
-                    tb2[i].setText("비옴");
+                    tb2[i].setImageResource(R.drawable.hard_rain_icon);//               tb2[i].setText("비옴");
                 }else if(Integer.parseInt(map.get("test"+(i*2))) == 8){
-                    tb2[i].setText("폭우");
+                    tb2[i].setImageResource(R.drawable.hard_rain_icon);//               tb2[i].setText("폭우");
                 }else if(Integer.parseInt(map.get("test"+(i*2))) == 9) {
-                    tb2[i].setText("모름");
+                    tb2[i].setImageResource(R.drawable.sun_icon);//                     tb2[i].setText("모름");
                 }else if(Integer.parseInt(map.get("test"+(i*2))) == 30) {
-                    tb2[i].setText("비올듯");
+                    tb2[i].setImageResource(R.drawable.soft_rain_icon);//               tb2[i].setText("비올듯");
                 }else if(Integer.parseInt(map.get("test"+(i*2))) == 31) {
-                    tb2[i].setText("약한 비");
+                    tb2[i].setImageResource(R.drawable.rain_icon);//                    tb2[i].setText("약한 비");
                 }else if(Integer.parseInt(map.get("test"+(i*2))) == 32) {
-                    tb2[i].setText("비옴");
+                    tb2[i].setImageResource(R.drawable.hard_rain_icon);//               tb2[i].setText("비옴");
                 }else if(Integer.parseInt(map.get("test"+(i*2))) == 33) {
-                    tb2[i].setText("큰 소나기");
+                    tb2[i].setImageResource(R.drawable.hard_rain_icon);//               tb2[i].setText("큰 소나기");
                 }else if(Integer.parseInt(map.get("test"+(i*2))) == 34) {
-                    tb2[i].setText("비오고 천둥도 침");
+                    tb2[i].setImageResource(R.drawable.storm_rain_icon);//              tb2[i].setText("비오고 천둥도 침");
                 }else{
-                    tb2[i].setText("오류");
+                    tb2[i].setImageResource(R.drawable.sun_icon);//                     tb2[i].setText("오류");
                 }
             }
         }
