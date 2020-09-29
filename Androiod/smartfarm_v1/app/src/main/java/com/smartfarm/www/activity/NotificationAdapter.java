@@ -1,51 +1,64 @@
 package com.smartfarm.www.activity;
 
 import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.smartfarm.www.R;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class NotificationAdapter extends BaseAdapter {
 
-    private Context context;
-    private List<NotificationItem> NotificationList;
+    private ImageView notification_mark;
+    private TextView notification_title;
+    private TextView notification_contents;
 
-    public NotificationAdapter(Context context, List<NotificationItem> noticeList) {
-        this.context = context;
-        this.NotificationList = noticeList;
-    }
+    private ArrayList<NotificationItem> notificationItemList = new ArrayList<NotificationItem>();
+
+    public NotificationAdapter(){};
 
     @Override
     public int getCount() {
-        return NotificationList.size();
+        return notificationItemList.size();
     }
 
     @Override
-    public Object getItem(int i) {
-        return NotificationList.get(i);
+    public Object getItem(int position) {
+        return notificationItemList.get(position);
     }
 
     @Override
-    public long getItemId(int i) {
-        return i;
+    public long getItemId(int position) {
+        return position;
     }
 
     @Override
-    public View getView(int i, View view, ViewGroup viewGroup) {
-        View v = View.inflate(context, R.layout.notification_page, null);
+    public View getView(int position, View convertView, ViewGroup parent) {
+        final int pos = position;
+        final Context context = parent.getContext();
 
-        TextView noticeText = (TextView) v.findViewById(R.id.notification_title);
-        TextView nameText = (TextView) v.findViewById(R.id.notification_contents);
+        if(convertView == null){
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = inflater.inflate(R.layout.listview_item, parent, false);
+        }
+        
+        notification_title = (TextView) convertView.findViewById(R.id.notification_title);
+        notification_contents = (TextView) convertView.findViewById(R.id.notification_contents);
 
-        noticeText.setText(NotificationList.get(i).getNotificationTitle());
-        nameText.setText(NotificationList.get(i).getNotificationContents());
+        return null;
+    }
 
-        v.setTag(NotificationList.get(i).getNotificationTitle());
-        return v;
+    public void addItem(String notificationTitle, String notificationContents){
+        NotificationItem item = new NotificationItem();
+
+//        item.setNotificationTitle(title);
+//        item.setNotificationContents(contents);
+
+        notificationItemList.add(item);
     }
 }

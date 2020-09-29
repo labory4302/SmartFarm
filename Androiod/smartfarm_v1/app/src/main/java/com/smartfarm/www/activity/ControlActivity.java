@@ -9,6 +9,7 @@ package com.smartfarm.www.activity;
 9001:자동모드 ON      | 9000:자동모드 OFF
 */
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -33,6 +34,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.smartfarm.www.R;
@@ -40,6 +42,7 @@ import com.smartfarm.www.data.EmbeddedResponse;
 import com.smartfarm.www.data.VersionResponse;
 import com.smartfarm.www.network.RetrofitClient;
 import com.smartfarm.www.network.ServiceApi;
+import com.smartfarm.www.service.ForegroundService;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -64,7 +67,7 @@ public class ControlActivity extends Fragment {
     private WebSettings webSettings;    //웹뷰세팅
     private ServiceApi service;
 
-    private String cctvUrl = "http://192.168.0.19:8081/video.mjpg";    //웹뷰의 주소
+    private String cctvUrl = "http://192.168.0.35:8081/video.mjpg";    //웹뷰의 주소
 
     //사전에 세팅한 값
 //    private int setTemp = 0;
@@ -74,10 +77,21 @@ public class ControlActivity extends Fragment {
     Socket socket;              //소켓 객체 생성
     ConnectRaspi connectRaspi;  //소켓통신을 위한 스레드객체
 
+    Button fire_button; // 불 딥러닝 테스트용 버튼   지워야함
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.control_page,container,false);
+
+        fire_button = (Button) view.findViewById(R.id.test11);
+
+        fire_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startService();
+            }
+        });
 
         service = RetrofitClient.getClient().create(ServiceApi.class);
 
@@ -430,5 +444,11 @@ public class ControlActivity extends Fragment {
                 Log.e("사전세팅 정보를 불러오지 못했습니다.", t.getMessage());
             }
         });
+    }
+
+    // foregroundSercie 시작 함수
+    public void startService() {
+        Intent serviceIntent = new Intent(getContext(), ForegroundService.class);
+        ContextCompat.startForegroundService(getContext(), serviceIntent);
     }
 }

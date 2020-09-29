@@ -14,9 +14,6 @@ import com.smartfarm.www.data.VersionResponse;
 import com.smartfarm.www.network.RetrofitClient;
 import com.smartfarm.www.network.ServiceApi;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -27,8 +24,6 @@ public class NotificationActivity extends AppCompatActivity {
 
     TextView notification_title, notification_contents;
     ListView notification_listview;
-    NotificationAdapter NotificationAdapter;
-    List<NotificationItem> notificationItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,27 +36,25 @@ public class NotificationActivity extends AppCompatActivity {
         notification_contents = findViewById(R.id.notification_contents);
 
         notification_listview = findViewById(R.id.notification_listview);
-        notification_listview = new ArrayList<NotificationItem>();
-        NotificationAdapter = new NotificationAdapter(getApplicationContext(), notificationItem);
-        notification_listview.setAdapter(NotificationAdapter);
-        checkNotification();
+//
+//        checkNotification();
     }
-    private void checkNotification() {
-        service.MypageNotification().enqueue(new Callback<NotificationResponse>() {
-            @Override
-            public void onResponse(Call<NotificationResponse> call, Response<NotificationResponse> response) {
-                NotificationResponse result = response.body();
-                notification_title.setText(""+result.getNotificationTitle());
-                notification_contents.setText(""+result.getNotificationContents());
-
-                //
-            }
-
-            @Override
-            public void onFailure(Call<NotificationResponse> call, Throwable t) {
-                Toast.makeText(NotificationActivity.this, "공지사항을 불러오지 못했습니다.", Toast.LENGTH_SHORT).show();
-                Log.e("공지사항을 불러오지 못했습니다.", t.getMessage());
-            }
-        });
-    }
+//    private void checkNotification() {
+//        service.MypageNotification().enqueue(new Callback<NotificationResponse>() {
+//            @Override
+//            public void onResponse(Call<NotificationResponse> call, Response<NotificationResponse> response) {
+//                NotificationResponse result = response.body();
+//                notification_title.setText(""+result.getNotificationTitle());
+//                notification_contents.setText(""+result.getNotificationContents());
+//
+//                notification_listview.additem();
+//            }
+//
+//            @Override
+//            public void onFailure(Call<NotificationResponse> call, Throwable t) {
+//                Toast.makeText(NotificationActivity.this, "공지사항을 불러오지 못했습니다.", Toast.LENGTH_SHORT).show();
+//                Log.e("공지사항을 불러오지 못했습니다.", t.getMessage());
+//            }
+//        });
+//    }
 }
