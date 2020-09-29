@@ -11,6 +11,7 @@
         android:id="@+id/login_id"
         android:layout_width="250dp"
         android:layout_height="40dp"
+        android:fontFamily="@font/my_font"
         android:layout_marginTop="460dp"
         android:background="@color/White"
         android:ems="10"
@@ -24,13 +25,14 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
+        android:hint="PW"
         android:id="@+id/login_pwd"
         android:layout_width="250dp"
         android:layout_height="40dp"
         android:layout_marginTop="10dp"
+        android:fontFamily="@font/my_font"
         android:background="@color/White"
         android:ems="10"
-        android:hint="PW"
         android:inputType="textPassword"
         android:textColorHint="@color/colorPrimary"
         android:textSize="14sp"
