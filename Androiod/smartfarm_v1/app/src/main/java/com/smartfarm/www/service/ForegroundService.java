@@ -118,9 +118,10 @@ public class ForegroundService extends Service {
     class test implements Runnable {
         @Override
         public void run() {
-            while (true)
-            {
+//            while (true)
+//            {
                 NotificationSomethings(444);
+                test();
                 Log.d("test","tttttttttttt");
                 try {
                     Thread.sleep(5000) ;
@@ -128,7 +129,7 @@ public class ForegroundService extends Service {
                     e.printStackTrace() ;
                 }
 
-            }
+//            }
 
         }
     }
@@ -174,7 +175,7 @@ public class ForegroundService extends Service {
 
 
 
-        startForeground(123, builder.build());
+//        startForeground(123, builder.build());
 
         // foregorundservice시 강제로 생기는 푸쉬 알림 cancel
         NotificationSomethings(123);
@@ -457,6 +458,11 @@ public class ForegroundService extends Service {
 
             }
         }.execute(request);
+    }
+
+    // DB 작업
+    private void test(){
+
     }
 
 

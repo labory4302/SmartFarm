@@ -46,7 +46,7 @@ public class NotificationAdapter extends BaseAdapter {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.listview_item, parent, false);
         }
-        
+
         notification_title = (TextView) convertView.findViewById(R.id.notification_title);
         notification_contents = (TextView) convertView.findViewById(R.id.notification_contents);
 
