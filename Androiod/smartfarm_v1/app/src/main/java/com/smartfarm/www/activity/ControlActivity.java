@@ -246,14 +246,14 @@ public class ControlActivity extends Fragment {
                 String humidity_str = show_humidity_change.getText().toString();    //습도 값 가져오기
                 String soil_str = show_soil_change.getText().toString();            //수분 값 가져오기
 
-                connectRaspi = new ConnectRaspi("40" + soil_str);       //소켓통신 송신(기대 토양수분량)
-                connectRaspi.start();
-
-                try {
-                    Thread.sleep(200);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+//                connectRaspi = new ConnectRaspi("40" + soil_str);       //소켓통신 송신(기대 토양수분량)
+//                connectRaspi.start();
+//
+//                try {
+//                    Thread.sleep(200);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
 
                 connectRaspi = new ConnectRaspi("50" + humidity_str);   //소켓통신 송신(기대 습도)
                 connectRaspi.start();
@@ -362,7 +362,7 @@ public class ControlActivity extends Fragment {
     }
 
     class ConnectRaspi extends Thread {     //소켓통신을 위한 스레드
-        private String ip = "192.168.0.7";  // 서버의 IP 주소
+        private String ip = "192.168.0.5";  // 서버의 IP 주소
         private int port = 9999;            // PORT번호를 꼭 라즈베리파이와 맞추어 주어야한다.
         private String sendMessage;         //송신할 데이터
 
@@ -434,7 +434,7 @@ public class ControlActivity extends Fragment {
                 show_soil_change.setText("준비중");
 
 //                setTemp;
-                setHumidity = result.getHumi();
+//                setHumidity = result.getHumi();
 //                setSoil;
             }
 
