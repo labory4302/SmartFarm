@@ -4,12 +4,16 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+
+import android.content.pm.ApplicationInfo;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.smartfarm.www.R;
+import com.smartfarm.www.appInfo;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -29,6 +33,10 @@ public class MainActivity extends AppCompatActivity {
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_page);
+
+        appInfo a =  (appInfo)getApplicationContext();
+
+        Toast.makeText(getApplicationContext(),a.test, Toast.LENGTH_SHORT).show();
 
         bottomNavigationView = findViewById(R.id.bottomNavi);
         show_temp_live = findViewById(R.id.show_temp);
