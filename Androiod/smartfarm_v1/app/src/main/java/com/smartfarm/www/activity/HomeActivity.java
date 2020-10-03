@@ -61,7 +61,7 @@ public class HomeActivity extends Fragment {
         listView.setAdapter(listViewAdapter);
 
 
-        new GetWeatherTask().execute();
+//        new GetWeatherTask().execute();
 
 
 //        listViewAdapter.notifyDataSetChanged();

@@ -33,6 +33,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="모드선택"
+                    android:textSize="20dp"
                     android:textColor="@color/Black" />
 
                 <Switch
@@ -40,7 +41,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="수동모드" />
+                    android:text="수동모드"
+                    android:textSize="20dp"/>
 
             </LinearLayout>
 
@@ -61,7 +63,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="온도" />
+                        android:text="온도"
+                        android:textSize="20dp"/>
 
                     <Button
                         android:id="@+id/temp_down"
@@ -107,7 +110,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="습도" />
+                        android:text="습도"
+                        android:textSize="20dp"/>
 
                     <Button
                         android:id="@+id/humidity_down"
@@ -153,7 +157,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="수분" />
+                        android:text="수분"
+                        android:textSize="20dp"/>
 
                     <Button
                         android:id="@+id/soil_down"
@@ -190,12 +195,6 @@
                 </LinearLayout>
 
                 <Button
-                    android:id="@+id/test11"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="fire" />
-
-                <Button
                     android:id="@+id/auto_change_apply"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -219,14 +218,16 @@
                         android:layout_width="30dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="스프링쿨러" />
+                        android:text="스프링쿨러"
+                        android:textSize="20dp"/>
 
                     <Switch
                         android:id="@+id/manuel_pump_status"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="꺼짐" />
+                        android:text="꺼짐"
+                        android:textSize="20dp"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -240,14 +241,16 @@
                         android:layout_width="30dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="환풍기" />
+                        android:text="환풍기"
+                        android:textSize="20dp" />
 
                     <Switch
                         android:id="@+id/manuel_fan_status"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="꺼짐" />
+                        android:text="꺼짐"
+                        android:textSize="20dp"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -261,26 +264,24 @@
                         android:layout_width="30dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="조명" />
+                        android:text="조명"
+                        android:textSize="20dp" />
 
                     <Switch
                         android:id="@+id/manuel_LED_status"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="꺼짐" />
+                        android:text="꺼짐"
+                        android:textSize="20dp"/>
                 </LinearLayout>
             </LinearLayout>
 
+            <Button
+                android:id="@+id/test11"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="fire" />
         </LinearLayout>
     </ScrollView>
-
-    <TextView
-        android:id="@+id/test1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="default"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

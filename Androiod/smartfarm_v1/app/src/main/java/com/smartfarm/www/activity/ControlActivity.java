@@ -257,6 +257,8 @@ public class ControlActivity extends Fragment {
 
                 connectRaspi = new ConnectRaspi("50" + humidity_str);   //소켓통신 송신(기대 습도)
                 connectRaspi.start();
+
+                Toast.makeText(getContext(), "설정값이 적용되었습니다.", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -434,7 +436,7 @@ public class ControlActivity extends Fragment {
                 show_soil_change.setText("준비중");
 
 //                setTemp;
-//                setHumidity = result.getHumi();
+                setHumidity = result.getHumi();
 //                setSoil;
             }
 
