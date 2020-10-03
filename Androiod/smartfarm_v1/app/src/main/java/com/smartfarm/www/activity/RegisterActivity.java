@@ -31,6 +31,7 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText mEmailView;
     private EditText mIdView;
     private EditText mPasswordView;
+    private EditText mConfirmPasswordView;
     private EditText mLocationView;
     private Button mRegisterButton;
     private ServiceApi service;
@@ -45,6 +46,7 @@ public class RegisterActivity extends AppCompatActivity {
         mEmailView = (EditText) findViewById(R.id.register_email);
         mIdView = (EditText) findViewById(R.id.register_id);
         mPasswordView = (EditText) findViewById(R.id.register_pwd);
+        mConfirmPasswordView = (EditText) findViewById(R.id.confirm_pwd);
         mLocationView = (EditText) findViewById(R.id.register_location);
         mRegisterButton = (Button) findViewById(R.id.register_Button);
 
@@ -53,6 +55,7 @@ public class RegisterActivity extends AppCompatActivity {
         mEmailView.setPadding(20,0,0,0);
         mIdView.setPadding(20,0,0,0);
         mPasswordView.setPadding(20,0,0,0);
+        mConfirmPasswordView.setPadding(20, 0, 0, 0);
         mLocationView.setPadding(20,0,0,0);
 
         service = RetrofitClient.getClient().create(ServiceApi.class);
@@ -71,6 +74,7 @@ public class RegisterActivity extends AppCompatActivity {
         mEmailView.setError(null);
         mIdView.setError(null);
         mPasswordView.setError(null);
+        mConfirmPasswordView.setError(null);
         mLocationView.setError(null);
 
         String name = mNameView.getText().toString();
@@ -78,19 +82,42 @@ public class RegisterActivity extends AppCompatActivity {
         String email = mEmailView.getText().toString();
         String id = mIdView.getText().toString();
         String password = mPasswordView.getText().toString();
+        String confirmPassword = mConfirmPasswordView.getText().toString();
         String location = mLocationView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
 
+        // ID 유효성 검사
+        if (id.isEmpty()) {
+            mIdView.setError("ID를 입력해주세요.");
+            focusView = mIdView;
+            cancel = true;
+        }
+
         // 패스워드의 유효성 검사
         if (password.isEmpty()) {
-            mEmailView.setError("비밀번호를 입력해주세요.");
-            focusView = mEmailView;
+            mPasswordView.setError("비밀번호를 입력해주세요.");
+            focusView = mPasswordView;
             cancel = true;
         } else if (!isPasswordValid(password)) {
             mPasswordView.setError("6자 이상의 비밀번호를 입력해주세요.");
             focusView = mPasswordView;
+            cancel = true;
+        } else if (confirmPassword.isEmpty()){
+            mConfirmPasswordView.setError("비밀번호를 한번 더 입력해주세요.");
+            focusView = mConfirmPasswordView;
+            cancel = true;
+        } else if (confirmPassword.equals(password) == false) {
+            mConfirmPasswordView.setError("비밀번호가 일치하지 않습니다.");
+            focusView = mConfirmPasswordView;
+            cancel = true;
+        }
+
+        // 닉네임 유효성 검사
+        if (nickname.isEmpty()) {
+            mNickNameView.setError("별명을 입력해주세요.");
+            focusView = mNickNameView;
             cancel = true;
         }
 
@@ -109,6 +136,13 @@ public class RegisterActivity extends AppCompatActivity {
         if (name.isEmpty()) {
             mNameView.setError("이름을 입력해주세요.");
             focusView = mNameView;
+            cancel = true;
+        }
+
+        // 지역 유효성 검사
+        if (location.isEmpty()) {
+            mLocationView.setError("지역을 입력해주세요.");
+            focusView = mLocationView;
             cancel = true;
         }
 
