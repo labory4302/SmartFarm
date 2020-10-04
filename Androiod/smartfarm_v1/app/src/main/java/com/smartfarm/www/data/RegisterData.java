@@ -44,4 +44,8 @@ public class RegisterData {
         this.userLocation = userLocation;
         this.userNo = userNo;
     }
+
+    public RegisterData(String userID) {
+        this.userID = userID;
+    }
 }

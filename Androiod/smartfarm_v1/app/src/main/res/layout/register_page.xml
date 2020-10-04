@@ -198,4 +198,16 @@
         app:layout_constraintTop_toTopOf="parent"
         android:elevation="1dp"/>
 
+    <Button
+        android:id="@+id/checkDuplicateId"
+        android:layout_width="59dp"
+        android:layout_height="27dp"
+        android:background="@color/colorPrimary"
+        android:text="중복확인"
+        android:textSize="8sp"
+        app:layout_constraintBottom_toBottomOf="@+id/register_id"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/register_id"
+        app:layout_constraintTop_toTopOf="@+id/register_id" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

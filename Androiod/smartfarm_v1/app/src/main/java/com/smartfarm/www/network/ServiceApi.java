@@ -22,8 +22,12 @@ public interface ServiceApi {
     @POST("/user/login")
     Call<LoginResponse> userLogin(@Body LoginData data);
 
+    //user register
     @POST("/user/register")
     Call<RegisterResponse> userRegister(@Body RegisterData data);
+
+    @POST("/user/checkDuplicateId")
+    Call<RegisterResponse> userCheckId(@Body RegisterData data);
 
     //mypage
     @POST("/mypage/changemyinformation")

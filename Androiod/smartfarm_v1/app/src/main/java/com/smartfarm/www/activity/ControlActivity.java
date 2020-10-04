@@ -134,6 +134,9 @@ public class ControlActivity extends Fragment {
         setWithArduinoStatus();
         setWithSetttingValue();
 
+        show_temp_change.setText("준비중");
+        show_soil_change.setText("준비중");
+
         //자동, 수동모드 선택
         changeMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override

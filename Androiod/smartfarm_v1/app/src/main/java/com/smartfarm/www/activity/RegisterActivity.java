@@ -1,7 +1,10 @@
 package com.smartfarm.www.activity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
@@ -12,6 +15,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.smartfarm.www.R;
@@ -30,11 +34,18 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText mNickNameView;
     private EditText mEmailView;
     private EditText mIdView;
+    private Button mCheckDuplicateIdButton;
     private EditText mPasswordView;
     private EditText mConfirmPasswordView;
     private EditText mLocationView;
     private Button mRegisterButton;
     private ServiceApi service;
+
+    private boolean IdChecked = false;
+    private int checkStatus = 0;
+    //404 : 아이디 중복 체크 에러
+    //204 : 아이디 중복
+    //200 : 아이디 사용 가능
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -45,6 +56,7 @@ public class RegisterActivity extends AppCompatActivity {
         mNickNameView = (EditText) findViewById(R.id.register_nickname);
         mEmailView = (EditText) findViewById(R.id.register_email);
         mIdView = (EditText) findViewById(R.id.register_id);
+        mCheckDuplicateIdButton = (Button) findViewById(R.id.checkDuplicateId);
         mPasswordView = (EditText) findViewById(R.id.register_pwd);
         mConfirmPasswordView = (EditText) findViewById(R.id.confirm_pwd);
         mLocationView = (EditText) findViewById(R.id.register_location);
@@ -64,6 +76,12 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 attemptregister();
+            }
+        });
+        mCheckDuplicateIdButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                checkId();
             }
         });
     }
@@ -91,6 +109,10 @@ public class RegisterActivity extends AppCompatActivity {
         // ID 유효성 검사
         if (id.isEmpty()) {
             mIdView.setError("ID를 입력해주세요.");
+            focusView = mIdView;
+            cancel = true;
+        } else if (!IdChecked) {
+            mIdView.setError("ID중복확인을 해주세요.");
             focusView = mIdView;
             cancel = true;
         }
@@ -153,6 +175,67 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
+    private void checkId() {
+        mIdView.setError(null);
+        String id = mIdView.getText().toString();
+
+        boolean cancel = false;
+        View focusView = null;
+
+        if (id.isEmpty()) {
+            mIdView.setError("ID를 입력해주세요.");
+            focusView = mIdView;
+            cancel = true;
+        } else {
+            checkDuplicateId(new RegisterData(id));
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    boolean cancel = false;
+                    View focusView = null;
+                    if (checkStatus == 204) {
+                        mIdView.setError("중복된 아이디입니다. 다른 아이디를 사용해주세요.");
+                        focusView = mIdView;
+                        cancel = true;
+                    } else if (checkStatus == 404) {
+                        focusView = mIdView;
+                        cancel = true;
+                    }
+
+                    if (cancel) {
+                        focusView.requestFocus();
+                    } else if (checkStatus == 200) {
+                        useNonDuplicateId();
+                    }
+                }
+            }, 500);
+        }
+        if (cancel) {
+            focusView.requestFocus();
+        }
+    }
+
+    private void checkDuplicateId(RegisterData data) {
+        service.userCheckId(data).enqueue(new Callback<RegisterResponse>() {
+            @Override
+            public void onResponse(Call<RegisterResponse> call, Response<RegisterResponse> response) {
+                RegisterResponse result = response.body();
+                if (result.getCode() == 204) {
+                    //중복된 아이디
+                    checkStatus = result.getCode();
+                } else if(result.getCode() == 200) {
+                    //사용가능한 아이디
+                    checkStatus = result.getCode();
+                }
+            }
+            @Override
+            public void onFailure(Call<RegisterResponse> call, Throwable t) {
+                checkStatus = 404;
+                Toast.makeText(RegisterActivity.this, "회원가입 에러 발생", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
     private void startregister(RegisterData data) {
         service.userRegister(data).enqueue(new Callback<RegisterResponse>() {
             @Override
@@ -171,6 +254,25 @@ public class RegisterActivity extends AppCompatActivity {
                 Log.e("회원가입 에러 발생", t.getMessage());
             }
         });
+    }
+
+    private void useNonDuplicateId() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(RegisterActivity.this);
+        builder.setMessage("사용가능한 아이디입니다.\n사용하시겠습니까?");
+        builder.setPositiveButton("사용",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        IdChecked = true;
+                        mIdView.setClickable(false);
+                        mIdView.setFocusable(false);
+                        mIdView.setBackgroundColor(Color.parseColor("#CFCFCF"));
+                    }
+                });
+        builder.setNegativeButton("사용하지 않음",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {}
+                });
+        builder.show();
     }
 
     private boolean isEmailValid(String email) {
