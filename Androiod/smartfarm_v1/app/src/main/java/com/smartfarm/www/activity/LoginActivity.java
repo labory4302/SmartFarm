@@ -1,11 +1,14 @@
 package com.smartfarm.www.activity;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
@@ -27,29 +30,50 @@ import retrofit2.Response;
 public class LoginActivity extends AppCompatActivity {
     private EditText mIdView, mPasswordView;
     private Button mLoginButton, mregisterButton, testLoginbt;
+    private CheckBox autoLogin_CheckBox;
     private ServiceApi service;
+    private String autoLoginId, autoLoginPwd;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_page);
+        service = RetrofitClient.getClient().create(ServiceApi.class);
+
         mIdView = (EditText) findViewById(R.id.login_id);
         mPasswordView = (EditText) findViewById(R.id.login_pwd);
         mLoginButton = (Button) findViewById(R.id.Login_Button);
         mregisterButton = (Button) findViewById(R.id.Register_Button);
-        testLoginbt = findViewById(R.id.test_login_bt);
-
-        service = RetrofitClient.getClient().create(ServiceApi.class);
+        testLoginbt = (Button)findViewById(R.id.test_login_bt);
+        autoLogin_CheckBox = (CheckBox)findViewById(R.id.autoLogin_CheckBox);
 
         mIdView.setPadding(100,0,0,0);
         mPasswordView.setPadding(100,0,0,0);
 
+        SharedPreferences auto = getSharedPreferences("auto", Activity.MODE_PRIVATE);
+        autoLoginId = auto.getString("inputId", null);
+        autoLoginPwd = auto.getString("inputPwd", null);
+
         mLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                attemptLogin();
+                if(autoLogin_CheckBox.isChecked()){
+                    attemptLogin_auto();
+                } else{
+                    attemptLogin_nonauto();
+                }
             }
         });
+
+        if(autoLogin_CheckBox.isChecked()){
+            mIdView.setText(autoLoginId);
+            mPasswordView.setText(autoLoginPwd);
+            Log.d("check", autoLoginId + autoLoginPwd);
+            mLoginButton.performClick();
+        } else {
+            //if checkbox unchecked
+        }
+
         mregisterButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -66,7 +90,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void attemptLogin() {
+    private void attemptLogin_nonauto() {
         mIdView.setError(null);
         mPasswordView.setError(null);
 
@@ -97,11 +121,46 @@ public class LoginActivity extends AppCompatActivity {
         if (cancel) {
             focusView.requestFocus();
         } else {
-            startLogin(new LoginData(id, password));
+            startLogin_nonauto(new LoginData(id, password));
         }
     }
 
-    private void startLogin(LoginData data) {
+    private void attemptLogin_auto() {
+        mIdView.setError(null);
+        mPasswordView.setError(null);
+
+        String id = mIdView.getText().toString();
+        String password = mPasswordView.getText().toString();
+
+        boolean cancel = false;
+        View focusView = null;
+
+        // 패스워드의 유효성 검사
+        if (password.isEmpty()) {
+            mIdView.setError("비밀번호를 입력해주세요.");
+            focusView = mIdView;
+            cancel = true;
+        } else if (!isPasswordValid(password)) {
+            mPasswordView.setError("6자 이상의 비밀번호를 입력해주세요.");
+            focusView = mPasswordView;
+            cancel = true;
+        }
+
+        // 아이디의 유효성 검사
+        if (id.isEmpty()) {
+            mIdView.setError("아이디를 입력해주세요.");
+            focusView = mIdView;
+            cancel = true;
+        }
+
+        if (cancel) {
+            focusView.requestFocus();
+        } else {
+            startLogin_auto(new LoginData(id, password));
+        }
+    }
+
+    private void startLogin_nonauto(LoginData data) {
         service.userLogin(data).enqueue(new Callback<LoginResponse>() {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
@@ -117,6 +176,46 @@ public class LoginActivity extends AppCompatActivity {
                 userInfo.setUserPwd(result.getUserPwd());
                 userInfo.setUserLocation(result.getUserLocation());
                 userInfo.setUserNo(result.getUserNo());
+
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
+                finish();
+            }
+
+            @Override
+            public void onFailure(Call<LoginResponse> call, Throwable t) {
+                Toast.makeText(LoginActivity.this, "로그인 에러 발생", Toast.LENGTH_SHORT).show();
+                Log.e("로그인 에러 발생", t.getMessage());
+            }
+        });
+    }
+
+    private void startLogin_auto(LoginData data) {
+        service.userLogin(data).enqueue(new Callback<LoginResponse>() {
+            @Override
+            public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+                LoginResponse result = response.body();
+                Toast.makeText(LoginActivity.this, result.getMessage(), Toast.LENGTH_SHORT).show();
+
+                //싱글톤 패턴에 유저정보 저장
+                UserInformation userInfo = UserInformation.getUserInformation();
+                userInfo.setUserName(result.getUserName());
+                userInfo.setUserNickName(result.getUserNickName());
+                userInfo.setUserEmail(result.getUserEmail());
+                userInfo.setUserID(result.getUserID());
+                userInfo.setUserPwd(result.getUserPwd());
+                userInfo.setUserLocation(result.getUserLocation());
+                userInfo.setUserNo(result.getUserNo());
+
+                //Auto Login function using sharedpreference
+                SharedPreferences auto = getSharedPreferences("auto", Activity.MODE_PRIVATE);
+                SharedPreferences.Editor editor = auto.edit();
+                editor.putString("inputId", result.getUserID());
+                editor.putString("inputPwd", result.getUserPwd());
+                editor.commit();
+//                System.out.println(auto.getString("inputId", ""));
+//                System.out.println(autoLoginId);
+//                System.out.println(result.getUserID());
 
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(intent);
