@@ -466,8 +466,7 @@ public class FireForegroundService extends Service {
                 if(result.getBody().equals("fire")){
                     NotificationSomethings(444, webImg_bitmap, "화재가 감지되었습니다.");
                 }
-
-                NotificationSomethings(444, webImg_bitmap, "화재가 감지되었습니다.");
+                
 
             }
         }.execute(request);
