@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.app.Activity;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -39,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
         show_temp_live = findViewById(R.id.show_temp);
         show_humidity_live = findViewById(R.id.show_humidity);
         show_soil_live = findViewById(R.id.show_soil);
+
+        SharedPreferences auto = getSharedPreferences("auto", Activity.MODE_PRIVATE);
 
         //바텀네비게이션 이벤트
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener()

@@ -1,6 +1,9 @@
 package com.smartfarm.www.activity;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,7 +22,7 @@ public class MypageActivity extends Fragment {
     private View view;
 
     TextView mypage_nickname, mypage_email, mypage_location;
-    Button changemyinformation_button, notification_button, event_button, inquiry_button, version_button;
+    Button changemyinformation_button, notification_button, event_button, inquiry_button, version_button, logout_button;
 
     @Nullable
     @Override
@@ -33,7 +36,7 @@ public class MypageActivity extends Fragment {
         event_button = view.findViewById(R.id.event_button);
         inquiry_button = view.findViewById(R.id.inquiry_button);
         version_button = view.findViewById(R.id.version_button);
-
+        logout_button = view.findViewById(R.id.logout_button);
 
         changemyinformation_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,6 +75,22 @@ public class MypageActivity extends Fragment {
             public void onClick(View view) {
                 Intent intent = new Intent(getActivity(), VersionActivity.class);
                 startActivity(intent);
+            }
+        });
+
+        logout_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Context context = getActivity();
+                SharedPreferences auto = context.getSharedPreferences("auto", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = auto.edit();
+                editor.clear();
+                editor.commit();
+
+                Intent intent = new Intent(getActivity(), LoginActivity.class);
+                startActivity(intent);
+
             }
         });
 
