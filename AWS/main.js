@@ -55,6 +55,32 @@ app.post('/user/register', function (req, res) {
 });
 
 
+//회원가입 시 중복된 아이디 확인
+app.post('/user/checkDuplicateId', function (req, res) {
+    var userID = req.body.userID;
+
+    var sql = 'SELECT * FROM Users WHERE userID = ?;';
+
+    connection.query(sql, userID, function(err, result) {
+        var resultCode = 404;
+
+        if (err) {
+            console.log(err);
+        } else {
+            if (result.length === 0) {
+                resultCode = 200;
+            } else {
+                resultCode = 204;
+            }
+        }
+
+        res.json({
+            code : resultCode
+        });
+    });
+});
+
+
 //로그인
 app.post('/user/login', function (req, res) {
     var userID = req.body.userID;
