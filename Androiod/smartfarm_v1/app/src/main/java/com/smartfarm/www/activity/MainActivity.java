@@ -34,9 +34,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_page);
 
-        appInfo a =  (appInfo)getApplicationContext();
-
-        Toast.makeText(getApplicationContext(),a.test, Toast.LENGTH_SHORT).show();
 
         bottomNavigationView = findViewById(R.id.bottomNavi);
         show_temp_live = findViewById(R.id.show_temp);

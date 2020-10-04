@@ -42,7 +42,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
-public class ForegroundService extends Service {
+public class FireForegroundService extends Service {
     private final String CHANNEL_ID = appInfo.SMARTFARM_CHANNEL_ID;
 
     private final String BUCKET_NAME = "hotsix-smartfarm"; // S3 버킷 이름 (저장소 이름)
@@ -53,7 +53,13 @@ public class ForegroundService extends Service {
 
     private File FwebImg_Resize; // 썸네일한 이미지 파일 (S3 올리고 사진을 지움)
 
-    private Bitmap webImg_bitmap; // 웹캠에서 받아오는 한 프레임 이미지 비트팸
+    private Bitmap webImg_bitmap=null; // 푸쉬알림에 띄우기 위한 비트맵 이미지
+    private String webImg_path; // intent로 넘겨주기 위한 사진 경로 저장 (푸쉬 알림 클릭 이벤트)
+    private Date date; // 푸쉬알림 보낼시의 시간
+
+    private Thread fireThread;
+
+
 
 
 
@@ -61,6 +67,13 @@ public class ForegroundService extends Service {
     // 이 메서드를 호출하여 일회성 설정 절차를 수행합니다. 서비스가 이미 실행 중인 경우, 이 메서드는 호출되지 않음음    @Override
     public void onCreate() {
         super.onCreate();
+
+        // 이미지 파일을 저장할 경로를 만들어준다. (넣을 폴더 생성)
+        File webimg_fire = new File(this.getExternalCacheDir()+"/fire/image/");
+        File webimg_fire_resize = new File(this.getExternalCacheDir()+"/fire/resize/");
+
+        webimg_fire.mkdirs();
+        webimg_fire_resize.mkdirs();
     }
 
 
@@ -72,67 +85,56 @@ public class ForegroundService extends Service {
     // 이렇게 별도의 쓰레드를 사용함으로써, 응답 지연 문제(ANR)를 예방하고,
     // 앱의 메인 스레드가 사용자와의 상호작용에 집중할 수 있도록 해줍니다. (앱을 사용중일시시)
 
-    class NewRunnable implements Runnable {
+    class FireRunnable implements Runnable {
         @Override
         public void run() {
-//            while (true) {
-                // 현재 시간 가져오기.
-                long now = System.currentTimeMillis();
+            try {
+                while (true) {
+                    // 현재 시간 가져오기.
+                    long now = System.currentTimeMillis();
 
-                // 현재시간의 날짜 생성하기
-                Date date = new Date(now);
+                    // 현재시간의 날짜 생성하기
+                    date = new Date(now);
 
-                // 내가 원하는 형식으로 포맷해서 시간 가져오기
-                SimpleDateFormat timeFormat = new SimpleDateFormat("HH-mm-ss");
+                    // 내가 원하는 형식으로 포맷해서 시간 가져오기
+                    SimpleDateFormat timeFormat = new SimpleDateFormat("HH-mm-ss");
 
-                imgName = timeFormat.format(date);
+                    //저장할 사진 이름
+                    imgName = timeFormat.format(date);
+                    imgName += ".png";
 
-                imgName +=".png";
+                    // 웹캠에서 현재시간의 사진(1프레임)을 받아옴
+                    webImg_bitmap = webCameraCapture();
+
+                    // 받아온 사진 비트맵을 파일로 변환하고 외부 캐시저장소에 원본사진 저장
+                    File webImg_file = SaveBitmapToFile(webImg_bitmap,
+                            getApplicationContext().getExternalCacheDir() + "/fire/image/", imgName);
+
+                    webImg_path = webImg_file.getAbsolutePath(); // intent로 넘겨주기 위한 사진 경로 저장 (푸쉬 알림 클릭 이벤트)
 
 
-                Log.d("webCameraCapture","시작");
-                // 웹캠에서 현재시간의 사진(1프레임)을 받아옴
-                Bitmap webImg_bitmap = webCameraCapture();
-
-                // 받아온 사진 비트맵을 파일로 변환하고 외부 캐시저장소에 원본사진 저장
-                File webImg_file = SaveBitmapToFile(webImg_bitmap, imgName);
-
-                // 통신을 빠르게 하기 위한 이미지 썸네일  (S3에 저장할 이미지의 크기를 작게 한다.)
-                // 썸네일한 이미지를 S3에 전송하기 위해 temp라는 이름으로 임시 저장했음
-                // 전송하고 난 뒤에 지워주어야 함
-                FwebImg_Resize = ImgResize(webImg_file);
+                    // 통신을 빠르게 하기 위한 이미지 썸네일  (S3에 저장할 이미지의 크기를 작게 한다.)
+                    // 썸네일한 이미지를 S3에 전송하기 위해 temp라는 이름으로 임시 저장했음
+                    // 전송하고 난 뒤에 지워주어야 함
+                    FwebImg_Resize = ImgResize(webImg_file);
 //
 //                // S3에 파일 업로드
-                awsS3Upload(FwebImg_Resize, imgName);
+                    awsS3Upload(FwebImg_Resize, imgName);
 
-                // 쓰레드를 어떤 시간마다 실핼할 것인지
-                try {
-                    Thread.sleep(60000) ;
-                } catch (Exception e) {
-                    e.printStackTrace() ;
+                    // 쓰레드를 어떤 시간마다 실핼할 것인지
+                    Thread.sleep(60000);
                 }
-//            }
+            }catch (InterruptedException e) {
+                System.out.println("interrupted 발생");
+                e.printStackTrace();
+            }
         }
     }
 
-    class test implements Runnable {
-        @Override
-        public void run() {
-//            while (true)
-//            {
-                NotificationSomethings(444);
-                test();
-                Log.d("test","tttttttttttt");
-                try {
-                    Thread.sleep(5000) ;
-                } catch (Exception e) {
-                    e.printStackTrace() ;
-                }
 
-//            }
 
-        }
-    }
+
+
 
 
 
@@ -140,9 +142,7 @@ public class ForegroundService extends Service {
     // 이 메소드가 실행되면 서비스는 started 상태가 되며, 후면(background)에서 작업을 수행한다.
     // 만약 이 메소드를 구현한다면, 서비스가 할 작업을 모두 마쳤을 때 서비스를 중지하기 위해
     // stopSelf()나 stopService()를 호출하는 부분도 구현해야 한다
-    // 이유는 stopSelf()나 stopService()를 호출되기 전까지 서비스는 멈추지 않기 때문 (서비스를 사용하고 싶지 않을때는 대비해서서
-
-
+    // 이유는 stopSelf()나 stopService()를 호출되기 전까지 서비스는 멈추지 않기 때문 (서비스를 사용하고 싶지 않을때는 대비해서)
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
@@ -163,34 +163,31 @@ public class ForegroundService extends Service {
             builder.setSmallIcon(R.drawable.ic_launcher_foreground); //mipmap 사용시 Oreo 이상에서 시스템 UI 에러남
 
 
-        }else builder.setSmallIcon(R.mipmap.ic_launcher); // Oreo 이하에서 mipmap 사용하지 않으면 Couldn't create icon: StatusBarIcon 에러남
+        }else builder.setSmallIcon(R.mipmap.ic_launcher_foreground); // Oreo 이하에서 mipmap 사용하지 않으면 Couldn't create icon: StatusBarIcon 에러남
 
         // null 아니라는걸 확인
         assert notificationManager != null;
 
 
         // 푸쉬알림을 ID로 구분함
-        notificationManager.notify(123, builder.build());
+        notificationManager.notify(111, builder.build());
 
 
+        // 앱이 포그라운드 서비스를 생성해야 하는 경우, 해당 앱은 startForegroundService()를 호출해야 합니다.
+        // 이 메서드는 백그라운드 서비스를 생성하지만, 메서드가 시스템에 신호를 보내 서비스가 자체적으로 포그라운드로 승격될 것이라고 알려줌
+        // 서비스가 생성되면 5초 이내에 startForeground() 메서드를 호출해야 합니다.
+        // 호출하지 않으면 foreground 서비스가 제대로 작동하지 않아서 24시간 가동이 되지 않는다.
 
-
-//        startForeground(123, builder.build());
+        startForeground(111, builder.build());
 
         // foregorundservice시 강제로 생기는 푸쉬 알림 cancel
-        NotificationSomethings(123);
+        NotificationSomethings(111, null, null);
 
 
-//        NewRunnable nr = new NewRunnable();
-//        Thread t = new Thread(nr);
-//        t.start();
-
-
-        test nr = new test();
-        Thread t = new Thread(nr);
-        t.start();
-
-
+        // 불 감지 스레드 (메인 스레드가 아닌 작업 스레드로 따로 지정)
+        FireRunnable firerun = new FireRunnable();
+        fireThread = new Thread(firerun);
+        fireThread.start();
 
 
 
@@ -221,6 +218,9 @@ public class ForegroundService extends Service {
     // 여기에서는 서비스에서 사용하던 리소스들(쓰레드, 등록된 리스너, 리시버 등)을 모두 정리해줘야(clean up) 합니다.
     @Override
     public void onDestroy() {
+        // 스레드가 일시 정지 상태에 있을 때 InterruptedException 예외를 발생시키는 역할
+        //서비스 종료시 쓰레드 중지하기
+        fireThread.interrupt();
         super.onDestroy();
     }
 
@@ -242,11 +242,14 @@ public class ForegroundService extends Service {
 
 
 
-    private void NotificationSomethings(int notifyID) {
+    private void NotificationSomethings(int notifyID,Bitmap webImg_bitmap, String content) {
         NotificationManager notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
 
         // 푸쉬 알림 터치 시 이동할 클래스 설정
-        Intent notificationIntent = new Intent(this, MainActivity.class);
+        Intent notificationIntent = new Intent(this,  Photoservice.class);
+
+        notificationIntent.putExtra("imgPath", webImg_path);
+
         // 기존에 쌓여있던 스택을 모두 없애고 task를 새로 만든다. (activity를 새로 만든다.)
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK) ;
 
@@ -257,15 +260,25 @@ public class ForegroundService extends Service {
         // 즉 다른 프로세스에서 수행하기 때문에 Notification으로 Intent수행시 PendingIntent의 사용이 필수 입니다.
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent,  PendingIntent.FLAG_UPDATE_CURRENT);
 
+        // 푸쉬알림 임시로 만들었을때 시간 설정 (forgroundsercie라 어쩌피 지울 푸쉬 알림)
+        if(notifyID==111){
+            date = new Date(System.currentTimeMillis());
+        }
 
         // NotificationCompat는 푸쉬 알림을 만드는 최신버전의 라이브러리리
         // 생성자의 경우 채널 ID를 제공해야 한다.
         // Android 8.0(API 수준 26) 이상에서는 호환성을 유지하기 위해 필요하지만 이전 버전에서는 무시된다.
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle("화재가 감지되었습니다.")  // 표시할 제목
+                .setContentTitle(content)  // 표시할 제목
+                .setContentText("사진을 보려면 여기를 누르세요.") // 표시할 내용
                 .setPriority(Notification.PRIORITY_HIGH) // 알람의 우선순위 최고
                 .setContentIntent(pendingIntent) // 사용자가 노티피케이션을 탭시 pendingIntent로 이동하도록 설정
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setWhen(date.getTime()) // 시간 표시
+                .setLargeIcon(webImg_bitmap) // 푸쉬알림 오른쪽 사진 등록
+                .setStyle(new NotificationCompat.BigPictureStyle()  // 푸쉬알림 밑에 화살표 터치시 보여줄 큰 사진 등록
+                        .bigPicture(webImg_bitmap)
+                        .bigLargeIcon(null))
                 .setAutoCancel(true); // 푸쉬 알림을 터치하고 난 후에는 지우는 옵션
 
 
@@ -275,23 +288,22 @@ public class ForegroundService extends Service {
             builder.setSmallIcon(R.drawable.ic_launcher_foreground); //mipmap 사용시 Oreo 이상에서 시스템 UI 에러남
 
 
-        }else builder.setSmallIcon(R.mipmap.ic_launcher); // Oreo 이하에서 mipmap 사용하지 않으면 Couldn't create icon: StatusBarIcon 에러남
+        }else builder.setSmallIcon(R.mipmap.ic_launcher_foreground); // Oreo 이하에서 mipmap 사용하지 않으면 Couldn't create icon: StatusBarIcon 에러남
 
         // null 아니라는걸 확인
         assert notificationManager != null;
         notificationManager.notify(notifyID, builder.build()); // 고유숫자로 노티피케이션 동작시킴
 
-        if(notifyID==123) {
+        // 푸쉬알림 임시로 만든것 삭제 (foreground 서비스를 background 처럼 이용하기 위한 편법법
+        if(notifyID==111) {
             notificationManager.cancel(notifyID);
         }
     }
 
 
-
     // webcam 1프레임 캡쳐
     private Bitmap webCameraCapture() {
 
-        webImg_bitmap=null;
 
         try {
             //서버에 올려둔 이미지 URL
@@ -324,11 +336,10 @@ public class ForegroundService extends Service {
     }
 
     // 비트맵 파일로 변환  (변환할 사진, 경로)
-    private File SaveBitmapToFile(Bitmap bitmap, String imgName) {
-        // 외부 저장소의 캐시 디렉터리에 temp라는 파일 객체 생성
+    private File SaveBitmapToFile(Bitmap bitmap, String imgPath , String imgName) {
 
-        Log.d("SaveBitmapToFile","시작");
-        File file = new File(this.getExternalCacheDir(), imgName);
+        // 외부 저장소에 저장할 파일 객체 생성
+        File file = new File(imgPath, imgName);
         OutputStream out = null;
         try {
             // 빈 파일생성
@@ -348,12 +359,11 @@ public class ForegroundService extends Service {
             }
         }
 
-        Log.d("SaveBitmapToFile","끝");
         return file;
     }
 
     //  S3 사진 업로드 함수
-    private void awsS3Upload(File webImg_file, String img_name){
+    private void awsS3Upload(File FwebImg_Resize, String img_name){
         // AWS 자격인증을 얻는 코드
         // Cognito를 이용하면 개발자 인증서를 앱에 직접 심지 않아도 되어 apk가 털려서 인증서가 유출 될 위험이 없다.
         // 개발자 인증 자격 증명을 사용하면 를 사용하여 사용자 데이터를 동기화하고 AWS 리소스에 액세스하면서도
@@ -378,7 +388,7 @@ public class ForegroundService extends Service {
 
         uploadObserver = transferUtility.upload(
                 BUCKET_NAME,    // 업로드할 버킷 이름
-                "image/"+img_name,    // 버킷에 저장할 파일의 이름 확장자명도 붙여줘야댐 png (이름이 key로 쓰임)
+                "image_fire/image/"+img_name,    // 버킷에 저장할 파일의 이름 확장자명도 붙여줘야댐 png (이름이 key로 쓰임)
                 FwebImg_Resize       // 버킷에 저장할 파일
         );
 
@@ -431,8 +441,8 @@ public class ForegroundService extends Service {
 
 // Lambda 함수 호출은 네트워크 호출을 발생시킵니다.
 // 메인 스레드에서 호출되지 않았는지 확인합니다.
+        // 화재 감지
         new AsyncTask<RequestClass, Void, ResponseClass>() {
-
             @Override
             protected ResponseClass doInBackground(RequestClass... params) {
                 // invoke "echo" method. In case it fails, it will throw a
@@ -453,21 +463,19 @@ public class ForegroundService extends Service {
 
                 Log.d("결과", ""+result.getBody());
 
-                if(result.getBody().equals("\"fire\"")){
-                    NotificationSomethings(444);
+                if(result.getBody().equals("fire")){
+                    NotificationSomethings(444, webImg_bitmap, "화재가 감지되었습니다.");
                 }
+
+                NotificationSomethings(444, webImg_bitmap, "화재가 감지되었습니다.");
 
             }
         }.execute(request);
-    }
-
-    // DB 작업
-    private void test(){
 
     }
 
 
-//  이미지 크기 썸네일화
+    //  이미지 크기 썸네일화 하고 파일로 다시 저장
     private File ImgResize(File webImg_file){
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inSampleSize = 2;
@@ -495,7 +503,7 @@ public class ForegroundService extends Service {
 
         Bitmap resizedBmp = Bitmap.createScaledBitmap(bitmap, (int) rezWidth, (int) rezHeight, true);
 
-        File ImgResize = SaveBitmapToFile(resizedBmp, "temp.png");
+        File ImgResize = SaveBitmapToFile(resizedBmp, this.getExternalCacheDir()+"/fire/resize/", imgName);
 
         return ImgResize;
     }

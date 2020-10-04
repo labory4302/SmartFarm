@@ -1,7 +1,10 @@
 package com.smartfarm.www.activity;
 
+import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,12 +18,15 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.smartfarm.www.R;
+import com.smartfarm.www.appInfo;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,6 +37,11 @@ public class HomeActivity extends Fragment {
 
     TextView tb1[] = new TextView[7];
     ImageView tb2[] = new ImageView[7];
+
+    ProgressDialog dialog= null; //dialog 데이터 로딩
+    Message message = null; // 데이터 로딩 후 메인 UI 업데이트 메시지
+
+    private final int FINISH = 999; // 핸들러 메시지 구분 ID
 
     @Nullable
     @Override
@@ -52,137 +63,142 @@ public class HomeActivity extends Fragment {
 
 
 
-        listViewAdapter.addItem("테스트1","내용1");
-        listViewAdapter.addItem("테스트2","내용2");
-        listViewAdapter.addItem("테스트3","내용3");
-        listViewAdapter.addItem("테스트4","내용4");
-        listViewAdapter.addItem("테스트5","내용5");
 
-        listView.setAdapter(listViewAdapter);
+        if (appInfo.strawberry==null){
+            Log.d("if", "여기 : ");
+            //로딩창 실행
+            dialog = new ProgressDialog(getContext());
+            dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            dialog.setMessage("데이터 확인중");
+            dialog.show();// 프로그레스바 시작`
+
+            // 핸들러에 보내기 위한 메시지 생성 (중복 메시지 확인하고 덮어씌우거나 없으면 새로 메시지 객체 생성)
+            message = mHandler.obtainMessage(); // 핸들러의 메시지 객체 획득
+            message.what = FINISH;
+
+            // 쓰레드는 View 자원들에 직접 접근이 불가
+            // 쓰레드로부터 전달받은 메세지들을 '메세지 큐(Message Queue)' 를 이용해 순차적으로 관리
+            // 쓰레드 / 메시지 큐 / handler 통신해서 메인 스레드가 일을 순차적으로 처리함
+            // 데이터 다 들어왔는지 확인 쓰레드
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while(true){
+                        if (appInfo.weatherMap != null) {
+                            // 데이터 로딩 롼료시 UI 변경 메시지 전송
+
+                            //메세지 큐에 데이터보냄냄
+                            mHandler.sendMessage(message);
+                            break;
+                        }
+                        try {
+                            Thread.sleep(500);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    return;
+                }
+            }).start();
+
+        }else{
+            Log.d("else", "여기 : ");
+            getWeather();
+        }
 
 
-//        new GetWeatherTask().execute();
 
-
-//        listViewAdapter.notifyDataSetChanged();
         return view;
     }
 
-    // 날씨 최고 온도, 최저온도, 강수량 가져오는 class
-    // 날씨 최고 온도, 최저온도, 강수량 가져오는 class
-    public class GetWeatherTask extends AsyncTask<Void, Void, Map<String,String>> {
-
+    // 데이터 전송 롼료시 UI 변경을 위한 핸들러
+    private final Handler mHandler = new Handler() {
         @Override
-        protected Map<String, String> doInBackground(Void... params) {
-            //파싱한 결과값을 담을 해쉬맵
-            Map<String,String> result = new HashMap<String,String>();
-            try {
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case FINISH :
+                    Log.d("??","dfd 시작");
+                    getWeather();
+                    listViewAdapter.addItem("테스트1",appInfo.cabbage);
+                    listViewAdapter.addItem("테스트2",appInfo.rice);
+                    listViewAdapter.addItem("테스트3",appInfo.bean);
+                    listViewAdapter.addItem("테스트4",appInfo.redPepper);
+                    listViewAdapter.addItem("테스트5",appInfo.strawberry);
 
-                // 날씨 URL 가져오기
-                Document document = Jsoup.connect("https://freemeteo.kr/weather/seoul/7-days/list/?gid=1835848&language=korean&country=south-korea").get();
-
-                //오늘 포함해서 7일 날씨 가져오기
-                Elements test_em = document.select(".table .today.sevendays .day .icon span");
-
-                // 최고기온 최저기온 가져오기
-                Elements temp_em = document.select(".table .today.sevendays .day > .temps");
-
-                // 강수량 가져오기기
-                Elements rain_em = document.select(".day .extra b");
-                //
-
-                // 일주일치 날씨 최고 온도 최저 온도
-                String temp_7day = temp_em.text();
-
-                String test_7 = test_em.toString();
-
-                // 파싱한 문자열에서 온도 빼고 필요없는 부분 지우기
-                temp_7day = temp_7day.replaceAll("최저: ","");
-                temp_7day = temp_7day.replaceAll("최고: ","");
-
-                String delete = "<span class=\"wicon w78x73 \" data-icon=\"";
-                String delete2 = "\"></span>";
-                test_7 = test_7.replaceAll(delete,"");
-                test_7 = test_7.replaceAll(delete2,"");
-                //
-                String testDay[] = test_7.split("\n");
-
-                // 띄어쓰기로 일주일치 온도를 분류
-                String tempDay[]  = temp_7day.split(" ");
-
-                // 띄어쓰기로 일주일치 평균강수량을 분류
-                String rainfallDay[]  = rain_em.text().split(" ");
-
-
-                // 온도 파싱한 내용 담기
-                for(int i=0; i<tempDay.length; i++){
-                    //Log.d("text : ", "content : "+tempDay[i]);
-                    result.put("temp"+i, tempDay[i]);
-                }
-                // 강수량 파싱한 내용 담기
-                for(int i=0; i<rainfallDay.length; i++){
-                    //Log.d("text : ", "content : "+rainfallDay[i]);
-                    result.put("rainfall"+i, rainfallDay[i]);
-                }
-                //
-                for(int i=0; i<testDay.length; i++){
-                    result.put("test"+i, testDay[i]);
-                }
-
-
-            } catch (IOException e) {
-                e.printStackTrace();
+                    listView.setAdapter(listViewAdapter);
+                    dialog.cancel();
+                    break ;
+                // TODO : add case.
             }
-            return result;
         }
+    } ;
 
-        //UI 표시할 곳곳
-        @Override
-        protected void onPostExecute(Map<String, String> map) {
-            // 온도/강수량  가져오기
-            Double rainfall_day[] = new Double[7];
-            for (int i = 0; i < 7; i++) {
-                Log.i("text : ", i+"일차 날씨 : "+map.get("test"+(i*2)));
-                String temp_temp = map.get("temp" + i);
-                rainfall_day[i] = Double.parseDouble(map.get("rainfall" + i));
+    //날씨값 설정
+    public void getWeather(){
+        long now = System.currentTimeMillis();
+        // 현재시간의 날짜 생성하기
+        Date date = new Date(now);
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH");
+        int time = Integer.valueOf(timeFormat.format(date));
+        Log.d("시간 ", "날씨시간 : "+timeFormat);
+        Log.d("시간 ", "날씨시간 : "+time);
 
-                String temp_temp_hl[] = temp_temp.split("°C");
-                int avg_temp = (int)(Float.parseFloat(temp_temp_hl[0])+Float.parseFloat(temp_temp_hl[1]))/2;
-//                Log.d("찍히냐?",""+avg_temp+", "+map.get("test"+i));
+        Map<String,String> map = appInfo.weatherMap;
+        // 온도/강수량  가져오기
+        Double rainfall_day[] = new Double[7];
+        for (int i = 0; i < 7; i++) {
+            Log.i("text : ", i+"일차 날씨 : "+map.get("test"+(i*2)));
+            String temp_temp = map.get("temp" + i);
+            rainfall_day[i] = Double.parseDouble(map.get("rainfall" + i));
+
+            String temp_temp_hl[] = temp_temp.split("°C");
+
+            Log.d("온도", "과연  "+ temp_temp);
+
+            if(i==0 && (time>=18 && time<=24) || (time>=0 && time<=6 )) {
+                float avg_temp = (Float.parseFloat(temp_temp_hl[0]));
                 tb1[i].setText("" + avg_temp + "℃");
+                tb2[i].setImageResource(R.drawable.sun_icon);//
+                // 0일차 날씨 : 4" data-night="true
+                continue;
+            }else {
+                float avg_temp = (Float.parseFloat(temp_temp_hl[0]) + Float.parseFloat(temp_temp_hl[1])) / 2;
+                tb1[i].setText("" + avg_temp + "℃");
+            }
 
-                if(Integer.parseInt(map.get("test"+(i*2))) == 1){
-                    tb2[i].setImageResource(R.drawable.sun_icon);//                     tb2[i].setText("맑음");
-                }else if(Integer.parseInt(map.get("test"+(i*2))) == 2){
-                    tb2[i].setImageResource(R.drawable.cloudy_icon);//                  tb2[i].setText("구름 조금");
-                }else if(Integer.parseInt(map.get("test"+(i*2))) == 3){
-                    tb2[i].setImageResource(R.drawable.cloud_icon);//                   tb2[i].setText("구름 많음");
-                }else if(Integer.parseInt(map.get("test"+(i*2))) == 4){
-                    tb2[i].setImageResource(R.drawable.cloud_icon);//                   tb2[i].setText("흐림");
-                }else if(Integer.parseInt(map.get("test"+(i*2))) == 5){
-                    tb2[i].setImageResource(R.drawable.soft_rain_icon);//               tb2[i].setText("비 확률");
-                }else if(Integer.parseInt(map.get("test"+(i*2))) == 6){
-                    tb2[i].setImageResource(R.drawable.rain_icon);//                    tb2[i].setText("비 조금");
-                }else if(Integer.parseInt(map.get("test"+(i*2))) == 7){
-                    tb2[i].setImageResource(R.drawable.hard_rain_icon);//               tb2[i].setText("비옴");
-                }else if(Integer.parseInt(map.get("test"+(i*2))) == 8){
-                    tb2[i].setImageResource(R.drawable.hard_rain_icon);//               tb2[i].setText("폭우");
-                }else if(Integer.parseInt(map.get("test"+(i*2))) == 9) {
-                    tb2[i].setImageResource(R.drawable.sun_icon);//                     tb2[i].setText("모름");
-                }else if(Integer.parseInt(map.get("test"+(i*2))) == 30) {
-                    tb2[i].setImageResource(R.drawable.soft_rain_icon);//               tb2[i].setText("비올듯");
-                }else if(Integer.parseInt(map.get("test"+(i*2))) == 31) {
-                    tb2[i].setImageResource(R.drawable.rain_icon);//                    tb2[i].setText("약한 비 잠시 맑음");
-                }else if(Integer.parseInt(map.get("test"+(i*2))) == 32) {
-                    tb2[i].setImageResource(R.drawable.hard_rain_icon);//               tb2[i].setText("비옴 잠시 맑음");
-                }else if(Integer.parseInt(map.get("test"+(i*2))) == 33) {
-                    tb2[i].setImageResource(R.drawable.hard_rain_icon);//               tb2[i].setText("큰 소나기");
-                }else if(Integer.parseInt(map.get("test"+(i*2))) == 34) {
-                    tb2[i].setImageResource(R.drawable.storm_rain_icon);//              tb2[i].setText("비오고 천둥도 침");
-                }else{
-                    tb2[i].setImageResource(R.drawable.sun_icon);//                     tb2[i].setText("오류");
-                }
+            if(Integer.parseInt(map.get("test"+(i*2))) == 1){
+                tb2[i].setImageResource(R.drawable.sun_icon);//                     tb2[i].setText("맑음");
+            }else if(Integer.parseInt(map.get("test"+(i*2))) == 2){
+                tb2[i].setImageResource(R.drawable.cloudy_icon);//                  tb2[i].setText("구름 조금");
+            }else if(Integer.parseInt(map.get("test"+(i*2))) == 3){
+                tb2[i].setImageResource(R.drawable.cloud_icon);//                   tb2[i].setText("구름 많음");
+            }else if(Integer.parseInt(map.get("test"+(i*2))) == 4){
+                tb2[i].setImageResource(R.drawable.cloud_icon);//                   tb2[i].setText("흐림");
+            }else if(Integer.parseInt(map.get("test"+(i*2))) == 5){
+                tb2[i].setImageResource(R.drawable.soft_rain_icon);//               tb2[i].setText("비 확률");
+            }else if(Integer.parseInt(map.get("test"+(i*2))) == 6){
+                tb2[i].setImageResource(R.drawable.rain_icon);//                    tb2[i].setText("비 조금");
+            }else if(Integer.parseInt(map.get("test"+(i*2))) == 7){
+                tb2[i].setImageResource(R.drawable.hard_rain_icon);//               tb2[i].setText("비옴");
+            }else if(Integer.parseInt(map.get("test"+(i*2))) == 8){
+                tb2[i].setImageResource(R.drawable.hard_rain_icon);//               tb2[i].setText("폭우");
+            }else if(Integer.parseInt(map.get("test"+(i*2))) == 9) {
+                tb2[i].setImageResource(R.drawable.sun_icon);//                     tb2[i].setText("모름");
+            }else if(Integer.parseInt(map.get("test"+(i*2))) == 30) {
+                tb2[i].setImageResource(R.drawable.soft_rain_icon);//               tb2[i].setText("비올듯");
+            }else if(Integer.parseInt(map.get("test"+(i*2))) == 31) {
+                tb2[i].setImageResource(R.drawable.rain_icon);//                    tb2[i].setText("약한 비");
+            }else if(Integer.parseInt(map.get("test"+(i*2))) == 32) {
+                tb2[i].setImageResource(R.drawable.hard_rain_icon);//               tb2[i].setText("비옴");
+            }else if(Integer.parseInt(map.get("test"+(i*2))) == 33) {
+                tb2[i].setImageResource(R.drawable.hard_rain_icon);//               tb2[i].setText("큰 소나기");
+            }else if(Integer.parseInt(map.get("test"+(i*2))) == 34) {
+                tb2[i].setImageResource(R.drawable.storm_rain_icon);//              tb2[i].setText("비오고 천둥도 침");
+            }else{
+                tb2[i].setImageResource(R.drawable.sun_icon);//                     tb2[i].setText("오류");
             }
         }
     }
+
+
 }

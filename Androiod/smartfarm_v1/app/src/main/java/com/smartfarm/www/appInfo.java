@@ -4,18 +4,46 @@ import android.app.Application;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.os.AsyncTask;
 import android.os.Build;
+import android.util.Log;
+
+import com.amazonaws.ClientConfiguration;
+import com.amazonaws.auth.CognitoCachingCredentialsProvider;
+import com.amazonaws.mobileconnectors.lambdainvoker.LambdaFunctionException;
+import com.amazonaws.mobileconnectors.lambdainvoker.LambdaInvokerFactory;
+import com.amazonaws.regions.Regions;
+import com.smartfarm.www.service.LambdaFuncInterface;
+import com.smartfarm.www.service.RequestClass;
+import com.smartfarm.www.service.ResponseClass;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class appInfo extends Application {
 
 
     public static final String SMARTFARM_CHANNEL_ID = "69981";
+    public static Map<String,String> weatherMap = null;
+    public static String cabbage = null;
+    public static String rice = null;
+    public static String bean = null;
+    public static String redPepper = null;
+    public static String strawberry = null;
     NotificationChannel channel; // 푸쉬 알림 채널 객체
-
-    public String test="dfdsf";
 
     @Override
     public void onCreate() {
+
+
+        new GetWeatherTask().execute();
 
         CharSequence channelName  = "smartfarm channel";
         String description = "camera detection";
@@ -39,5 +67,154 @@ public class appInfo extends Application {
         }
 
         super.onCreate();
+    }
+
+    // 날씨 최고 온도, 최저온도, 강수량 가져오는 class
+    public class GetWeatherTask extends AsyncTask<Void, Void, Map<String,String>> {
+
+        @Override
+        protected Map<String, String> doInBackground(Void... params) {
+            //파싱한 결과값을 담을 해쉬맵
+            Map<String,String> result = new HashMap<String,String>();
+            try {
+
+                // 날씨 URL 가져오기
+                Document document = Jsoup.connect("https://freemeteo.kr/weather/seoul/7-days/list/?gid=1835848&language=korean&country=south-korea").get();
+
+                //오늘 포함해서 7일 날씨 가져오기
+                Elements test_em = document.select(".table .today.sevendays .day .icon span");
+
+                // 최고기온 최저기온 가져오기
+                Elements temp_em = document.select(".table .today.sevendays .day > .temps");
+
+                // 강수량 가져오기기
+                Elements rain_em = document.select(".day .extra b");
+                //
+
+                // 일주일치 날씨 최고 온도 최저 온도
+                String temp_7day = temp_em.text();
+
+                String test_7 = test_em.toString();
+
+                // 파싱한 문자열에서 온도 빼고 필요없는 부분 지우기
+                temp_7day = temp_7day.replaceAll("최저: ","");
+                temp_7day = temp_7day.replaceAll("최고: ","");
+
+                String delete = "<span class=\"wicon w78x73 \" data-icon=\"";
+                String delete2 = "\"></span>";
+                test_7 = test_7.replaceAll(delete,"");
+                test_7 = test_7.replaceAll(delete2,"");
+                //
+                String testDay[] = test_7.split("\n");
+
+                // 띄어쓰기로 일주일치 온도를 분류
+                String tempDay[]  = temp_7day.split(" ");
+
+                // 띄어쓰기로 일주일치 평균강수량을 분류
+                String rainfallDay[]  = rain_em.text().split(" ");
+
+                //일주일치 작물 파싱
+//                awsLambdaConnect(temp_7day.replaceAll(" ","").replaceAll("°C","%")+"/"+rain_em.text());
+
+
+
+
+                // 온도 파싱한 내용 담기
+                for(int i=0; i<tempDay.length; i++){
+                    //Log.d("text : ", "content : "+tempDay[i]);
+                    result.put("temp"+i, tempDay[i]);
+                }
+                // 강수량 파싱한 내용 담기
+                for(int i=0; i<rainfallDay.length; i++){
+                    //Log.d("text : ", "content : "+rainfallDay[i]);
+                    result.put("rainfall"+i, rainfallDay[i]);
+                }
+                //
+                for(int i=0; i<testDay.length; i++){
+                    result.put("test"+i, testDay[i]);
+                }
+
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            weatherMap = result;
+            return result;
+        }
+
+        //UI 표시할 곳곳
+        @Override
+        protected void onPostExecute(Map<String, String> map) {
+            // 온도/강수량  가져오기
+
+
+        }
+    }
+
+
+    public void awsLambdaConnect(String weather){
+
+
+//      Lambda 프록시를 인스턴스화하는 데 사용할 LambdaInvokerFactory를 생성합니다.
+
+        CognitoCachingCredentialsProvider credentialsProvider = new CognitoCachingCredentialsProvider(
+                getApplicationContext(),
+                "ap-northeast-2:6d58538f-d438-48f3-bd0e-dc7455119ea3", // 자격 증명 풀 ID
+                Regions.AP_NORTHEAST_2  // 물리적인 저장 위치 서울
+        );
+
+        ClientConfiguration client = new ClientConfiguration ();
+        client.setConnectionTimeout(60*1000);
+        client.setSocketTimeout(60*1000);
+        LambdaInvokerFactory factory = new LambdaInvokerFactory(this.getApplicationContext(),
+                Regions.AP_NORTHEAST_2 , credentialsProvider, client);
+
+
+
+// 기본 Json 데이터 바인더를 사용하여 Lambda 프록시 객체를 생성
+// 구현하여 자체 데이터 바인더를 제공 할 수 있음
+// LambdaDataBinder.
+        final LambdaFuncInterface myInterface = factory.build(LambdaFuncInterface.class);
+
+        final RequestClass request = new RequestClass(weather);
+
+// Lambda 함수 호출은 네트워크 호출을 발생시킵니다.
+// 메인 스레드에서 호출되지 않았는지 확인합니다.
+        new AsyncTask<RequestClass, Void, retailResponse>() {
+            @Override
+            protected retailResponse doInBackground(RequestClass... params) {
+                // invoke "echo" method. In case it fails, it will throw a
+                // LambdaFunctionException.
+                try {
+                    return myInterface.retailPrediction(params[0]);
+
+
+                } catch (LambdaFunctionException lfe) {
+                    Log.e("Tag", "Failed to invoke echo", lfe);
+                    return null;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(retailResponse result) {
+                if (result == null) {
+                    return;
+                }
+
+                Log.d("배추결과", ""+result.getCabbage_result());
+                Log.d("쌀결과", ""+result.getRice_result());
+                Log.d("콩결과", ""+result.getBean_result());
+                Log.d("고추결과", ""+result.getRedPepper_result());
+                Log.d("딸기결과", ""+result.getStrawberry_result());
+
+                cabbage = result.getCabbage_result();
+                rice = result.getRice_result();
+                bean = result.getBean_result();
+                redPepper = result.getRedPepper_result();
+                strawberry = result.getStrawberry_result();
+
+            }
+        }.execute(request);
     }
 }

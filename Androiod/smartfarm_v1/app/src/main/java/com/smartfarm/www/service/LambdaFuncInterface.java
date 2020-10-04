@@ -1,6 +1,7 @@
 package com.smartfarm.www.service;
 
 import com.amazonaws.mobileconnectors.lambdainvoker.LambdaFunction;
+import com.smartfarm.www.retailResponse;
 
 public interface LambdaFuncInterface {
 
@@ -18,5 +19,9 @@ public interface LambdaFuncInterface {
 
     @LambdaFunction
     ResponseClass objectDetection(RequestClass request);
+
+    @LambdaFunction
+    retailResponse retailPrediction(RequestClass request);
+
 
 }

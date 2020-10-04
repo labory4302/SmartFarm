@@ -26,9 +26,15 @@
 
         <!-- foreground 서비스 등록 -->
         <service
-            android:name=".service.ForegroundService"
+            android:name=".service.FireForegroundService"
             android:enabled="true"
             android:exported="true"></service>
+
+        <!-- foreground 서비스 등록 -->
+        <service
+            android:name=".service.ObjectForegroundService"
+            android:enabled="true"
+            android:exported="true" />
 
         <!-- 전송작업을 background로 처리하기 위한 service -->
         <service android:name="com.amazonaws.mobileconnectors.s3.transferutility.TransferService" android:enabled="true" />
@@ -50,6 +56,8 @@
         <activity android:name=".activity.NotificationActivity"/>
         <activity android:name=".activity.EventActivity"/>
         <activity android:name=".activity.VersionActivity"/>
+
+        <activity android:name=".service.Photoservice" /> <!-- 푸쉬알림 선택시 보여주는 클래스 -->
 
         <!-- 카메라 파일 저장 경로 설정 -->
         <provider

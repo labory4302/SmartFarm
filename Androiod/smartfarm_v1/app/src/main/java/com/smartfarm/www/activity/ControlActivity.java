@@ -10,12 +10,6 @@ package com.smartfarm.www.activity;
 */
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,7 +23,6 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Switch;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -39,16 +32,12 @@ import androidx.fragment.app.Fragment;
 
 import com.smartfarm.www.R;
 import com.smartfarm.www.data.EmbeddedResponse;
-import com.smartfarm.www.data.VersionResponse;
 import com.smartfarm.www.network.RetrofitClient;
 import com.smartfarm.www.network.ServiceApi;
-import com.smartfarm.www.service.ForegroundService;
+import com.smartfarm.www.service.FireForegroundService;
+import com.smartfarm.www.service.ObjectForegroundService;
 
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.InetAddress;
@@ -78,18 +67,50 @@ public class ControlActivity extends Fragment {
     ConnectRaspi connectRaspi;  //소켓통신을 위한 스레드객체
 
     Button fire_button; // 불 딥러닝 테스트용 버튼   지워야함
+    Button fireOff_button; // 불 딥러닝 테스트용 버튼   지워야함
+    Button object_button; // 객체 딥러닝 테스트용 버튼   지워야함
+    Button objectOff_button; // 객체 딥러닝 테스트용 버튼   지워야함
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.control_page,container,false);
 
-        fire_button = (Button) view.findViewById(R.id.test11);
+        fire_button = (Button) view.findViewById(R.id.test11);   // 지
+        fireOff_button = (Button) view.findViewById(R.id.test12);  // 워
+        object_button = (Button) view.findViewById(R.id.test13); // 야
+        objectOff_button = (Button) view.findViewById(R.id.test14);  // 함
 
+
+        // 불 foreground 켜기
         fire_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startService();
+                startFireService();
+            }
+        });
+
+        // 불 foreground 끄기
+        fireOff_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                stopFireService();
+            }
+        });
+
+        // 객체감지 foreground 켜기
+        object_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startObjectService();
+            }
+        });
+
+        // 객체감지 foreground 끄기
+        objectOff_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                stopObjectService();
             }
         });
 
@@ -269,51 +290,6 @@ public class ControlActivity extends Fragment {
     }
 
 
-//    //웹뷰의 화면을 캡쳐하여 저장
-//    private void screenshotSharing() {
-//        //스크린샷 찍어 Bitmap 객체로 변환
-//        cctvView.setDrawingCacheEnabled(true);
-//
-//        Bitmap screenshot = Bitmap. createBitmap(cctvView.getWidth(), cctvView.getHeight(), Bitmap.Config.ARGB_8888);   //캡쳐화면을 저장할 비트맵을 생성
-//        Canvas c = new Canvas(screenshot);      //캔버스를 생성
-//        cctvView.draw(c);                       //웹뷰의 화면을 캔버스에 그림
-//
-//        //Bitmap객체를 파일로 저장
-//        String filename = "screenShot.png";
-//        Uri imageUri = null;
-//
-//        try {
-//            File f = new File(getActivity().getExternalCacheDir(), filename);
-//
-//            f.createNewFile();
-//            imageUri = Uri. fromFile(f);
-//            OutputStream outStream = new FileOutputStream(f);
-//
-//            screenshot.compress(Bitmap.CompressFormat.PNG, 100, outStream);
-//            outStream.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        cctvView.setDrawingCacheEnabled(false);
-//    }
-//
-//    //웹뷰에서 찍은 사진을 불러오기
-//    private void uploadImage() {
-//        String path = getActivity().getExternalCacheDir() + "/screenShot.png";
-//        Bitmap bitmap = BitmapFactory.decodeFile(path);
-//        Drawable drawable = (Drawable)(new BitmapDrawable(bitmap));
-//        mImageView.setImageDrawable(drawable);
-//    }
-//
-//    public void onStop() {
-//        super.onStop();
-//        try {
-//            socket.close();     //종료시 소켓도 닫아주어야한다.
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-
     private void setAutoMode() {
         changeMode.setText("자동모드");
         autoLayout.setVisibility(View.VISIBLE);
@@ -451,9 +427,27 @@ public class ControlActivity extends Fragment {
         });
     }
 
-    // foregroundSercie 시작 함수
-    public void startService() {
-        Intent serviceIntent = new Intent(getContext(), ForegroundService.class);
+    // 불 감지 foregroundSercie 시작 함수
+    public void startFireService() {
+        Intent serviceIntent = new Intent(getContext(), FireForegroundService.class);
         ContextCompat.startForegroundService(getContext(), serviceIntent);
+    }
+
+    // 불 감지 foregroundSercie 끝내기 함수
+    public void stopFireService() {
+        Intent serviceIntent = new Intent(getContext(), FireForegroundService.class);
+        getContext().stopService(serviceIntent);
+    }
+
+    // 객체 감지 foregroundSercie 시작 함수
+    public void startObjectService() {
+        Intent serviceIntent = new Intent(getContext(), ObjectForegroundService.class);
+        ContextCompat.startForegroundService(getContext(), serviceIntent);
+    }
+
+    // 객체 감지 foregroundSercie 끝내기 함수
+    public void stopObjectService() {
+        Intent serviceIntent = new Intent(getContext(), ObjectForegroundService.class);
+        getContext().stopService(serviceIntent);
     }
 }
