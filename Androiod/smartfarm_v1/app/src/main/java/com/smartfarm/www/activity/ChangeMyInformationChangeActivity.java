@@ -29,7 +29,8 @@ public class ChangeMyInformationChangeActivity extends AppCompatActivity {
             changemyinformation_change_id,
             changemyinformation_change_pwd,
             changemyinformation_change_location;
-    Button changemyinformation_change_button;
+    Button changemyinformation_change_button, change_info_change_back_bt;
+
     private ServiceApi service;
 
     @Override
@@ -45,6 +46,14 @@ public class ChangeMyInformationChangeActivity extends AppCompatActivity {
         changemyinformation_change_id = (EditText) findViewById(R.id.changemyinformation_change_id);
         changemyinformation_change_pwd = (EditText) findViewById(R.id.changemyinformation_change_pwd);
         changemyinformation_change_location = (EditText) findViewById(R.id.changemyinformation_change_location);
+        change_info_change_back_bt = (Button) findViewById(R.id.change_info_change_bt);
+
+        changemyinformation_change_name.setPadding(20,0,0,0);
+        changemyinformation_change_nickname.setPadding(20,0,0,0);
+        changemyinformation_change_email.setPadding(20,0,0,0);
+        changemyinformation_change_id.setPadding(20,0,0,0);
+        changemyinformation_change_pwd.setPadding(20,0,0,0);
+        changemyinformation_change_location.setPadding(20,0,0,0);
 
         changemyinformation_change_name.setText(userInfo.getUserName());
         changemyinformation_change_nickname.setText(userInfo.getUserNickName());
@@ -54,6 +63,13 @@ public class ChangeMyInformationChangeActivity extends AppCompatActivity {
         changemyinformation_change_location.setText(userInfo.getUserLocation());
 
         changemyinformation_change_button = (Button) findViewById(R.id.changemyinformation_change_button);
+
+        change_info_change_back_bt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
         changemyinformation_change_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -79,8 +95,6 @@ public class ChangeMyInformationChangeActivity extends AppCompatActivity {
                 userInfo2.setUserPwd(pwd);
                 userInfo2.setUserLocation(location);
 
-                Intent intent = new Intent(getApplicationContext(), ChangeMyInformationActivity.class);
-                startActivity(intent);
                 finish();
             }
         });

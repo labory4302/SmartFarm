@@ -59,7 +59,7 @@ public class CropActivity extends Fragment {
 
     View view;
     String imageFileName;
-    TextView Disease_result;
+    TextView Disease_result, Nothing;
     File photoFile;
     private static final int REQUEST_IMAGE_CAPTURE = 672;   //사진파일을  Request코드
     private String imageFilePath;                           //사진이 저장되어있는 파일 경로
@@ -81,6 +81,7 @@ public class CropActivity extends Fragment {
         view = inflater.inflate(R.layout.crop_page, container, false);
 
         Disease_result = view.findViewById(R.id.disease_result);
+        Nothing = view.findViewById(R.id.nothing);
 
         //권한체크
         //bulid.gradle(Module: app)부분에 dependencies에 implementation 'gun0912.ted:tedpermission:2.0.0'라고 선언되어있음
@@ -98,6 +99,7 @@ public class CropActivity extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);    //카메라 애플리케이션으로 가도록 함
+                Nothing.setText("");
                 Disease_result.setText("잠시 기다려 주세요");
                 //컴포넌트를 실행하지 못하면 앱 작동이 종료되므로 사전에 컴포넌트가 실행가능한지 여부를 판단
                 //패키지매니저를 불러와 해당 인텐트가 갖는 컴포넌트가 사용가능한지 확인. 사용가능하다면 null이 아닌 값을 반환
