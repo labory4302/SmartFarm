@@ -1,9 +1,11 @@
 package com.smartfarm.www;
 
+import android.app.Activity;
 import android.app.Application;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.util.Log;
@@ -15,7 +17,6 @@ import com.amazonaws.mobileconnectors.lambdainvoker.LambdaInvokerFactory;
 import com.amazonaws.regions.Regions;
 import com.smartfarm.www.service.LambdaFuncInterface;
 import com.smartfarm.www.service.RequestClass;
-import com.smartfarm.www.service.ResponseClass;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -40,9 +41,19 @@ public class appInfo extends Application {
 
     @Override
     public void onCreate() {
+        long now = System.currentTimeMillis();
+        Date date = new Date(now);
+        SimpleDateFormat timeFormat = new SimpleDateFormat("yyyyMMdd");
+        String currentTime = timeFormat.format(date);
 
+        SharedPreferences appInfoPref = getSharedPreferences("appInfoPref", Activity.MODE_PRIVATE);
+        String appInfoPrefTime = appInfoPref.getString("date", null);
 
-        new GetWeatherTask().execute();
+        if(currentTime.equals(appInfoPrefTime) == true) {
+            new uplaodSaveAppInfo().execute();
+        } else {
+            new GetWeatherTask().execute();
+        }
 
         CharSequence channelName  = "smartfarm channel";
         String description = "camera detection";
@@ -62,21 +73,19 @@ public class appInfo extends Application {
             assert notificationManager != null;
 
             notificationManager.createNotificationChannel(channel);
-
         }
 
         super.onCreate();
     }
 
     // 날씨 최고 온도, 최저온도, 강수량 가져오는 class
-    public class GetWeatherTask extends AsyncTask<Void, Void, Map<String,String>> {
+    public class GetWeatherTask extends AsyncTask<Void, Void, Void> {
 
         @Override
-        protected Map<String, String> doInBackground(Void... params) {
+        protected Void doInBackground(Void... params) {
             //파싱한 결과값을 담을 해쉬맵
             Map<String,String> result = new HashMap<String,String>();
             try {
-
                 // 날씨 URL 가져오기
                 Document document = Jsoup.connect("https://freemeteo.kr/weather/seoul/7-days/list/?gid=1835848&language=korean&country=south-korea").get();
 
@@ -88,7 +97,6 @@ public class appInfo extends Application {
 
                 // 강수량 가져오기기
                 Elements rain_em = document.select(".day .extra b");
-                //
 
                 // 일주일치 날씨 최고 온도 최저 온도
                 String temp_7day = temp_em.text();
@@ -103,51 +111,45 @@ public class appInfo extends Application {
                 String delete2 = "\"></span>";
                 test_7 = test_7.replaceAll(delete,"");
                 test_7 = test_7.replaceAll(delete2,"");
-                //
+                // 날씨 아이콘
                 String testDay[] = test_7.split("\n");
 
                 // 띄어쓰기로 일주일치 온도를 분류
-                String tempDay[]  = temp_7day.split(" ");
+                String tempDay[] = temp_7day.split(" ");
 
                 // 띄어쓰기로 일주일치 평균강수량을 분류
-                String rainfallDay[]  = rain_em.text().split(" ");
-
-                //일주일치 작물 파싱
-//                awsLambdaConnect(temp_7day.replaceAll(" ","").replaceAll("°C","%")+"/"+rain_em.text());
+                String rainfallDay[] = rain_em.text().split(" ");
 
 
-
-
+                SharedPreferences appInfoPref = getSharedPreferences("appInfoPref", Activity.MODE_PRIVATE);
+                SharedPreferences.Editor editor = appInfoPref.edit();
                 // 온도 파싱한 내용 담기
                 for(int i=0; i<tempDay.length; i++){
                     //Log.d("text : ", "content : "+tempDay[i]);
                     result.put("temp"+i, tempDay[i]);
+                    editor.putString("temp"+i, tempDay[i]);
                 }
                 // 강수량 파싱한 내용 담기
                 for(int i=0; i<rainfallDay.length; i++){
                     //Log.d("text : ", "content : "+rainfallDay[i]);
                     result.put("rainfall"+i, rainfallDay[i]);
+                    editor.putString("rainfall"+i, rainfallDay[i]);
                 }
                 //
                 for(int i=0; i<testDay.length; i++){
                     result.put("test"+i, testDay[i]);
+                    editor.putString("test"+i, testDay[i]);
                 }
+                editor.apply();
 
-
+                //일주일치 작물 파싱
+                awsLambdaConnect(temp_7day.replaceAll(" ","").replaceAll("°C","%")+"/"+rain_em.text());
 
             } catch (IOException e) {
                 e.printStackTrace();
             }
             weatherMap = result;
-            return result;
-        }
-
-        //UI 표시할 곳곳
-        @Override
-        protected void onPostExecute(Map<String, String> map) {
-            // 온도/강수량  가져오기
-
-
+            return null;
         }
     }
 
@@ -195,6 +197,7 @@ public class appInfo extends Application {
                 }
             }
 
+
             @Override
             protected void onPostExecute(retailResponse result) {
                 if (result == null) {
@@ -213,7 +216,51 @@ public class appInfo extends Application {
                 redPepper = result.getRedPepper_result();
                 strawberry = result.getStrawberry_result();
 
+                long now = System.currentTimeMillis();
+                Date date = new Date(now);
+                SimpleDateFormat timeFormat = new SimpleDateFormat("yyyyMMdd");
+                String time = timeFormat.format(date);
+
+                SharedPreferences appInfoPref = getSharedPreferences("appInfoPref", Activity.MODE_PRIVATE);
+                SharedPreferences.Editor editor = appInfoPref.edit();
+                editor.putString("cabbage", cabbage);
+                editor.putString("rice", rice);
+                editor.putString("bean", bean);
+                editor.putString("redPepper", redPepper);
+                editor.putString("strawberry", strawberry);
+                editor.putString("date", time);
+                editor.apply();
             }
         }.execute(request);
+    }
+
+    public class uplaodSaveAppInfo extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... parms) {
+
+            SharedPreferences appInfoPref = getSharedPreferences("appInfoPref", Activity.MODE_PRIVATE);
+
+            Map<String,String> result = new HashMap<String,String>();
+            for(int i=0; i<7; i++){
+                result.put("temp"+i, appInfoPref.getString("temp"+i, null));
+            }
+            for(int i=0; i<7; i++){
+                result.put("rainfall"+i, appInfoPref.getString("rainfall"+i, null));
+            }
+            for(int i=0; i<14; i++){
+                result.put("test"+i, appInfoPref.getString("test"+i, null));
+            }
+            weatherMap = result;
+
+            cabbage = appInfoPref.getString("cabbage", null);
+            rice = appInfoPref.getString("rice", null);
+            bean = appInfoPref.getString("bean", null);
+            redPepper = appInfoPref.getString("redPepper", null);
+            strawberry = appInfoPref.getString("strawberry", null);
+
+            Log.d("dddddddddd", "디버그디버그"+strawberry);
+
+            return null;
+        }
     }
 }

@@ -56,5 +56,8 @@ public interface ServiceApi {
     Call<EmbeddedResponse> EmbeddedSensorRecentData();
 
     @POST("/embedded/status")
-    Call<EmbeddedResponse> EmbeddedSensorStatus();
+    Call<EmbeddedResponse> EmbeddedSensorStatusAndDetectionStatus();
+
+    @POST("/embedded/changeDetection")
+    Call<EmbeddedResponse> EmbeddedSetDetectionStatus(@Body EmbeddedData data);
 }

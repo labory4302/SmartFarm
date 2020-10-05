@@ -84,7 +84,7 @@ public class HomeActivity extends Fragment {
                 @Override
                 public void run() {
                     while(true){
-                        if (appInfo.weatherMap != null) {
+                        if (appInfo.strawberry != null) {
                             // 데이터 로딩 롼료시 UI 변경 메시지 전송
 
                             //메세지 큐에 데이터보냄냄
@@ -104,6 +104,13 @@ public class HomeActivity extends Fragment {
         }else{
             Log.d("else", "여기 : ");
             getWeather();
+
+            listViewAdapter.addItem("양배추",appInfo.cabbage);
+            listViewAdapter.addItem("쌀",appInfo.rice);
+            listViewAdapter.addItem("콩",appInfo.bean);
+            listViewAdapter.addItem("홍고추",appInfo.redPepper);
+            listViewAdapter.addItem("딸기",appInfo.strawberry);
+            listView.setAdapter(listViewAdapter);
         }
 
 
@@ -119,11 +126,12 @@ public class HomeActivity extends Fragment {
                 case FINISH :
                     Log.d("??","dfd 시작");
                     getWeather();
-                    listViewAdapter.addItem("테스트1",appInfo.cabbage);
-                    listViewAdapter.addItem("테스트2",appInfo.rice);
-                    listViewAdapter.addItem("테스트3",appInfo.bean);
-                    listViewAdapter.addItem("테스트4",appInfo.redPepper);
-                    listViewAdapter.addItem("테스트5",appInfo.strawberry);
+                    Log.d("dddddddddd", "홈액티비티"+appInfo.strawberry);
+                    listViewAdapter.addItem("양배추",appInfo.cabbage);
+                    listViewAdapter.addItem("쌀",appInfo.rice);
+                    listViewAdapter.addItem("콩",appInfo.bean);
+                    listViewAdapter.addItem("홍고추",appInfo.redPepper);
+                    listViewAdapter.addItem("딸기",appInfo.strawberry);
 
                     listView.setAdapter(listViewAdapter);
                     dialog.cancel();
