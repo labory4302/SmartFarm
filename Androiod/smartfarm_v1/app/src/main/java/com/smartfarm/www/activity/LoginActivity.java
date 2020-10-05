@@ -5,13 +5,16 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -53,6 +56,21 @@ public class LoginActivity extends AppCompatActivity {
         SharedPreferences auto = getSharedPreferences("auto", Activity.MODE_PRIVATE);
         autoLoginId = auto.getString("inputId", null);
         autoLoginPwd = auto.getString("inputPwd", null);
+
+        mPasswordView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if(actionId == EditorInfo.IME_ACTION_DONE){
+                    if(autoLogin_CheckBox.isChecked()){
+                        attemptLogin_auto();
+                    } else{
+                        attemptLogin_nonauto();
+                    }
+                }
+                return false;
+            }
+        });
 
         mLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override

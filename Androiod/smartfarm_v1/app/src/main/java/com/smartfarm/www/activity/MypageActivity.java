@@ -17,6 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.smartfarm.www.R;
+import com.smartfarm.www.data.UserInformation;
 
 public class MypageActivity extends Fragment {
     private View view;
@@ -29,14 +30,20 @@ public class MypageActivity extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.mypage_page,container,false);
         mypage_nickname = view.findViewById(R.id.mypage_nickname);
-        mypage_email = view.findViewById(R.id.mypage_email);
-        mypage_location = view.findViewById(R.id.mypage_location);
+//        mypage_email = view.findViewById(R.id.mypage_email);
+//        mypage_location = view.findViewById(R.id.mypage_location);
         changemyinformation_button = view.findViewById(R.id.changemyinformation_button);
         notification_button = view.findViewById(R.id.notification_button);
         event_button = view.findViewById(R.id.event_button);
         inquiry_button = view.findViewById(R.id.inquiry_button);
         version_button = view.findViewById(R.id.version_button);
         logout_button = view.findViewById(R.id.logout_button);
+
+        UserInformation userInfo = UserInformation.getUserInformation();
+
+        String My_name = userInfo.getUserNickName();
+
+        mypage_nickname.setText("안녕하세요 "+My_name+" 님!");
 
         changemyinformation_button.setOnClickListener(new View.OnClickListener() {
             @Override

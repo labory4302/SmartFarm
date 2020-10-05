@@ -23,7 +23,7 @@ import retrofit2.Response;
 public class ChangeMyInformationActivity extends AppCompatActivity {
 
     TextView changemyinformation_name, changemyinformation_nickname, changemyinformation_email, changemyinformation_id, changemyinformation_pwd, changemyinformation_location;
-    Button changemyinformation_button;
+    Button changemyinformation_button,changeinfobackbt;
     private ServiceApi service;
 
     @Override
@@ -38,6 +38,7 @@ public class ChangeMyInformationActivity extends AppCompatActivity {
         changemyinformation_id = findViewById(R.id.changemyinformation_id);
         changemyinformation_pwd = findViewById(R.id.changemyinformation_pwd);
         changemyinformation_location = findViewById(R.id.changemyinformation_location);
+        changeinfobackbt = findViewById(R.id.change_info_back_bt);
 
         UserInformation userInfo = UserInformation.getUserInformation();
 
@@ -47,6 +48,13 @@ public class ChangeMyInformationActivity extends AppCompatActivity {
         changemyinformation_id.setText(userInfo.getUserID());
         changemyinformation_pwd.setText(userInfo.getUserPwd());
         changemyinformation_location.setText(userInfo.getUserLocation());
+
+        changeinfobackbt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         changemyinformation_button = (Button) findViewById(R.id.changemyinformation_button);
         changemyinformation_button.setOnClickListener(new View.OnClickListener() {
