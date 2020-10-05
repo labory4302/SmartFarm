@@ -6,17 +6,16 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.smartfarm.www.R;
+import com.smartfarm.www.data.AccessData;
+import com.smartfarm.www.data.AccessResponse;
 import com.smartfarm.www.data.LoginData;
 import com.smartfarm.www.data.LoginResponse;
 import com.smartfarm.www.data.UserInformation;
@@ -65,15 +64,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        if(autoLogin_CheckBox.isChecked()){
-            mIdView.setText(autoLoginId);
-            mPasswordView.setText(autoLoginPwd);
-            Log.d("check", autoLoginId + autoLoginPwd);
-            mLoginButton.performClick();
-        } else {
-            //if checkbox unchecked
-        }
-
         mregisterButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -81,6 +71,7 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
         testLoginbt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -88,6 +79,13 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        if(autoLogin_CheckBox.isChecked() && mIdView.getText().toString() != null ){
+            mIdView.setText(autoLoginId);
+            mPasswordView.setText(autoLoginPwd);
+            mLoginButton.performClick();
+        }
+
     }
 
     private void attemptLogin_nonauto() {
@@ -176,10 +174,9 @@ public class LoginActivity extends AppCompatActivity {
                 userInfo.setUserPwd(result.getUserPwd());
                 userInfo.setUserLocation(result.getUserLocation());
                 userInfo.setUserNo(result.getUserNo());
+                userInfo.setUserLoginCheck(result.getUserLoginCheck());
 
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                startActivity(intent);
-                finish();
+                checkIn(new AccessData(userInfo.getUserLoginCheck(), userInfo.getUserNo()));
             }
 
             @Override
@@ -195,7 +192,6 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                 LoginResponse result = response.body();
-                Toast.makeText(LoginActivity.this, result.getMessage(), Toast.LENGTH_SHORT).show();
 
                 //싱글톤 패턴에 유저정보 저장
                 UserInformation userInfo = UserInformation.getUserInformation();
@@ -206,6 +202,7 @@ public class LoginActivity extends AppCompatActivity {
                 userInfo.setUserPwd(result.getUserPwd());
                 userInfo.setUserLocation(result.getUserLocation());
                 userInfo.setUserNo(result.getUserNo());
+                userInfo.setUserLoginCheck(result.getUserLoginCheck());
 
                 //Auto Login function using sharedpreference
                 SharedPreferences auto = getSharedPreferences("auto", Activity.MODE_PRIVATE);
@@ -213,19 +210,39 @@ public class LoginActivity extends AppCompatActivity {
                 editor.putString("inputId", result.getUserID());
                 editor.putString("inputPwd", result.getUserPwd());
                 editor.commit();
-//                System.out.println(auto.getString("inputId", ""));
-//                System.out.println(autoLoginId);
-//                System.out.println(result.getUserID());
 
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                startActivity(intent);
-                finish();
+                checkIn(new AccessData(userInfo.getUserLoginCheck(), userInfo.getUserNo()));
             }
 
             @Override
             public void onFailure(Call<LoginResponse> call, Throwable t) {
                 Toast.makeText(LoginActivity.this, "로그인 에러 발생", Toast.LENGTH_SHORT).show();
                 Log.e("로그인 에러 발생", t.getMessage());
+            }
+        });
+    }
+
+    private void checkIn(AccessData data){
+        service.userLoginCheckIn(data).enqueue(new Callback<AccessResponse>() {
+            @Override
+            public void onResponse(Call<AccessResponse> call, Response<AccessResponse> response) {
+                AccessResponse result = response.body();
+                if(result.getUserLoginCheck() == 0){
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                } else if (result.getUserLoginCheck() == 1) {
+                    Toast.makeText(LoginActivity.this, "해당 유저가 접속중입니다.", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<AccessResponse> call, Throwable t) {
+                Toast.makeText(LoginActivity.this, "접속 에러 발생", Toast.LENGTH_SHORT).show();
+                Log.e("접속 에러 발생", t.getMessage());
             }
         });
     }

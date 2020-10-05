@@ -28,8 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class appInfo extends Application {
-
-
+    
     public static final String SMARTFARM_CHANNEL_ID = "69981";
     public static Map<String,String> weatherMap = null;
     public static String cabbage = null;
