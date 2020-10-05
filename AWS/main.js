@@ -5,7 +5,6 @@ var app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-
 app.listen(8080, function () {
     console.log('서버 실행 중...');
 });
@@ -20,6 +19,51 @@ var connection = mysql.createConnection({
 
 // 안드로이드
 // 회원
+
+// 접속
+app.post('/user/access/in', function (req, res) {
+
+    var userNo = req.body.userID;
+    var userLoginCheck = req.body.userLoginCheck;
+
+    var sql = 'UPDATE Users SET userLoginCheck = "?" WHERE userNo = "?" ;';
+    var params = [userLoginCheck, userNo];
+
+    connection.query(sql, params, function (err, result) {
+        var resultCode = 404;
+        if (err) {
+            console.log(err);
+        } else {
+            resultCode = 200;
+        }
+        res.json({
+            code : resultCode
+        });
+    });
+});
+
+// 접속 해제
+app.post('/user/access/out', function (req, res) {
+
+    var userNo = req.body.userID;
+    var userLoginCheck = req.body.userLoginCheck;
+
+    var sql = 'UPDATE Users SET userLoginCheck = "?" WHERE userNo = "?" ;';
+    var params = [userLoginCheck, userNo];
+
+    connection.query(sql, params, function (err, result) {
+        var resultCode = 404;
+        if (err) {
+            console.log(err);
+        } else {
+            resultCode = 200;  
+        }
+        res.json({
+            code : resultCode
+        });
+    });
+});
+
 // 회원가입
 app.post('/user/register', function (req, res) {
     console.log(req.body);
@@ -46,40 +90,12 @@ app.post('/user/register', function (req, res) {
             resultCode = 200;
             message = '회원가입에 성공했습니다.';
         }
-
         res.json({
-            'code': resultCode,
-            'message': message
+            code : resultCode,
+            message : message
         });
     });
 });
-
-
-//회원가입 시 중복된 아이디 확인
-app.post('/user/checkDuplicateId', function (req, res) {
-    var userID = req.body.userID;
-
-    var sql = 'SELECT * FROM Users WHERE userID = ?;';
-
-    connection.query(sql, userID, function(err, result) {
-        var resultCode = 404;
-
-        if (err) {
-            console.log(err);
-        } else {
-            if (result.length === 0) {
-                resultCode = 200;
-            } else {
-                resultCode = 204;
-            }
-        }
-
-        res.json({
-            code : resultCode
-        });
-    });
-});
-
 
 //로그인
 app.post('/user/login', function (req, res) {
@@ -165,7 +181,6 @@ app.post('/mypage/changemyinformation', function (req, res) {
         } else {
             resultCode = 200;
             message = '개인정보가 수정되었습니다.';
-            console.log(message);  
         }
 
         res.json({
@@ -247,7 +262,6 @@ app.post('/mypage/version', function (req, res) {
     });
 });
 
-
 // 임베디드
 // 블루투스로 전달 받은 센서값을 안드로이드에 표시
 app.post('/embedded/data', function (req, res) {
@@ -307,9 +321,11 @@ app.post('/embedded/status', function (req, res) {
     var pump = req.body.pump;
     var fan = req.body.fan;
     var led = req.body.led;
+    var fireDetection = req.body.fireDetection;
+    var objectDetection = req.body.objectDetection;
 
-    var sql = 'SELECT userNo, automode, pump, fan, led FROM arduinoStatus;';
-    var params = [userNo, automode, pump, fan, led];
+    var sql = 'SELECT userNo, automode, pump, fan, led, fireDetection, objectDetection FROM arduinoStatus;';
+    var params = [userNo, automode, pump, fan, led, fireDetection, objectDetection];
 
     connection.query(sql, params, function (err, result) {
         var resultCode = 404;
@@ -323,9 +339,40 @@ app.post('/embedded/status', function (req, res) {
                 automode : result[0].automode,
                 pump : result[0].pump,
                 fan : result[0].fan,
-                led : result[0].led
+                led : result[0].led,
+                fireDetection : result[0].fireDetection,
+                objectDetection : result[0].objectDetection
             });
         }
+    });
+});
+
+// 화재감지, 객체감지 상태 변경 시 값 반영
+app.post('/embedded/changeDetection', function (req, res) {
+
+    var userNo = req.body.userNo;
+    var fireDetection = req.body.fireDetection;
+    var objectDetection = req.body.objectDetection;
+
+    var sql = 'UPDATE arduinoStatus SET fireDetection = ?, objectDetection = ? WHERE userNo = ?;';
+    var params = [fireDetection, objectDetection, userNo];
+
+    // sql 문의 ?는 두번째 매개변수로 넘겨진 params의 값으로 치환된다.
+    connection.query(sql, params, function (err, result) {
+        var resultCode = 404;
+        var message = '에러가 발생했습니다';
+    
+        if (err) {
+            console.log(err);
+        } else {
+            resultCode = 200;
+            message = '감지기 설정변경이 완료되었습니다.';
+        }
+
+        res.json({
+            code : resultCode,
+            message : message
+        });
     });
 });
 

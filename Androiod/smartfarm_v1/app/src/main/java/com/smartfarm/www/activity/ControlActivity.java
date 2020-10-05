@@ -11,6 +11,7 @@ package com.smartfarm.www.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,7 +32,9 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.smartfarm.www.R;
+import com.smartfarm.www.data.EmbeddedData;
 import com.smartfarm.www.data.EmbeddedResponse;
+import com.smartfarm.www.data.UserInformation;
 import com.smartfarm.www.network.RetrofitClient;
 import com.smartfarm.www.network.ServiceApi;
 import com.smartfarm.www.service.FireForegroundService;
@@ -51,7 +54,7 @@ public class ControlActivity extends Fragment {
     private LinearLayout autoLayout, manualLayout;
     private EditText show_temp_change, show_humidity_change, show_soil_change;
     private Button temp_up, temp_down, humidity_up, humidity_down, soil_up, soil_down, auto_change_apply;
-    private Switch changeMode, manuel_pump_status, manual_fan_status, manual_LED_status;
+    private Switch changeMode, manuel_pump_status, manual_fan_status, manual_LED_status, changeFireDetectionMode, changeObjectDetectionMode;
     private WebView cctvView;           //웹뷰객체
     private WebSettings webSettings;    //웹뷰세팅
     private ServiceApi service;
@@ -66,53 +69,19 @@ public class ControlActivity extends Fragment {
     Socket socket;              //소켓 객체 생성
     ConnectRaspi connectRaspi;  //소켓통신을 위한 스레드객체
 
-    Button fire_button; // 불 딥러닝 테스트용 버튼   지워야함
-    Button fireOff_button; // 불 딥러닝 테스트용 버튼   지워야함
-    Button object_button; // 객체 딥러닝 테스트용 버튼   지워야함
-    Button objectOff_button; // 객체 딥러닝 테스트용 버튼   지워야함
+    UserInformation userInfo = UserInformation.getUserInformation();
+    private int no;
+    private int fireDetectionStatus;
+    private int objectDetectionStatus;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.control_page,container,false);
 
-        fire_button = (Button) view.findViewById(R.id.test11);   // 지
-        fireOff_button = (Button) view.findViewById(R.id.test12);  // 워
-        object_button = (Button) view.findViewById(R.id.test13); // 야
-        objectOff_button = (Button) view.findViewById(R.id.test14);  // 함
-
-
-        // 불 foreground 켜기
-        fire_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startFireService();
-            }
-        });
-
-        // 불 foreground 끄기
-        fireOff_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                stopFireService();
-            }
-        });
-
-        // 객체감지 foreground 켜기
-        object_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startObjectService();
-            }
-        });
-
-        // 객체감지 foreground 끄기
-        objectOff_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                stopObjectService();
-            }
-        });
+        no = userInfo.getUserNo();
+        fireDetectionStatus = 0;
+        objectDetectionStatus = 0;
 
         service = RetrofitClient.getClient().create(ServiceApi.class);
 
@@ -136,6 +105,8 @@ public class ControlActivity extends Fragment {
         manuel_pump_status = view.findViewById(R.id.manuel_pump_status);    //수동모드에서의 펌프 상태선택
         manual_fan_status = view.findViewById(R.id.manuel_fan_status);      //수동모드에서의 환풍기 상태선택
         manual_LED_status = view.findViewById(R.id.manuel_LED_status);      //수동모드에서의 조명 상태선택
+        changeFireDetectionMode = view.findViewById(R.id.changeFireDetectionMode);      //화재감지 상태선택
+        changeObjectDetectionMode = view.findViewById(R.id.changeObjectDetectionMode);  //객체감지 상태선택
 
         autoLayout = view.findViewById(R.id.auto_layout);       //자동모드 화면
         manualLayout = view.findViewById(R.id.manual_layout);   //수동모드 화면
@@ -152,139 +123,318 @@ public class ControlActivity extends Fragment {
         show_humidity_change = view.findViewById(R.id.show_humidity_change);//자동모드 습도값 표시
         show_soil_change = view.findViewById(R.id.show_soil_change);        //자동모드 토양수분값 표시
 
-        setWithArduinoStatus();
+        setWithArduinoStatusAndDetectionStatus();
         setWithSetttingValue();
 
         show_temp_change.setText("준비중");
         show_soil_change.setText("준비중");
 
-        //자동, 수동모드 선택
-        changeMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        new Handler().postDelayed(new Runnable() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked) {
-                    setAutoMode();
-                } else {
-                    setMenualMode();
-                }
+            public void run() {
+                //자동, 수동모드 선택
+                changeMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if(isChecked) {
+                            setAutoMode();
+                        } else {
+                            setMenualMode();
+                        }
+                    }
+                });
+
+                //수동모드에서의 펌프 상태 제어
+                manuel_pump_status.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if(isChecked) {
+                            turnOnPump();
+                        } else {
+                            turnOffPump();
+                        }
+                    }
+                });
+
+                //수동모드에서의 환풍기 상태 제어
+                manual_fan_status.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if(isChecked) {
+                            turnOnFan();
+                        } else {
+                            turnOffFan();
+                        }
+                    }
+                });
+
+                //수동모드에서의 조명 상태 제어
+                manual_LED_status.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if(isChecked) {
+                            turnOnLED();
+                        } else {
+                            turnOffLED();
+                        }
+                    }
+                });
+
+                changeFireDetectionMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if(isChecked) {
+                            turnOnFireService();
+                        } else {
+                            turnOffFireService();
+                        }
+                    }
+                });
+
+                changeObjectDetectionMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if(isChecked) {
+                            turnOnObjectService();
+                        } else {
+                            turnOffObjectService();
+                        }
+                    }
+                });
+
+
+        //        //온도 상승 하락 버튼 리스너
+        //        temp_up.setOnClickListener(new View.OnClickListener() {
+        //            @Override
+        //            public void onClick(View view) {
+        //                setTemp++;
+        //                show_temp_change.setText(String.valueOf(setTemp));
+        //            }
+        //        });
+        //        temp_down.setOnClickListener(new View.OnClickListener() {
+        //            @Override
+        //            public void onClick(View view) {
+        //                if(setTemp <=0) {
+        //                } else{
+        //                    setTemp--;
+        //                    show_temp_change.setText(String.valueOf(setTemp));
+        //                }
+        //            }
+        //        });
+                humidity_up.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        setHumidity++;
+                        show_humidity_change.setText(String.valueOf(setHumidity));
+                    }
+                });
+                humidity_down.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if(setHumidity <= 0){
+                        } else{
+                            setHumidity--;
+                            show_humidity_change.setText(String.valueOf(setHumidity));
+                        }
+                    }
+                });
+        //        soil_up.setOnClickListener(new View.OnClickListener() {
+        //            @Override
+        //            public void onClick(View view) {
+        //                setSoil++;
+        //                show_soil_change.setText(String.valueOf(setSoil));
+        //            }
+        //        });
+        //        soil_down.setOnClickListener(new View.OnClickListener() {
+        //            @Override
+        //            public void onClick(View view) {
+        //                if(setSoil <= 0){
+        //                }else{
+        //                    setSoil--;
+        //                    show_soil_change.setText(String.valueOf(setSoil));
+        //                }
+        //            }
+        //        });
+
+
+
+                //소켓으로 쏘세요 쏘는부분임
+                auto_change_apply.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        String temp_str = show_temp_change.getText().toString(); //온도 값 가져오기
+                        String humidity_str = show_humidity_change.getText().toString();    //습도 값 가져오기
+                        String soil_str = show_soil_change.getText().toString();            //수분 값 가져오기
+
+        //                connectRaspi = new ConnectRaspi("40" + soil_str);       //소켓통신 송신(기대 토양수분량)
+        //                connectRaspi.start();
+        //
+        //                try {
+        //                    Thread.sleep(200);
+        //                } catch (InterruptedException e) {
+        //                    e.printStackTrace();
+        //                }
+
+                        connectRaspi = new ConnectRaspi("50" + humidity_str);   //소켓통신 송신(기대 습도)
+                        connectRaspi.start();
+
+                        Toast.makeText(getContext(), "설정값이 적용되었습니다.", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
-        });
+        }, 500);
 
-        //수동모드에서의 펌프 상태 제어
-        manuel_pump_status.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked) {
-                    turnOnPump();
-                } else {
-                    turnOffPump();
-                }
-            }
-        });
-
-        //수동모드에서의 환풍기 상태 제어
-        manual_fan_status.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked) {
-                    turnOnFan();
-                } else {
-                    turnOffFan();
-                }
-            }
-        });
-
-        //수동모드에서의 조명 상태 제어
-        manual_LED_status.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked) {
-                    turnOnLED();
-                } else {
-                    turnOffLED();
-                }
-            }
-        });
-
-
-//        //온도 상승 하락 버튼 리스너
-//        temp_up.setOnClickListener(new View.OnClickListener() {
+//        //자동, 수동모드 선택
+//        changeMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 //            @Override
-//            public void onClick(View view) {
-//                setTemp++;
-//                show_temp_change.setText(String.valueOf(setTemp));
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                if(isChecked) {
+//                    setAutoMode();
+//                } else {
+//                    setMenualMode();
+//                }
 //            }
 //        });
-//        temp_down.setOnClickListener(new View.OnClickListener() {
+//
+//        //수동모드에서의 펌프 상태 제어
+//        manuel_pump_status.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                if(isChecked) {
+//                    turnOnPump();
+//                } else {
+//                    turnOffPump();
+//                }
+//            }
+//        });
+//
+//        //수동모드에서의 환풍기 상태 제어
+//        manual_fan_status.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                if(isChecked) {
+//                    turnOnFan();
+//                } else {
+//                    turnOffFan();
+//                }
+//            }
+//        });
+//
+//        //수동모드에서의 조명 상태 제어
+//        manual_LED_status.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                if(isChecked) {
+//                    turnOnLED();
+//                } else {
+//                    turnOffLED();
+//                }
+//            }
+//        });
+//
+//        changeFireDetectionMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                if(isChecked) {
+//                    turnOnFireService();
+//                } else {
+//                    turnOffFireService();
+//                }
+//            }
+//        });
+//
+//        changeObjectDetectionMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                if(isChecked) {
+//                    turnOnObjectService();
+//                } else {
+//                    turnOffObjectService();
+//                }
+//            }
+//        });
+//
+//
+////        //온도 상승 하락 버튼 리스너
+////        temp_up.setOnClickListener(new View.OnClickListener() {
+////            @Override
+////            public void onClick(View view) {
+////                setTemp++;
+////                show_temp_change.setText(String.valueOf(setTemp));
+////            }
+////        });
+////        temp_down.setOnClickListener(new View.OnClickListener() {
+////            @Override
+////            public void onClick(View view) {
+////                if(setTemp <=0) {
+////                } else{
+////                    setTemp--;
+////                    show_temp_change.setText(String.valueOf(setTemp));
+////                }
+////            }
+////        });
+//        humidity_up.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View view) {
-//                if(setTemp <=0) {
+//                setHumidity++;
+//                show_humidity_change.setText(String.valueOf(setHumidity));
+//            }
+//        });
+//        humidity_down.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if(setHumidity <= 0){
 //                } else{
-//                    setTemp--;
-//                    show_temp_change.setText(String.valueOf(setTemp));
+//                    setHumidity--;
+//                    show_humidity_change.setText(String.valueOf(setHumidity));
 //                }
 //            }
 //        });
-        humidity_up.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setHumidity++;
-                show_humidity_change.setText(String.valueOf(setHumidity));
-            }
-        });
-        humidity_down.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(setHumidity <= 0){
-                } else{
-                    setHumidity--;
-                    show_humidity_change.setText(String.valueOf(setHumidity));
-                }
-            }
-        });
-//        soil_up.setOnClickListener(new View.OnClickListener() {
+////        soil_up.setOnClickListener(new View.OnClickListener() {
+////            @Override
+////            public void onClick(View view) {
+////                setSoil++;
+////                show_soil_change.setText(String.valueOf(setSoil));
+////            }
+////        });
+////        soil_down.setOnClickListener(new View.OnClickListener() {
+////            @Override
+////            public void onClick(View view) {
+////                if(setSoil <= 0){
+////                }else{
+////                    setSoil--;
+////                    show_soil_change.setText(String.valueOf(setSoil));
+////                }
+////            }
+////        });
+//
+//
+//
+//        //소켓으로 쏘세요 쏘는부분임
+//        auto_change_apply.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View view) {
-//                setSoil++;
-//                show_soil_change.setText(String.valueOf(setSoil));
-//            }
-//        });
-//        soil_down.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if(setSoil <= 0){
-//                }else{
-//                    setSoil--;
-//                    show_soil_change.setText(String.valueOf(setSoil));
-//                }
-//            }
-//        });
-
-
-
-        //소켓으로 쏘세요 쏘는부분임
-        auto_change_apply.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String temp_str = show_temp_change.getText().toString(); //온도 값 가져오기
-                String humidity_str = show_humidity_change.getText().toString();    //습도 값 가져오기
-                String soil_str = show_soil_change.getText().toString();            //수분 값 가져오기
-
-//                connectRaspi = new ConnectRaspi("40" + soil_str);       //소켓통신 송신(기대 토양수분량)
+//                String temp_str = show_temp_change.getText().toString(); //온도 값 가져오기
+//                String humidity_str = show_humidity_change.getText().toString();    //습도 값 가져오기
+//                String soil_str = show_soil_change.getText().toString();            //수분 값 가져오기
+//
+////                connectRaspi = new ConnectRaspi("40" + soil_str);       //소켓통신 송신(기대 토양수분량)
+////                connectRaspi.start();
+////
+////                try {
+////                    Thread.sleep(200);
+////                } catch (InterruptedException e) {
+////                    e.printStackTrace();
+////                }
+//
+//                connectRaspi = new ConnectRaspi("50" + humidity_str);   //소켓통신 송신(기대 습도)
 //                connectRaspi.start();
 //
-//                try {
-//                    Thread.sleep(200);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-
-                connectRaspi = new ConnectRaspi("50" + humidity_str);   //소켓통신 송신(기대 습도)
-                connectRaspi.start();
-
-                Toast.makeText(getContext(), "설정값이 적용되었습니다.", Toast.LENGTH_SHORT).show();
-            }
-        });
+//                Toast.makeText(getContext(), "설정값이 적용되었습니다.", Toast.LENGTH_SHORT).show();
+//            }
+//        });
+//
+//        return view;
 
         return view;
     }
@@ -342,6 +492,50 @@ public class ControlActivity extends Fragment {
         connectRaspi.start();
     }
 
+    private void turnOnFireService() {
+        changeFireDetectionMode.setText("켜짐");
+        switchFireDetectionStatus();
+        changeDetectionStatus(new EmbeddedData(no, fireDetectionStatus, objectDetectionStatus));
+        startFireService();
+    }
+
+    private void turnOffFireService() {
+        changeFireDetectionMode.setText("꺼짐");
+        switchFireDetectionStatus();
+        changeDetectionStatus(new EmbeddedData(no, fireDetectionStatus, objectDetectionStatus));
+        stopFireService();
+    }
+
+    private void turnOnObjectService() {
+        changeObjectDetectionMode.setText("켜짐");
+        switchObjectDetectionStatus();
+        changeDetectionStatus(new EmbeddedData(no, fireDetectionStatus, objectDetectionStatus));
+        startObjectService();
+    }
+
+    private void turnOffObjectService() {
+        changeObjectDetectionMode.setText("꺼짐");
+        switchObjectDetectionStatus();
+        changeDetectionStatus(new EmbeddedData(no, fireDetectionStatus, objectDetectionStatus));
+        stopObjectService();
+    }
+
+    private void switchFireDetectionStatus() {
+        if(fireDetectionStatus == 1) {
+            fireDetectionStatus = 0;
+        } else {
+            fireDetectionStatus = 1;
+        }
+    }
+
+    private void switchObjectDetectionStatus() {
+        if(objectDetectionStatus == 1) {
+            objectDetectionStatus = 0;
+        } else {
+            objectDetectionStatus = 1;
+        }
+    }
+
     class ConnectRaspi extends Thread {     //소켓통신을 위한 스레드
         private String ip = "192.168.0.5";  // 서버의 IP 주소
         private int port = 9999;            // PORT번호를 꼭 라즈베리파이와 맞추어 주어야한다.
@@ -366,33 +560,61 @@ public class ControlActivity extends Fragment {
         }
     }
 
-    private void setWithArduinoStatus() {
-        service.EmbeddedSensorStatus().enqueue(new Callback<EmbeddedResponse>() {
+    private void setWithArduinoStatusAndDetectionStatus() {
+        service.EmbeddedSensorStatusAndDetectionStatus().enqueue(new Callback<EmbeddedResponse>() {
             @Override
             public void onResponse(Call<EmbeddedResponse> call, Response<EmbeddedResponse> response) {
                 EmbeddedResponse result = response.body();
                 if(result.getAutomode() == 1) {
                     changeMode.setChecked(true);
+                    changeMode.setText("자동모드");
                 } else {
                     changeMode.setChecked(false);
+                    changeMode.setText("수동모드");
                 }
 
                 if(result.getPump() == 1) {
                     manuel_pump_status.setChecked(true);
+                    manuel_pump_status.setText("켜짐");
                 } else {
                     manuel_pump_status.setChecked(false);
+                    manuel_pump_status.setText("꺼짐");
                 }
 
                 if(result.getFan() == 1) {
                     manual_fan_status.setChecked(true);
+                    manual_fan_status.setText("켜짐");
                 } else {
                     manual_fan_status.setChecked(false);
+                    manual_fan_status.setText("꺼짐");
                 }
 
                 if(result.getLed() == 1) {
                     manual_LED_status.setChecked(true);
+                    manual_LED_status.setText("켜짐");
                 } else {
                     manual_LED_status.setChecked(false);
+                    manual_LED_status.setText("꺼짐");
+                }
+
+                if(result.getFireDetection() == 1) {
+                    changeFireDetectionMode.setChecked(true);
+                    changeFireDetectionMode.setText("켜짐");
+                    fireDetectionStatus = 1;
+                } else {
+                    changeFireDetectionMode.setChecked(false);
+                    changeFireDetectionMode.setText("꺼짐");
+                    fireDetectionStatus = 0;
+                }
+
+                if(result.getObjectDetection() == 1) {
+                    changeObjectDetectionMode.setChecked(true);
+                    changeObjectDetectionMode.setText("켜짐");
+                    objectDetectionStatus = 1;
+                } else {
+                    changeObjectDetectionMode.setChecked(false);
+                    changeObjectDetectionMode.setText("꺼짐");
+                    objectDetectionStatus = 0;
                 }
             }
 
@@ -423,6 +645,17 @@ public class ControlActivity extends Fragment {
             public void onFailure(Call<EmbeddedResponse> call, Throwable t) {
                 Toast.makeText(getActivity(), "사전세팅 정보를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show();
                 Log.e("사전세팅 정보를 불러오지 못했습니다.", t.getMessage());
+            }
+        });
+    }
+
+    private void changeDetectionStatus(EmbeddedData data) {
+        service.EmbeddedSetDetectionStatus(data).enqueue(new Callback<EmbeddedResponse>() {
+            @Override
+            public void onResponse(Call<EmbeddedResponse> call, Response<EmbeddedResponse> response) { }
+            @Override
+            public void onFailure(Call<EmbeddedResponse> call, Throwable t) {
+                Toast.makeText(getActivity(), "감지기 상태변경을 완료하지 못했습니다.", Toast.LENGTH_SHORT).show();
             }
         });
     }

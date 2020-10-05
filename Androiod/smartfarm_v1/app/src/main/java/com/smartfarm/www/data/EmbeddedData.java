@@ -35,25 +35,17 @@ public class EmbeddedData {
     @SerializedName("led")
     int led;
 
-    public EmbeddedData(int code, int userNo, int recentHumi, int temp) {
-        this.code = code;
-        this.userNo = userNo;
-        this.recentHumi = recentHumi;
-        Temp = temp;
-    }
+    //세팅해둔 객체감지, 화재감지 상태
+    @SerializedName("fireDetection")
+    int fireDetection;
 
-    public EmbeddedData(int code, int userNo, int humi) {
-        this.code = code;
-        this.userNo = userNo;
-        Humi = humi;
-    }
+    @SerializedName("objectDetection")
+    int objectDetection;
 
-    public EmbeddedData(int code, int userNo, int automode, int pump, int fan, int led) {
-        this.code = code;
+
+    public EmbeddedData(int userNo, int fireDetection, int objectDetection) {
         this.userNo = userNo;
-        this.automode = automode;
-        this.pump = pump;
-        this.fan = fan;
-        this.led = led;
+        this.fireDetection = fireDetection;
+        this.objectDetection = objectDetection;
     }
 }

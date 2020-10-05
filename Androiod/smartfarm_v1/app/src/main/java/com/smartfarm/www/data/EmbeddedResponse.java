@@ -30,6 +30,12 @@ public class EmbeddedResponse {
     @SerializedName("led")
     private int led;
 
+    @SerializedName("fireDetection")
+    private int fireDetection;
+
+    @SerializedName("objectDetection")
+    private int objectDetection;
+
     public int getCode() {
         return code;
     }
@@ -99,4 +105,12 @@ public class EmbeddedResponse {
     public void setLed(int led) {
         this.led = led;
     }
+
+    public int getFireDetection() { return fireDetection; }
+
+    public void setFireDetection(int fireDetection) { this.fireDetection = fireDetection; }
+
+    public int getObjectDetection() { return objectDetection; }
+
+    public void setObjectDetection(int objectDetection) { this.objectDetection = objectDetection; }
 }
