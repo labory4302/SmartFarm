@@ -7,11 +7,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-<<<<<<< HEAD
+//<<<<<<< HEAD
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-=======
+//=======
 import android.view.inputmethod.EditorInfo;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -20,7 +20,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
->>>>>>> 24ec2695e31b99da155b9107e9dd50fe51a0c096
+//>>>>>>> 24ec2695e31b99da155b9107e9dd50fe51a0c096
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;

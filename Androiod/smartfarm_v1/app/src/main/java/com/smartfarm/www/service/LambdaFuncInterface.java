@@ -15,7 +15,7 @@ public interface LambdaFuncInterface {
     ResponseClass fireDetection(RequestClass request);
 
     @LambdaFunction
-    ResponseClass crop_classification(RequestClass request);
+    DiseaseResponseclass crop_classification(RequestClass request);
 
     @LambdaFunction
     ResponseClass objectDetection(RequestClass request);

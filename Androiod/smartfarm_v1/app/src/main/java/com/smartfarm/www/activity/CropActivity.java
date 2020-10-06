@@ -40,6 +40,7 @@ import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 import com.smartfarm.www.R;
 import com.smartfarm.www.appInfo;
+import com.smartfarm.www.service.DiseaseResponseclass;
 import com.smartfarm.www.service.LambdaFuncInterface;
 import com.smartfarm.www.service.RequestClass;
 import com.smartfarm.www.service.ResponseClass;
@@ -285,9 +286,9 @@ public class CropActivity extends Fragment {
 
 // Lambda 함수 호출은 네트워크 호출을 발생시킵니다.
 // 메인 스레드에서 호출되지 않았는지 확인합니다.
-        new AsyncTask<RequestClass, Void, ResponseClass>() {
+        new AsyncTask<RequestClass, Void, DiseaseResponseclass>() {
             @Override
-            protected ResponseClass doInBackground(RequestClass... params) {
+            protected DiseaseResponseclass doInBackground(RequestClass... params) {
                 // invoke "echo" method. In case it fails, it will throw a
                 // LambdaFunctionException.
                 try {
@@ -298,17 +299,19 @@ public class CropActivity extends Fragment {
                 }
             }
 
+            String[] test = {"배추", "고추", "깨"};
+            String[][] test_d = {{"뿌리 혹병", "노균병", "무름병"}, {"탄저병", "칼슘 부족", "고추 역병"}, {"마름병", "식물 역병", "흰가루병"}};
+
             @Override
-            protected void onPostExecute(ResponseClass result) {
+            protected void onPostExecute(DiseaseResponseclass result) {
                 if (result == null) {
                     return;
                 }
 
-                Log.d("결과", ""+result.getBody());
-                Disease_result.setText("결과 : "+result.getBody());
-                if(result.getBody().equals("\"fire\"")){
-                    //NotificationSomethings(444);
-                }
+                //test[result.getRe_vegetable()];
+
+                Log.d("결과", "" + test[result.getRe_vegetable()] + ' ' + test_d[result.getRe_vegetable()][result.getRe_disease()]);
+                Disease_result.setText("작물 : "  + test[result.getRe_vegetable()]+ ", 예측 작물 질병 : " + test_d[result.getRe_vegetable()][result.getRe_disease()]);
 
             }
         }.execute(request);
