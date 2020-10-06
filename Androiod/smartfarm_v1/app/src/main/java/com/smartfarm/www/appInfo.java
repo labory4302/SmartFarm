@@ -40,6 +40,7 @@ public class appInfo extends Application {
     public static String strawberry = null;
     public static String today[] = null;
     public static String day[] = null;
+    public static String S3userID = null; // AWS S3 유저 폴더 저장 경로
     NotificationChannel channel; // 푸쉬 알림 채널 객체
 
     @Override

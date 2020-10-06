@@ -97,7 +97,7 @@ public class FireForegroundService extends Service {
                     date = new Date(now);
 
                     // 내가 원하는 형식으로 포맷해서 시간 가져오기
-                    SimpleDateFormat timeFormat = new SimpleDateFormat("HH-mm-ss");
+                    SimpleDateFormat timeFormat = new SimpleDateFormat("MMdd-HHmm");
 
                     //저장할 사진 이름
                     imgName = timeFormat.format(date);
