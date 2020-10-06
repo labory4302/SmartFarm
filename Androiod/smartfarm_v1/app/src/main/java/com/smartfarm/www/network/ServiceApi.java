@@ -50,7 +50,7 @@ public interface ServiceApi {
 
     //embedded
     @POST("/embedded/data")
-    Call<EmbeddedResponse> EmbeddedSensorData();
+    Call<EmbeddedResponse> EmbeddedSensorData(@Body EmbeddedData data);
 
     @POST("/embedded/recentdata")
     Call<EmbeddedResponse> EmbeddedSensorRecentData();
