@@ -19,7 +19,6 @@ var connection = mysql.createConnection({
 
 // 안드로이드
 // 회원
-<<<<<<< HEAD
 // 접속
 app.post('/user/access/in', function (req, res) {
 
@@ -69,71 +68,10 @@ app.post('/user/access/out', function (req, res) {
 // 회원가입
 app.post('/user/register', function (req, res) {
     console.log(req.body);
-=======
->>>>>>> 24ec2695e31b99da155b9107e9dd50fe51a0c096
-
-// 접속
-app.post('/user/access/in', function (req, res) {
-
-    var userNo = req.body.userID;
-    var userLoginCheck = req.body.userLoginCheck;
-
-    var sql = 'UPDATE Users SET userLoginCheck = "?" WHERE userNo = "?" ;';
-    var params = [userLoginCheck, userNo];
-
-    connection.query(sql, params, function (err, result) {
-        var resultCode = 404;
-        if (err) {
-            console.log(err);
-        } else {
-            resultCode = 200;
-        }
-<<<<<<< HEAD
-        res.json({
-            code : resultCode,
-            message : message
-=======
-        res.json({
-            code : resultCode
-        });
-    });
-});
-
-// 접속 해제
-app.post('/user/access/out', function (req, res) {
-
-    var userNo = req.body.userID;
-    var userLoginCheck = req.body.userLoginCheck;
-
-    var sql = 'UPDATE Users SET userLoginCheck = "?" WHERE userNo = "?" ;';
-    var params = [userLoginCheck, userNo];
-
-    connection.query(sql, params, function (err, result) {
-        var resultCode = 404;
-        if (err) {
-            console.log(err);
-        } else {
-            resultCode = 200;  
-        }
-        res.json({
-            code : resultCode
->>>>>>> 24ec2695e31b99da155b9107e9dd50fe51a0c096
-        });
-    });
-});
-
-<<<<<<< HEAD
-//회원가입 시 중복된 아이디 확인
-app.post('/user/checkDuplicateId', function (req, res) {
-=======
-// 회원가입
-app.post('/user/register', function (req, res) {
-    console.log(req.body);
 
     var userName = req.body.userName;
     var userNickName = req.body.userNickName;
     var userEmail = req.body.userEmail;
->>>>>>> 24ec2695e31b99da155b9107e9dd50fe51a0c096
     var userID = req.body.userID;
     var userPwd = req.body.userPwd;
     var userLocation = req.body.userLocation;
@@ -156,6 +94,31 @@ app.post('/user/register', function (req, res) {
         res.json({
             code : resultCode,
             message : message
+        });
+    });
+});
+
+//회원가입 시 중복된 아이디 확인
+app.post('/user/checkDuplicateId', function (req, res) {
+    var userID = req.body.userID;
+
+    var sql = 'SELECT * FROM Users WHERE userID = ?;';
+
+    connection.query(sql, userID, function(err, result) {
+        var resultCode = 404;
+
+        if (err) {
+            console.log(err);
+        } else {
+            if (result.length === 0) {
+                resultCode = 200;
+            } else {
+                resultCode = 204;
+            }
+        }
+
+        res.json({
+            code : resultCode
         });
     });
 });
@@ -440,10 +403,7 @@ app.post('/embedded/changeDetection', function (req, res) {
     });
 });
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 24ec2695e31b99da155b9107e9dd50fe51a0c096
 // //모든 기능의 원형
 // app.post('/embedded/recentdata', function (req, res) {
 

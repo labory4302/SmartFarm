@@ -9,9 +9,11 @@ package com.smartfarm.www.activity;
 9001:자동모드 ON      | 9000:자동모드 OFF
 */
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -59,8 +61,7 @@ public class ControlActivity extends Fragment {
     private WebSettings webSettings;    //웹뷰세팅
     private ServiceApi service;
 
-    private String cctvUrl = "http://192.168.0.35:8081/video.mjpg";    //웹뷰의 주소
-
+    private String cctvUrl = "http://192.168.0.39:8081/video.mjpg";    //웹뷰의 주소
     //사전에 세팅한 값
 //    private int setTemp = 0;
     private int setHumidity = 0;
@@ -82,6 +83,10 @@ public class ControlActivity extends Fragment {
         no = userInfo.getUserNo();
         fireDetectionStatus = 0;
         objectDetectionStatus = 0;
+
+//        // 핸들러에 보내기 위한 메시지 생성 (중복 메시지 확인하고 덮어씌우거나 없으면 새로 메시지 객체 생성)
+//        message = mHandler.obtainMessage(); // 핸들러의 메시지 객체 획득
+//        message.what = FINISH;
 
         service = RetrofitClient.getClient().create(ServiceApi.class);
 
@@ -123,11 +128,11 @@ public class ControlActivity extends Fragment {
         show_humidity_change = view.findViewById(R.id.show_humidity_change);//자동모드 습도값 표시
         show_soil_change = view.findViewById(R.id.show_soil_change);        //자동모드 토양수분값 표시
 
-        setWithArduinoStatusAndDetectionStatus();
-        setWithSetttingValue();
-
         show_temp_change.setText("준비중");
         show_soil_change.setText("준비중");
+
+        setWithArduinoStatusAndDetectionStatus();
+        setWithSetttingValue();
 
         new Handler().postDelayed(new Runnable() {
             @Override

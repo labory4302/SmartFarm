@@ -159,7 +159,7 @@ public class ObjectForegroundService extends Service {
         notificationManager.notify(222, builder.build());
 
 
-       // 앱이 포그라운드 서비스를 생성해야 하는 경우, 해당 앱은 startForegroundService()를 호출해야 합니다.
+        // 앱이 포그라운드 서비스를 생성해야 하는 경우, 해당 앱은 startForegroundService()를 호출해야 합니다.
         // 이 메서드는 백그라운드 서비스를 생성하지만, 메서드가 시스템에 신호를 보내 서비스가 자체적으로 포그라운드로 승격될 것이라고 알려줌
         // 서비스가 생성되면 5초 이내에 startForeground() 메서드를 호출해야 합니다.
         // 호출하지 않으면 foreground 서비스가 제대로 작동하지 않아서 24시간 가동이 되지 않는다.
@@ -297,7 +297,7 @@ public class ObjectForegroundService extends Service {
 
         try {
             //서버에 올려둔 이미지 URL
-            URL url = new URL("http://192.168.0.35:8990/out.jpg");
+            URL url = new URL("http://192.168.0.39:8990/out.jpg");
 
             //Web에서 이미지 가져온 후 ImageView에 지정할 Bitmap 만들기
             /* URLConnection 생성자가 protected로 선언되어 있으므로
@@ -352,7 +352,7 @@ public class ObjectForegroundService extends Service {
         return file;
     }
 
-//  S3 사진 업로드 함수
+    //  S3 사진 업로드 함수
     private void awsS3Upload(File webImg_file, String img_name){
         // AWS 자격인증을 얻는 코드
         // Cognito를 이용하면 개발자 인증서를 앱에 직접 심지 않아도 되어 apk가 털려서 인증서가 유출 될 위험이 없다.
@@ -376,10 +376,10 @@ public class ObjectForegroundService extends Service {
         // TransferListener를 만들면 업로드 현황을 모니터링하면서 몇 퍼센트 업로드가 완료됐는지,
         // 또는 무엇 때문에 업로드에 실패했는지 등을 알 수가 있다.
 
-
+        Log.d("너 안되지","학진일 :"+appInfo.S3userID);
         Observer = transferUtility.upload(
                 BUCKET_NAME,    // 업로드할 버킷 이름
-                "image_yolo/image/"+img_name,    // 버킷에 저장할 파일의 이름 확장자명도 붙여줘야댐 png (이름이 key로 쓰임)
+                "user/"+appInfo.S3userID+"/image_yolo/image/"+img_name,    // 버킷에 저장할 파일의 이름 확장자명도 붙여줘야댐 png (이름이 key로 쓰임)
                 webImg_file       // 버킷에 저장할 파일
         );
 
@@ -436,9 +436,10 @@ public class ObjectForegroundService extends Service {
         // TransferListener를 만들면 업로드 현황을 모니터링하면서 몇 퍼센트 업로드가 완료됐는지,
         // 또는 무엇 때문에 업로드에 실패했는지 등을 알 수가 있다.
 
+        Log.d("너 안되지","학진일 :"+appInfo.S3userID);
         Observer = transferUtility.download(
                 BUCKET_NAME,    // 업로드할 버킷 이름
-                "image_yolo/detect/"+img_name,    // 버킷에 저장할 파일의 이름 확장자명도 붙여줘야댐 png (이름이 key로 쓰임)
+                "user/"+appInfo.S3userID+"/image_yolo/detect/"+img_name,    // 버킷에 저장할 파일의 이름 확장자명도 붙여줘야댐 png (이름이 key로 쓰임)
                 S3Downfile       // 버킷에 저장할 파일
         );
 
@@ -490,7 +491,7 @@ public class ObjectForegroundService extends Service {
 // LambdaDataBinder.
         final LambdaFuncInterface myInterface = factory.build(LambdaFuncInterface.class);
 
-        final RequestClass request = new RequestClass(img_name);
+        final RequestClass request = new RequestClass(appInfo.S3userID, img_name);
 
 // Lambda 함수 호출은 네트워크 호출을 발생시킵니다.
 // 메인 스레드에서 호출되지 않았는지 확인합니다.

@@ -7,11 +7,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-//<<<<<<< HEAD
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-//=======
 import android.view.inputmethod.EditorInfo;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -20,12 +18,12 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-//>>>>>>> 24ec2695e31b99da155b9107e9dd50fe51a0c096
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.smartfarm.www.R;
+import com.smartfarm.www.appInfo;
 import com.smartfarm.www.data.AccessData;
 import com.smartfarm.www.data.AccessResponse;
 import com.smartfarm.www.data.LoginData;
@@ -203,6 +201,8 @@ public class LoginActivity extends AppCompatActivity {
                 userInfo.setUserNo(result.getUserNo());
                 userInfo.setUserLoginCheck(result.getUserLoginCheck());
 
+                appInfo.S3userID = result.getUserID(); // foreground 서비스에 이용하기 위한 넣기 (가벼운 메모리를 위해)
+
                 checkIn(new AccessData(userInfo.getUserLoginCheck(), userInfo.getUserNo()));
             }
 
@@ -219,6 +219,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                 LoginResponse result = response.body();
+                Toast.makeText(LoginActivity.this, result.getMessage(), Toast.LENGTH_SHORT).show();
 
                 //싱글톤 패턴에 유저정보 저장
                 UserInformation userInfo = UserInformation.getUserInformation();
@@ -230,6 +231,8 @@ public class LoginActivity extends AppCompatActivity {
                 userInfo.setUserLocation(result.getUserLocation());
                 userInfo.setUserNo(result.getUserNo());
                 userInfo.setUserLoginCheck(result.getUserLoginCheck());
+
+                appInfo.S3userID = result.getUserID(); // foreground 서비스에 이용하기 위한 넣기 (가벼운 메모리를 위해)
 
                 //Auto Login function using sharedpreference
                 SharedPreferences auto = getSharedPreferences("auto", Activity.MODE_PRIVATE);
