@@ -17,6 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.smartfarm.www.R;
 import com.smartfarm.www.data.AccessData;
@@ -112,10 +113,19 @@ public class MypageActivity extends Fragment {
                 editor.clear();
                 editor.commit();
 
-//                checkOut();
-
-                Intent intent = new Intent(getActivity(), LoginActivity.class);
-                startActivity(intent);
+                int check = 0;
+                int no = userInfo.getUserNo();
+                if(check == 0){
+                    check = 0;
+                    Log.d("체크가 0", Integer.toString(check));
+                    Log.d("체크가 0", Integer.toString(no));
+                    checkOut(new AccessData(check, no));
+                } else if (check == 1){
+                    check = 0;
+                    Log.d("체크가 1", Integer.toString(check));
+                    Log.d("체크가 1", Integer.toString(no));
+                    checkOut(new AccessData(check, no));
+                }
             }
         });
 
@@ -127,13 +137,18 @@ public class MypageActivity extends Fragment {
             @Override
             public void onResponse(Call<AccessResponse> call, Response<AccessResponse> response) {
                 AccessResponse result = response.body();
+                if (result.getCode() == 200) {
+                    Intent intent = new Intent(getContext(), LoginActivity.class);
+                    startActivity(intent);
+                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                    fragmentManager.beginTransaction().remove(MypageActivity.this).commit();
+                }
             }
-
             @Override
             public void onFailure(Call<AccessResponse> call, Throwable t) {
+                Toast.makeText(getContext(), "로그 아웃 에러 발생", Toast.LENGTH_SHORT).show();
                 Log.e("로그 아웃 에러 발생", t.getMessage());
             }
         });
     }
-
 }
