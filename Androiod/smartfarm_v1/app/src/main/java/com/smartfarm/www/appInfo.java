@@ -37,6 +37,7 @@ public class appInfo extends Application {
     public static String bean = null;
     public static String redPepper = null;
     public static String strawberry = null;
+    public static String S3userID =null;
     NotificationChannel channel; // 푸쉬 알림 채널 객체
 
     @Override
@@ -178,7 +179,7 @@ public class appInfo extends Application {
 // LambdaDataBinder.
         final LambdaFuncInterface myInterface = factory.build(LambdaFuncInterface.class);
 
-        final RequestClass request = new RequestClass(weather);
+        final RequestClass request = new RequestClass("",weather);
 
 // Lambda 함수 호출은 네트워크 호출을 발생시킵니다.
 // 메인 스레드에서 호출되지 않았는지 확인합니다.

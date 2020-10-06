@@ -61,8 +61,7 @@ public class ControlActivity extends Fragment {
     private WebSettings webSettings;    //웹뷰세팅
     private ServiceApi service;
 
-    private String cctvUrl = "http://192.168.0.35:8081/video.mjpg";    //웹뷰의 주소
-
+    private String cctvUrl = "http://192.168.0.39:8081/video.mjpg";    //웹뷰의 주소
     //사전에 세팅한 값
 //    private int setTemp = 0;
     private int setHumidity = 0;
