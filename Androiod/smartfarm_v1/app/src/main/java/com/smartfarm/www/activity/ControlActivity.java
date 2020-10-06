@@ -500,7 +500,7 @@ public class ControlActivity extends Fragment {
 
             @Override
             public void onFailure(Call<EmbeddedResponse> call, Throwable t) {
-                Toast.makeText(getActivity(), "아두이노 정보를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "아두이노 정보를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show();
                 Log.e("아두이노 정보를 불러오지 못했습니다.", t.getMessage());
                 dataUploadComplete = true;
             }

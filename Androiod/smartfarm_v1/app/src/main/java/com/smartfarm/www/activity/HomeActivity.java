@@ -78,7 +78,6 @@ public class HomeActivity extends Fragment {
         }
 
         if (appInfo.strawberry==null){
-            Log.d("if", "여기 : ");
             //로딩창 실행
             dialog = new ProgressDialog(getContext());
             dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -210,8 +209,6 @@ public class HomeActivity extends Fragment {
         Date date = new Date(now);
         SimpleDateFormat timeFormat = new SimpleDateFormat("HH");
         int time = Integer.valueOf(timeFormat.format(date));
-        Log.d("시간 ", "날씨시간 : "+timeFormat);
-        Log.d("시간 ", "날씨시간 : "+time);
 
         Map<String,String> map = appInfo.weatherMap;
         // 온도/강수량  가져오기
@@ -223,7 +220,6 @@ public class HomeActivity extends Fragment {
 
             String temp_temp_hl[] = temp_temp.split("°C");
 
-            Log.d("온도", "과연  "+ temp_temp);
 
             if(i==0 && (time>=18 && time<=24) || (time>=0 && time<=6 )) {
                 float avg_temp = (Float.parseFloat(temp_temp_hl[0]));
