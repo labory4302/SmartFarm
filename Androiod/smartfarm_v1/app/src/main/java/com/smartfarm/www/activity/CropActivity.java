@@ -40,6 +40,7 @@ import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 import com.smartfarm.www.R;
 import com.smartfarm.www.appInfo;
+import com.smartfarm.www.service.DiseaseResponseclass;
 import com.smartfarm.www.service.LambdaFuncInterface;
 import com.smartfarm.www.service.RequestClass;
 import com.smartfarm.www.service.ResponseClass;
@@ -59,7 +60,7 @@ public class CropActivity extends Fragment {
 
     View view;
     String imageFileName;
-    TextView Disease_result, Nothing;
+    TextView Disease_result, Crop_result, Nothing;
     File photoFile;
     private static final int REQUEST_IMAGE_CAPTURE = 672;   //사진파일을  Request코드
     private String imageFilePath;                           //사진이 저장되어있는 파일 경로
@@ -81,6 +82,7 @@ public class CropActivity extends Fragment {
         view = inflater.inflate(R.layout.crop_page, container, false);
 
         Disease_result = view.findViewById(R.id.disease_result);
+        Crop_result = view.findViewById(R.id.crop_result);
         Nothing = view.findViewById(R.id.nothing);
 
         //권한체크
@@ -100,7 +102,7 @@ public class CropActivity extends Fragment {
             public void onClick(View v) {
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);    //카메라 애플리케이션으로 가도록 함
                 Nothing.setText("");
-                Disease_result.setText("잠시 기다려 주세요");
+                Crop_result.setText("잠시 기다려 주세요");
                 //컴포넌트를 실행하지 못하면 앱 작동이 종료되므로 사전에 컴포넌트가 실행가능한지 여부를 판단
                 //패키지매니저를 불러와 해당 인텐트가 갖는 컴포넌트가 사용가능한지 확인. 사용가능하다면 null이 아닌 값을 반환
                 if(intent.resolveActivity(getActivity().getPackageManager()) != null) {
@@ -133,8 +135,8 @@ public class CropActivity extends Fragment {
     }
 
     private File createImageFile() throws IOException {
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());      //현재시간을 문자열로 반환
-        imageFileName = "TEST_" + timeStamp + "_";                                           //파일이름의 형식 지정. 끝에 언더바하는 이유는 사진 저장할 때 뒤에 숫자가 더 붙음
+        String timeStamp = new SimpleDateFormat("yyMMdd_HHmm").format(new Date());      //현재시간을 문자열로 반환
+        imageFileName = timeStamp;                                           //파일이름의 형식 지정. 끝에 언더바하는 이유는 사진 저장할 때 뒤에 숫자가 더 붙음
         File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);                      //외부저장소 고유영역중 사진디렉토리의 주소를 불러옴
         File image = File.createTempFile(imageFileName, ".png", storageDir);                 //임시파일 생성
         imageFilePath = image.getAbsolutePath();                                                    //임시파일의 절대경로 불러옴
@@ -232,7 +234,7 @@ public class CropActivity extends Fragment {
 
         uploadObserver = transferUtility.upload(
                 BUCKET_NAME,    // 업로드할 버킷 이름
-                "image/"+img_name,    // 버킷에 저장할 파일의 이름 확장자명도 붙여줘야댐 png (이름이 key로 쓰임)
+                "user/"+appInfo.S3userID+"/image_crop/image/"+img_name,    // 버킷에 저장할 파일의 이름 확장자명도 붙여줘야댐 png (이름이 key로 쓰임)
                 FwebImg_Resize       // 버킷에 저장할 파일
         );
 
@@ -281,13 +283,13 @@ public class CropActivity extends Fragment {
 // LambdaDataBinder.
         final LambdaFuncInterface myInterface = factory.build(LambdaFuncInterface.class);
 
-        final RequestClass request = new RequestClass("",img_name);
+        final RequestClass request = new RequestClass(appInfo.S3userID, img_name);
 
 // Lambda 함수 호출은 네트워크 호출을 발생시킵니다.
 // 메인 스레드에서 호출되지 않았는지 확인합니다.
-        new AsyncTask<RequestClass, Void, ResponseClass>() {
+        new AsyncTask<RequestClass, Void, DiseaseResponseclass>() {
             @Override
-            protected ResponseClass doInBackground(RequestClass... params) {
+            protected DiseaseResponseclass doInBackground(RequestClass... params) {
                 // invoke "echo" method. In case it fails, it will throw a
                 // LambdaFunctionException.
                 try {
@@ -298,17 +300,20 @@ public class CropActivity extends Fragment {
                 }
             }
 
+            String[] test = {"배추", "고추", "깨"};
+            String[][] test_d = {{"뿌리 혹병", "노균병", "무름병"}, {"탄저병", "칼슘 부족", "고추 역병"}, {"마름병", "식물 역병", "흰가루병"}};
+
             @Override
-            protected void onPostExecute(ResponseClass result) {
+            protected void onPostExecute(DiseaseResponseclass result) {
                 if (result == null) {
                     return;
                 }
 
-                Log.d("결과", ""+result.getBody());
-                Disease_result.setText("결과 : "+result.getBody());
-                if(result.getBody().equals("\"fire\"")){
-                    //NotificationSomethings(444);
-                }
+                //test[result.getRe_vegetable()];
+
+                Log.d("결과", "" + test[result.getRe_vegetable()] + ' ' + test_d[result.getRe_vegetable()][result.getRe_disease()]);
+                Crop_result.setText("작물 : "  + test[result.getRe_vegetable()]);
+                Disease_result.setText("예측 작물 질병 : " + test_d[result.getRe_vegetable()][result.getRe_disease()]);
 
             }
         }.execute(request);
