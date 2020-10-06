@@ -56,12 +56,17 @@ public class appInfo extends Application {
 
         SharedPreferences appInfoPref = getSharedPreferences("appInfoPref", Activity.MODE_PRIVATE);
         String appInfoPrefTime = appInfoPref.getString("date", null);
-        new GetWeatherTask().execute();
-//        if(currentTime.equals(appInfoPrefTime) == true) {
-//            new uplaodSaveAppInfo().execute();
-//        } else {
-//            new GetWeatherTask().execute();
-//        }
+
+
+        day=new String[7]; // 일주일 날짜 가져올 변수
+
+        // 오늘 접속 기록이 있을떄 (날짜, 날씨, 소도매)
+        if(currentTime.equals(appInfoPrefTime) == true) {
+            new uplaodSaveAppInfo().execute();
+        } else {
+            // 오늘 처음 접속할떄
+            new GetWeatherTask().execute();
+    }
 
         CharSequence channelName  = "smartfarm channel";
         String description = "camera detection";
@@ -137,7 +142,6 @@ public class appInfo extends Application {
                 // 띄어쓰기로 일주일치 평균강수량을 분류
                 String rainfallDay[] = rain_em.text().split(" ");
 
-                day=new String[7];
 
                 for(int i=0; i<day.length; i++){
                     day[i] = dateDay[i*2];
@@ -162,8 +166,8 @@ public class appInfo extends Application {
                     result.put("test"+i, testDay[i]);
                     editor.putString("test"+i, testDay[i]);
                 }
-                for(int i=0; i<28; i++){
-
+                for(int i=0; i<day.length; i++){
+                    editor.putString("date"+i, day[i]);
                 }
                 editor.apply();
 
@@ -274,6 +278,10 @@ public class appInfo extends Application {
                 result.put("test"+i, appInfoPref.getString("test"+i, null));
             }
             weatherMap = result;
+
+            for(int i=0; i<7; i++){
+                day[i] = appInfoPref.getString("date"+i, null);
+            }
 
             cabbage = appInfoPref.getString("cabbage", null);
             rice = appInfoPref.getString("rice", null);
