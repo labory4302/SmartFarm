@@ -1,6 +1,7 @@
 package com.smartfarm.www.network;
 
-import com.smartfarm.www.activity.LoginActivity;
+import com.smartfarm.www.data.AccessData;
+import com.smartfarm.www.data.AccessResponse;
 import com.smartfarm.www.data.EventResponse;
 import com.smartfarm.www.data.NotificationResponse;
 import com.smartfarm.www.data.RegisterData;
@@ -18,14 +19,19 @@ import retrofit2.http.POST;
 
 public interface ServiceApi {
 
+    //user
+    //user login check
+    @POST("/user/access/in")
+    Call<AccessResponse> userLoginCheckIn(@Body AccessData data);
+    @POST("/user/access/out")
+    Call<AccessResponse> userLoginCheckOut(@Body AccessData data);
     //user login
     @POST("/user/login")
     Call<LoginResponse> userLogin(@Body LoginData data);
-
     //user register
     @POST("/user/register")
     Call<RegisterResponse> userRegister(@Body RegisterData data);
-
+    //user id check
     @POST("/user/checkDuplicateId")
     Call<RegisterResponse> userCheckId(@Body RegisterData data);
 

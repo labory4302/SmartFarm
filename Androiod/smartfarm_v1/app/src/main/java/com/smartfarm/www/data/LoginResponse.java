@@ -34,6 +34,12 @@ public class LoginResponse {
     public int getUserNo() { return userNo; }
     public void setUserNo(int userNo) { this.userNo = userNo; }
 
+    //ACCESS CHECK
+    @SerializedName("userLoginCheck")
+    private int userLoginCheck;
+    public int getUserLoginCheck() { return userLoginCheck; }
+    public void setUserLoginCheck(int userLoginCheck) { this.userLoginCheck = userLoginCheck; }
+
     public int getCode() {
         return code;
     }

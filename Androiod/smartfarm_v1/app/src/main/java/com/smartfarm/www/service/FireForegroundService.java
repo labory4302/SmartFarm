@@ -307,7 +307,7 @@ public class FireForegroundService extends Service {
 
         try {
             //서버에 올려둔 이미지 URL
-            URL url = new URL("http://192.168.0.35:8990/out.jpg");
+            URL url = new URL("http://192.168.0.39:8990/out.jpg");
 
             //Web에서 이미지 가져온 후 ImageView에 지정할 Bitmap 만들기
             /* URLConnection 생성자가 protected로 선언되어 있으므로
@@ -388,7 +388,7 @@ public class FireForegroundService extends Service {
 
         uploadObserver = transferUtility.upload(
                 BUCKET_NAME,    // 업로드할 버킷 이름
-                "image_fire/image/"+img_name,    // 버킷에 저장할 파일의 이름 확장자명도 붙여줘야댐 png (이름이 key로 쓰임)
+                "user/"+appInfo.S3userID+"/image_fire/image/"+img_name,    // 버킷에 저장할 파일의 이름 확장자명도 붙여줘야댐 png (이름이 key로 쓰임)
                 FwebImg_Resize       // 버킷에 저장할 파일
         );
 
@@ -437,7 +437,7 @@ public class FireForegroundService extends Service {
 // LambdaDataBinder.
         final LambdaFuncInterface myInterface = factory.build(LambdaFuncInterface.class);
 
-        final RequestClass request = new RequestClass(img_name);
+        final RequestClass request = new RequestClass(appInfo.S3userID, img_name);
 
 // Lambda 함수 호출은 네트워크 호출을 발생시킵니다.
 // 메인 스레드에서 호출되지 않았는지 확인합니다.
@@ -466,7 +466,7 @@ public class FireForegroundService extends Service {
                 if(result.getBody().equals("fire")){
                     NotificationSomethings(444, webImg_bitmap, "화재가 감지되었습니다.");
                 }
-                
+
 
             }
         }.execute(request);

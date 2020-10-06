@@ -1,5 +1,6 @@
 package com.smartfarm.www.activity;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -15,11 +16,13 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.smartfarm.www.R;
+import com.smartfarm.www.appInfo;
 import com.smartfarm.www.data.RegisterData;
 import com.smartfarm.www.data.RegisterResponse;
 import com.smartfarm.www.network.RetrofitClient;
@@ -43,10 +46,16 @@ public class RegisterActivity extends AppCompatActivity {
     private ServiceApi service;
 
     private boolean IdChecked = false;
+    private boolean checkComplete = false;
     private int checkStatus = 0;
     //404 : 아이디 중복 체크 에러
     //204 : 아이디 중복
     //200 : 아이디 사용 가능
+
+    Message message = null; // 데이터 로딩 후 메인 UI 업데이트 메시지
+    private final int FINISH = 999; // 핸들러 메시지 구분 ID
+
+    View focusIdView = null;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -72,6 +81,8 @@ public class RegisterActivity extends AppCompatActivity {
         mLocationView.setPadding(20,0,0,0);
 
         service = RetrofitClient.getClient().create(ServiceApi.class);
+
+        focusIdView = mIdView;
 
         mRegisterButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -181,40 +192,106 @@ public class RegisterActivity extends AppCompatActivity {
         String id = mIdView.getText().toString();
 
         boolean cancel = false;
-        View focusView = null;
+
+        message = mHandler.obtainMessage(); // 핸들러의 메시지 객체 획득
+        message.what = FINISH;
 
         if (id.isEmpty()) {
             mIdView.setError("ID를 입력해주세요.");
-            focusView = mIdView;
             cancel = true;
         } else {
             checkDuplicateId(new RegisterData(id));
-            new Handler().postDelayed(new Runnable() {
+            new Thread(new Runnable() {
                 @Override
                 public void run() {
+                    while(true) {
+                        if(checkComplete) {
+                            mHandler.sendMessage(message);
+                            break;
+                        }
+                        try {
+                            Thread.sleep(200);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    return;
+                }
+            }).start();
+        }
+        if (cancel) {
+            focusIdView.requestFocus();
+        }
+    }
+
+    private final Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case FINISH:
                     boolean cancel = false;
-                    View focusView = null;
                     if (checkStatus == 204) {
                         mIdView.setError("중복된 아이디입니다. 다른 아이디를 사용해주세요.");
-                        focusView = mIdView;
                         cancel = true;
                     } else if (checkStatus == 404) {
-                        focusView = mIdView;
                         cancel = true;
                     }
 
                     if (cancel) {
-                        focusView.requestFocus();
+                        focusIdView.requestFocus();
                     } else if (checkStatus == 200) {
                         useNonDuplicateId();
                     }
-                }
-            }, 500);
+
+                    Log.d("dddddddddddd", "checkStatus : " + checkStatus);
+                    checkStatus = 0;
+                    checkComplete = false;
+                    break;
+            }
         }
-        if (cancel) {
-            focusView.requestFocus();
-        }
-    }
+    };
+
+//    private void checkId() {
+//        mIdView.setError(null);
+//        String id = mIdView.getText().toString();
+//
+//        boolean cancel = false;
+//        View focusView = null;
+//
+//        if (id.isEmpty()) {
+//            mIdView.setError("ID를 입력해주세요.");
+//            focusView = mIdView;
+//            cancel = true;
+//        } else {
+//            checkDuplicateId(new RegisterData(id));
+//            new Handler().postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+//                    Log.d("ddddddfffddd", "결과 : " + checkComplete + " 검사코드 : " + checkStatus);
+//                    boolean cancel = false;
+//                    View focusView = null;
+//                    if (checkStatus == 204) {
+//                        mIdView.setError("중복된 아이디입니다. 다른 아이디를 사용해주세요.");
+//                        focusView = mIdView;
+//                        cancel = true;
+//                    } else if (checkStatus == 404) {
+//                        focusView = mIdView;
+//                        cancel = true;
+//                    }
+//
+//                    if (cancel) {
+//                        focusView.requestFocus();
+//                    } else if (checkStatus == 200) {
+//                        useNonDuplicateId();
+//                    }
+//                    checkStatus = 0;
+//                }
+//            }, 500);
+//        }
+//        if (cancel) {
+//            focusView.requestFocus();
+//        }
+//    }
 
     private void checkDuplicateId(RegisterData data) {
         service.userCheckId(data).enqueue(new Callback<RegisterResponse>() {
@@ -223,16 +300,18 @@ public class RegisterActivity extends AppCompatActivity {
                 RegisterResponse result = response.body();
                 if (result.getCode() == 204) {
                     //중복된 아이디
-                    checkStatus = result.getCode();
+                    checkStatus = 204;
                 } else if(result.getCode() == 200) {
                     //사용가능한 아이디
-                    checkStatus = result.getCode();
+                    checkStatus = 200;
                 }
+                checkComplete = true;
             }
             @Override
             public void onFailure(Call<RegisterResponse> call, Throwable t) {
                 checkStatus = 404;
                 Toast.makeText(RegisterActivity.this, "회원가입 에러 발생", Toast.LENGTH_SHORT).show();
+                checkComplete = true;
             }
         });
     }

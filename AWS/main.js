@@ -19,14 +19,13 @@ var connection = mysql.createConnection({
 
 // 안드로이드
 // 회원
-
 // 접속
 app.post('/user/access/in', function (req, res) {
 
     var userNo = req.body.userID;
     var userLoginCheck = req.body.userLoginCheck;
 
-    var sql = 'UPDATE Users SET userLoginCheck = "?" WHERE userNo = "?" ;';
+    var sql = 'UPDATE Users SET userLoginCheck = ? WHERE userNo = "?" ;';
     var params = [userLoginCheck, userNo];
 
     connection.query(sql, params, function (err, result) {
@@ -34,11 +33,12 @@ app.post('/user/access/in', function (req, res) {
         if (err) {
             console.log(err);
         } else {
+            console.log("접속");
             resultCode = 200;
+            res.json({
+                code : resultCode
+            });
         }
-        res.json({
-            code : resultCode
-        });
     });
 });
 
@@ -46,9 +46,9 @@ app.post('/user/access/in', function (req, res) {
 app.post('/user/access/out', function (req, res) {
 
     var userNo = req.body.userID;
-    var userLoginCheck = req.body.userLoginCheck;
+    var userLoginCheck = req.body.userLoginCheck
 
-    var sql = 'UPDATE Users SET userLoginCheck = "?" WHERE userNo = "?" ;';
+    var sql = 'UPDATE Users SET userLoginCheck = 0 WHERE userNo = "?" ;';
     var params = [userLoginCheck, userNo];
 
     connection.query(sql, params, function (err, result) {
@@ -56,11 +56,12 @@ app.post('/user/access/out', function (req, res) {
         if (err) {
             console.log(err);
         } else {
-            resultCode = 200;  
+            console.log("해제");
+            resultCode = 200;
+            res.json({
+                code : resultCode
+            });
         }
-        res.json({
-            code : resultCode
-        });
     });
 });
 
@@ -97,6 +98,31 @@ app.post('/user/register', function (req, res) {
     });
 });
 
+//회원가입 시 중복된 아이디 확인
+app.post('/user/checkDuplicateId', function (req, res) {
+    var userID = req.body.userID;
+
+    var sql = 'SELECT * FROM Users WHERE userID = ?;';
+
+    connection.query(sql, userID, function(err, result) {
+        var resultCode = 404;
+
+        if (err) {
+            console.log(err);
+        } else {
+            if (result.length === 0) {
+                resultCode = 200;
+            } else {
+                resultCode = 204;
+            }
+        }
+
+        res.json({
+            code : resultCode
+        });
+    });
+});
+
 //로그인
 app.post('/user/login', function (req, res) {
     var userID = req.body.userID;
@@ -108,6 +134,7 @@ app.post('/user/login', function (req, res) {
     var userEmail = req.body.userEmail;
     var userLocation = req.body.userLocation;
     var userNo = req.body.userNo;
+    var userLoginCheck = req.body.userLoginCheck;
 
     var sql = 'SELECT * FROM Users WHERE userID = ?;';
 
@@ -149,7 +176,8 @@ app.post('/user/login', function (req, res) {
             userID : result[0].userID,
             userPwd : result[0].userPwd,
             userLocation : result[0].userLocation,
-            userNo : result[0].userNo
+            userNo : result[0].userNo,
+            userLoginCheck : result[0].userLoginCheck
         });
     })
 });
@@ -182,7 +210,6 @@ app.post('/mypage/changemyinformation', function (req, res) {
             resultCode = 200;
             message = '개인정보가 수정되었습니다.';
         }
-
         res.json({
             code : resultCode,
             message : message
@@ -375,6 +402,7 @@ app.post('/embedded/changeDetection', function (req, res) {
         });
     });
 });
+
 
 // //모든 기능의 원형
 // app.post('/embedded/recentdata', function (req, res) {

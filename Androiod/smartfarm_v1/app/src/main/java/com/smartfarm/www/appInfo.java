@@ -30,8 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class appInfo extends Application {
-
-
+    
     public static final String SMARTFARM_CHANNEL_ID = "69981";
     public static Map<String,String> weatherMap = null;
     public static String cabbage = null;
@@ -201,7 +200,7 @@ public class appInfo extends Application {
 // LambdaDataBinder.
         final LambdaFuncInterface myInterface = factory.build(LambdaFuncInterface.class);
 
-        final RequestClass request = new RequestClass(weather);
+        final RequestClass request = new RequestClass("",weather);
 
 // Lambda 함수 호출은 네트워크 호출을 발생시킵니다.
 // 메인 스레드에서 호출되지 않았는지 확인합니다.

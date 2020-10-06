@@ -11,6 +11,7 @@ public class UserInformation {
     private String userPwd;
     private String userLocation;
     private int userNo;
+    private int userLoginCheck;
 
     private UserInformation(){
         userName = null ;
@@ -20,6 +21,7 @@ public class UserInformation {
         userPwd = null ;
         userLocation = null ;
         userNo = 0;
+        userLoginCheck = 0;
     }
 
     public static UserInformation getUserInformation(){
@@ -28,7 +30,6 @@ public class UserInformation {
         }
         return userInfo;
     }
-
 
     public String getUserName() {
         return userName;
@@ -82,7 +83,9 @@ public class UserInformation {
         return userNo;
     }
 
-    public void setUserNo(int userNo) {
-        this.userNo = userNo;
-    }
+    public void setUserNo(int userNo) { this.userNo = userNo; }
+
+    public int getUserLoginCheck() { return userLoginCheck; }
+
+    public void setUserLoginCheck(int userLoginCheck) { this.userLoginCheck = userLoginCheck; }
 }
