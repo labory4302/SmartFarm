@@ -55,7 +55,7 @@ public class RegisterActivity extends AppCompatActivity {
     Message message = null; // 데이터 로딩 후 메인 UI 업데이트 메시지
     private final int FINISH = 999; // 핸들러 메시지 구분 ID
 
-    View focusIdView = null;;
+    View focusIdView = null;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

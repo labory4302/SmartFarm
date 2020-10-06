@@ -20,6 +20,7 @@ import com.smartfarm.www.service.RequestClass;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
@@ -37,7 +38,9 @@ public class appInfo extends Application {
     public static String bean = null;
     public static String redPepper = null;
     public static String strawberry = null;
-    public static String S3userID =null;
+    public static String today[] = null;
+    public static String day[] = null;
+    public static String S3userID = null; // AWS S3 유저 폴더 저장 경로
     NotificationChannel channel; // 푸쉬 알림 채널 객체
 
     @Override
@@ -45,16 +48,20 @@ public class appInfo extends Application {
         long now = System.currentTimeMillis();
         Date date = new Date(now);
         SimpleDateFormat timeFormat = new SimpleDateFormat("yyyyMMdd");
+        SimpleDateFormat timeFormat1 = new SimpleDateFormat("yyyy-MM-dd");
         String currentTime = timeFormat.format(date);
+        String currentTime1 = timeFormat1.format(date);
+
+        today = currentTime1.split("-");
 
         SharedPreferences appInfoPref = getSharedPreferences("appInfoPref", Activity.MODE_PRIVATE);
         String appInfoPrefTime = appInfoPref.getString("date", null);
-
-        if(currentTime.equals(appInfoPrefTime) == true) {
-            new uplaodSaveAppInfo().execute();
-        } else {
-            new GetWeatherTask().execute();
-        }
+        new GetWeatherTask().execute();
+//        if(currentTime.equals(appInfoPrefTime) == true) {
+//            new uplaodSaveAppInfo().execute();
+//        } else {
+//            new GetWeatherTask().execute();
+//        }
 
         CharSequence channelName  = "smartfarm channel";
         String description = "camera detection";
@@ -67,8 +74,6 @@ public class appInfo extends Application {
             channel.enableLights(true);
             channel.enableVibration(true);
             channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
-
-
 
             // 노티피케이션 채널을 시스템에 등록
             assert notificationManager != null;
@@ -90,6 +95,9 @@ public class appInfo extends Application {
                 // 날씨 URL 가져오기
                 Document document = Jsoup.connect("https://freemeteo.kr/weather/seoul/7-days/list/?gid=1835848&language=korean&country=south-korea").get();
 
+                //7일 날짜 가져오기
+                Elements date_em = document.select(".table .today.sevendays .day > .title span");
+
                 //오늘 포함해서 7일 날씨 가져오기
                 Elements test_em = document.select(".table .today.sevendays .day .icon span");
 
@@ -99,9 +107,13 @@ public class appInfo extends Application {
                 // 강수량 가져오기기
                 Elements rain_em = document.select(".day .extra b");
 
+                //일주일간 날짜
+                String date_7day = date_em.text();
+
                 // 일주일치 날씨 최고 온도 최저 온도
                 String temp_7day = temp_em.text();
 
+                //일주일 날씨
                 String test_7 = test_em.toString();
 
                 // 파싱한 문자열에서 온도 빼고 필요없는 부분 지우기
@@ -112,6 +124,10 @@ public class appInfo extends Application {
                 String delete2 = "\"></span>";
                 test_7 = test_7.replaceAll(delete,"");
                 test_7 = test_7.replaceAll(delete2,"");
+
+                //날짜
+                String dateDay[] = date_7day.split(" ");
+
                 // 날씨 아이콘
                 String testDay[] = test_7.split("\n");
 
@@ -121,6 +137,11 @@ public class appInfo extends Application {
                 // 띄어쓰기로 일주일치 평균강수량을 분류
                 String rainfallDay[] = rain_em.text().split(" ");
 
+                day=new String[7];
+
+                for(int i=0; i<day.length; i++){
+                    day[i] = dateDay[i*2];
+                }
 
                 SharedPreferences appInfoPref = getSharedPreferences("appInfoPref", Activity.MODE_PRIVATE);
                 SharedPreferences.Editor editor = appInfoPref.edit();
@@ -141,6 +162,9 @@ public class appInfo extends Application {
                     result.put("test"+i, testDay[i]);
                     editor.putString("test"+i, testDay[i]);
                 }
+                for(int i=0; i<28; i++){
+
+                }
                 editor.apply();
 
                 //일주일치 작물 파싱
@@ -154,9 +178,7 @@ public class appInfo extends Application {
         }
     }
 
-
     public void awsLambdaConnect(String weather){
-
 
 //      Lambda 프록시를 인스턴스화하는 데 사용할 LambdaInvokerFactory를 생성합니다.
 
