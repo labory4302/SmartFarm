@@ -139,7 +139,7 @@ public class ControlActivity extends Fragment {
         show_temp_change.setText("준비중");
         show_soil_change.setText("준비중");
 
-        setWithArduinoStatusAndDetectionStatus();
+        setWithArduinoStatusAndDetectionStatus(new EmbeddedData(no));
         setWithSetttingValue();
         new Thread(new Runnable() {
             @Override
@@ -395,14 +395,14 @@ public class ControlActivity extends Fragment {
                             String humidity_str = show_humidity_change.getText().toString();    //습도 값 가져오기
                             String soil_str = show_soil_change.getText().toString();            //수분 값 가져오기
 
-                            //                connectRaspi = new ConnectRaspi("40" + soil_str);       //소켓통신 송신(기대 토양수분량)
-                            //                connectRaspi.start();
-                            //
-                            //                try {
-                            //                    Thread.sleep(200);
-                            //                } catch (InterruptedException e) {
-                            //                    e.printStackTrace();
-                            //                }
+//                            connectRaspi = new ConnectRaspi("40" + soil_str);       //소켓통신 송신(기대 토양수분량)
+//                            connectRaspi.start();
+//
+//                            try {
+//                                Thread.sleep(200);
+//                            } catch (InterruptedException e) {
+//                                e.printStackTrace();
+//                            }
 
                             connectRaspi = new ConnectRaspi("50" + humidity_str);   //소켓통신 송신(기대 습도)
                             connectRaspi.start();
@@ -439,8 +439,8 @@ public class ControlActivity extends Fragment {
         }
     }
 
-    private void setWithArduinoStatusAndDetectionStatus() {
-        service.EmbeddedSensorStatusAndDetectionStatus().enqueue(new Callback<EmbeddedResponse>() {
+    private void setWithArduinoStatusAndDetectionStatus(EmbeddedData data) {
+        service.EmbeddedSensorStatusAndDetectionStatus(data).enqueue(new Callback<EmbeddedResponse>() {
             @Override
             public void onResponse(Call<EmbeddedResponse> call, Response<EmbeddedResponse> response) {
                 EmbeddedResponse result = response.body();

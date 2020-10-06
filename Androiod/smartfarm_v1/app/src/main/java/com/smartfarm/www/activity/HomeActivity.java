@@ -1,7 +1,7 @@
 package com.smartfarm.www.activity;
 
 import android.app.ProgressDialog;
-import android.os.AsyncTask;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -9,10 +9,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -20,14 +22,8 @@ import androidx.fragment.app.Fragment;
 import com.smartfarm.www.R;
 import com.smartfarm.www.appInfo;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
-
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 public class HomeActivity extends Fragment {
@@ -37,6 +33,10 @@ public class HomeActivity extends Fragment {
 
     TextView tb1[] = new TextView[7];
     ImageView tb2[] = new ImageView[7];
+    TextView day_tv[] = new TextView[7];
+
+    ImageButton strawberry,rice,beans,chili,cabbage;
+    TextView showDate;
 
     ProgressDialog dialog= null; //dialog 데이터 로딩
     Message message = null; // 데이터 로딩 후 메인 UI 업데이트 메시지
@@ -51,7 +51,19 @@ public class HomeActivity extends Fragment {
         listViewAdapter = new ListViewAdapter();
 
         listView = (ListView) view.findViewById(R.id.listview);
+        cabbage = view.findViewById(R.id.cabbage_bt);
+        rice = view.findViewById(R.id.rice_bt);
+        beans = view.findViewById(R.id.beans_bt);
+        chili = view.findViewById(R.id.chili_bt);
+        strawberry = view.findViewById(R.id.strawberry_bt);
+        showDate = view.findViewById(R.id.show_date);
 
+        showDate.setText(appInfo.today[1]+"월"+appInfo.today[2]+"일");
+
+        for (int i = 1; i<7; i++){
+            int resId = getResources().getIdentifier("day"+i,"id",getContext().getPackageName());
+            day_tv[i] = (TextView) view.findViewById(resId);
+        }
         for(int i=0; i<=6; i++){
             int resId = getResources().getIdentifier("today"+i,"id", getContext().getPackageName());
             tb1[i] = (TextView) view.findViewById(resId);
@@ -61,8 +73,9 @@ public class HomeActivity extends Fragment {
             tb2[i] = (ImageView) view.findViewById(resId);
         }
 
-
-
+        for (int i =1; i<7; i++){
+            day_tv[i].setText(appInfo.day[i]+"일");
+        }
 
         if (appInfo.strawberry==null){
             Log.d("if", "여기 : ");
@@ -113,7 +126,56 @@ public class HomeActivity extends Fragment {
             listView.setAdapter(listViewAdapter);
         }
 
-
+        cabbage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cabbage.setImageResource(R.drawable.cabbage);
+                rice.setImageResource(R.drawable.rice_unclick);
+                beans.setImageResource(R.drawable.beans_unclick);
+                chili.setImageResource(R.drawable.chili_unclick);
+                strawberry.setImageResource(R.drawable.strawberry_unclick);
+            }
+        });
+        rice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cabbage.setImageResource(R.drawable.cabbage_unclick);
+                rice.setImageResource(R.drawable.rice);
+                beans.setImageResource(R.drawable.beans_unclick);
+                chili.setImageResource(R.drawable.chili_unclick);
+                strawberry.setImageResource(R.drawable.strawberry_unclick);
+            }
+        });
+        beans.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cabbage.setImageResource(R.drawable.cabbage_unclick);
+                rice.setImageResource(R.drawable.rice_unclick);
+                beans.setImageResource(R.drawable.beans);
+                chili.setImageResource(R.drawable.chili_unclick);
+                strawberry.setImageResource(R.drawable.strawberry_unclick);
+            }
+        });
+        chili.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cabbage.setImageResource(R.drawable.cabbage_unclick);
+                rice.setImageResource(R.drawable.rice_unclick);
+                beans.setImageResource(R.drawable.beans_unclick);
+                chili.setImageResource(R.drawable.chili);
+                strawberry.setImageResource(R.drawable.strawberry_unclick);
+            }
+        });
+        strawberry.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cabbage.setImageResource(R.drawable.cabbage_unclick);
+                rice.setImageResource(R.drawable.rice_unclick);
+                beans.setImageResource(R.drawable.beans_unclick);
+                chili.setImageResource(R.drawable.chili_unclick);
+                strawberry.setImageResource(R.drawable.strawberry);
+            }
+        });
 
         return view;
     }

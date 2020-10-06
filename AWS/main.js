@@ -294,13 +294,10 @@ app.post('/mypage/version', function (req, res) {
 app.post('/embedded/data', function (req, res) {
 
     var userNo = req.body.userNo;
-    var recentHumi = req.body.recentHumi;
-    var Temp = req.body.Temp;
 
-    var sql = 'SELECT userNo, recentHumi, Temp FROM RaspiData;';
-    var params = [userNo, recentHumi, Temp];
+    var sql = 'SELECT userNo, recentHumi, Temp FROM RaspiData WHERE userNo = ?;';
 
-    connection.query(sql, params, function (err, result) {
+    connection.query(sql, userNo, function (err, result) {
         var resultCode = 404;
         if (err) {
             console.log(err);
@@ -308,7 +305,6 @@ app.post('/embedded/data', function (req, res) {
             resultCode = 200;
             res.json({
                 code : resultCode,
-                userNo : result[0].userNo,
                 Humi : result[0].recentHumi,
                 Temp : result[0].Temp
             });

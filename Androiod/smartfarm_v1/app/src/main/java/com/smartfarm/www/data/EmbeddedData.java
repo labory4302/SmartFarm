@@ -42,10 +42,13 @@ public class EmbeddedData {
     @SerializedName("objectDetection")
     int objectDetection;
 
-
     public EmbeddedData(int userNo, int fireDetection, int objectDetection) {
         this.userNo = userNo;
         this.fireDetection = fireDetection;
         this.objectDetection = objectDetection;
+    }
+
+    public EmbeddedData(int userNo) {
+        this.userNo = userNo;
     }
 }
