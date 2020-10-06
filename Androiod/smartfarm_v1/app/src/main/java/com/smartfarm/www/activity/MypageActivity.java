@@ -115,17 +115,7 @@ public class MypageActivity extends Fragment {
 
                 int check = 0;
                 int no = userInfo.getUserNo();
-                if(check == 0){
-                    check = 0;
-                    Log.d("체크가 0", Integer.toString(check));
-                    Log.d("체크가 0", Integer.toString(no));
-                    checkOut(new AccessData(check, no));
-                } else if (check == 1){
-                    check = 0;
-                    Log.d("체크가 1", Integer.toString(check));
-                    Log.d("체크가 1", Integer.toString(no));
-                    checkOut(new AccessData(check, no));
-                }
+                checkOut(new AccessData(check, no));
             }
         });
 

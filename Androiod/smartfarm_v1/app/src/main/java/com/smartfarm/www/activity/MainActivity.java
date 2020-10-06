@@ -6,6 +6,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.os.Bundle;
@@ -21,6 +22,7 @@ import com.smartfarm.www.data.EmbeddedResponse;
 import com.smartfarm.www.data.UserInformation;
 import com.smartfarm.www.network.RetrofitClient;
 import com.smartfarm.www.network.ServiceApi;
+import com.smartfarm.www.service.LogoutService;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -45,8 +47,7 @@ public class MainActivity extends AppCompatActivity {
     TextView show_temp_live, show_humidity_live, show_soil_live; //현재 온,습,수분 뷰
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_page);
 
@@ -55,6 +56,9 @@ public class MainActivity extends AppCompatActivity {
 
         //서비스 인스턴스 활성화
         service = RetrofitClient.getClient().create(ServiceApi.class);
+
+        //자동로그아웃 활성화
+        startService(new Intent(this, LogoutService.class));
 
         bottomNavigationView = findViewById(R.id.bottomNavi);
         show_temp_live = findViewById(R.id.show_temp);
