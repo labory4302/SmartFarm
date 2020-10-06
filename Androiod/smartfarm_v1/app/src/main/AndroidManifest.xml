@@ -39,6 +39,11 @@
             android:enabled="true"
             android:exported="true" />
 
+        <!-- 자동 로그아웃-->
+        <service
+            android:name=".service.LogoutService"
+            android:stopWithTask="false"/>
+
         <!-- 전송작업을 background로 처리하기 위한 service -->
         <service android:name="com.amazonaws.mobileconnectors.s3.transferutility.TransferService" android:enabled="true" />
 

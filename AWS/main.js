@@ -22,10 +22,10 @@ var connection = mysql.createConnection({
 // 접속
 app.post('/user/access/in', function (req, res) {
 
-    var userNo = req.body.userID;
     var userLoginCheck = req.body.userLoginCheck;
+    var userNo = req.body.userNo;
 
-    var sql = 'UPDATE Users SET userLoginCheck = ? WHERE userNo = "?" ;';
+    var sql = 'UPDATE Users SET userLoginCheck = ? WHERE userNo = ?;';
     var params = [userLoginCheck, userNo];
 
     connection.query(sql, params, function (err, result) {
@@ -33,22 +33,21 @@ app.post('/user/access/in', function (req, res) {
         if (err) {
             console.log(err);
         } else {
-            console.log("접속");
             resultCode = 200;
-            res.json({
-                code : resultCode
-            });
         }
+        res.json({
+            code : resultCode
+        });
     });
 });
 
 // 접속 해제
 app.post('/user/access/out', function (req, res) {
 
+    var userLoginCheck = req.body.userLoginCheck;
     var userNo = req.body.userID;
-    var userLoginCheck = req.body.userLoginCheck
-
-    var sql = 'UPDATE Users SET userLoginCheck = 0 WHERE userNo = "?" ;';
+    
+    var sql = 'UPDATE Users SET userLoginCheck = ? WHERE userNo = ?;';
     var params = [userLoginCheck, userNo];
 
     connection.query(sql, params, function (err, result) {
@@ -56,14 +55,15 @@ app.post('/user/access/out', function (req, res) {
         if (err) {
             console.log(err);
         } else {
-            console.log("해제");
             resultCode = 200;
-            res.json({
-                code : resultCode
-            });
         }
+        res.json({
+            code : resultCode
+        });
     });
 });
+
+
 
 // 회원가입
 app.post('/user/register', function (req, res) {
@@ -295,7 +295,7 @@ app.post('/embedded/data', function (req, res) {
 
     var userNo = req.body.userNo;
 
-    var sql = 'SELECT userNo, recentHumi, Temp FROM RaspiData WHERE userNo = ?;';
+    var sql = 'SELECT recentHumi, Temp FROM RaspiData WHERE userNo = ?;';
 
     connection.query(sql, userNo, function (err, result) {
         var resultCode = 404;
@@ -305,7 +305,7 @@ app.post('/embedded/data', function (req, res) {
             resultCode = 200;
             res.json({
                 code : resultCode,
-                Humi : result[0].recentHumi,
+                recentHumi : result[0].recentHumi,
                 Temp : result[0].Temp
             });
         }
@@ -340,17 +340,10 @@ app.post('/embedded/recentdata', function (req, res) {
 app.post('/embedded/status', function (req, res) {
 
     var userNo = req.body.userNo;
-    var automode = req.body.automode;
-    var pump = req.body.pump;
-    var fan = req.body.fan;
-    var led = req.body.led;
-    var fireDetection = req.body.fireDetection;
-    var objectDetection = req.body.objectDetection;
 
-    var sql = 'SELECT userNo, automode, pump, fan, led, fireDetection, objectDetection FROM arduinoStatus;';
-    var params = [userNo, automode, pump, fan, led, fireDetection, objectDetection];
+    var sql = 'SELECT userNo, automode, pump, fan, led, fireDetection, objectDetection FROM arduinoStatus WHERE userNo = ?;';
 
-    connection.query(sql, params, function (err, result) {
+    connection.query(sql, userNo, function (err, result) {
         var resultCode = 404;
         if (err) {
             console.log(err);

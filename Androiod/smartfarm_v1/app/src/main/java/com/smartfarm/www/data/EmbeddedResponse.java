@@ -52,9 +52,7 @@ public class EmbeddedResponse {
         this.userNo = userNo;
     }
 
-    public int getRecentHumi() {
-        return recentHumi;
-    }
+    public int getRecentHumi() { return recentHumi; }
 
     public void setRecentHumi(int recentHumi) {
         this.recentHumi = recentHumi;
