@@ -21,9 +21,9 @@ public class AccessResponse {
 
     public void setUserLoginCheck(int userLoginCheck) { this.userLoginCheck = userLoginCheck; }
 
-    public int getUserID() { return userNo; }
+    public int getUserNo() { return userNo; }
 
-    public void setUserID(int userID) { this.userNo = userID; }
+    public void setUserNo(int userNo) { this.userNo = userNo; }
 
 
 }

@@ -28,6 +28,8 @@ import com.smartfarm.www.data.AccessData;
 import com.smartfarm.www.data.AccessResponse;
 import com.smartfarm.www.data.LoginData;
 import com.smartfarm.www.data.LoginResponse;
+import com.smartfarm.www.data.RegisterData;
+import com.smartfarm.www.data.RegisterResponse;
 import com.smartfarm.www.data.UserInformation;
 import com.smartfarm.www.network.RetrofitClient;
 import com.smartfarm.www.network.ServiceApi;
@@ -42,12 +44,14 @@ public class LoginActivity extends AppCompatActivity {
     private CheckBox autoLogin_CheckBox;
     private ServiceApi service;
     private String autoLoginId, autoLoginPwd;
+    private int userLogincheck, userNo;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_page);
         service = RetrofitClient.getClient().create(ServiceApi.class);
+
 
         mIdView = (EditText) findViewById(R.id.login_id);
         mPasswordView = (EditText) findViewById(R.id.login_pwd);
@@ -70,8 +74,16 @@ public class LoginActivity extends AppCompatActivity {
                 if(actionId == EditorInfo.IME_ACTION_DONE){
                     if(autoLogin_CheckBox.isChecked()){
                         attemptLogin_auto();
+                        UserInformation userInfo = UserInformation.getUserInformation();
+                        int userlogincheck = userInfo.getUserLoginCheck();
+                        int userno = userInfo.getUserNo();
+                        checkIn(new AccessData(userlogincheck, userno));
                     } else{
                         attemptLogin_nonauto();
+                        UserInformation userInfo = UserInformation.getUserInformation();
+                        int userlogincheck = userInfo.getUserLoginCheck();
+                        int userno = userInfo.getUserNo();
+                        checkIn(new AccessData(userlogincheck, userno));
                     }
                 }
                 return false;
@@ -81,10 +93,18 @@ public class LoginActivity extends AppCompatActivity {
         mLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(autoLogin_CheckBox.isChecked()){
+                if(autoLogin_CheckBox.isChecked() && mIdView.getText() != null && mPasswordView.getText() != null ){
                     attemptLogin_auto();
+//                    UserInformation userInfo = UserInformation.getUserInformation();
+//                    int userlogincheck = userInfo.getUserLoginCheck();
+//                    int userno = userInfo.getUserNo();
+//                    checkIn(new AccessData(userlogincheck, userno));
                 } else{
                     attemptLogin_nonauto();
+//                    UserInformation userInfo = UserInformation.getUserInformation();
+//                    int userlogincheck = userInfo.getUserLoginCheck();
+//                    int userno = userInfo.getUserNo();
+//                    checkIn(new AccessData(userlogincheck, userno));
                 }
             }
         });
@@ -203,7 +223,14 @@ public class LoginActivity extends AppCompatActivity {
 
                 appInfo.S3userID = result.getUserID(); // foreground 서비스에 이용하기 위한 넣기 (가벼운 메모리를 위해)
 
-                checkIn(new AccessData(userInfo.getUserLoginCheck(), userInfo.getUserNo()));
+                Log.d("노노토체크인", Integer.toString(userInfo.getUserLoginCheck()));
+                Log.d("노노토체크인", Integer.toString(userInfo.getUserNo()));
+                int check = userInfo.getUserLoginCheck();
+                int no = userInfo.getUserNo();
+                if(check == 0){ check = 1; }
+                Log.d("변경 후 노노토체크인", Integer.toString(check));
+                Log.d("변경 후 노노토체크인", Integer.toString(no));
+                checkIn(new AccessData(check, no));
             }
 
             @Override
@@ -241,7 +268,14 @@ public class LoginActivity extends AppCompatActivity {
                 editor.putString("inputPwd", result.getUserPwd());
                 editor.commit();
 
-                checkIn(new AccessData(userInfo.getUserLoginCheck(), userInfo.getUserNo()));
+                Log.d("오토체크인", Integer.toString(userInfo.getUserLoginCheck()));
+                Log.d("오토체크인", Integer.toString(userInfo.getUserNo()));
+                int check = userInfo.getUserLoginCheck();
+                int no = userInfo.getUserNo();
+                if(check == 0){ check = 1; }
+                Log.d("변경 후 오토체크인", Integer.toString(check));
+                Log.d("변경 후 오토체크인", Integer.toString(no));
+                checkIn(new AccessData(check, no));
             }
 
             @Override
@@ -257,18 +291,16 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<AccessResponse> call, Response<AccessResponse> response) {
                 AccessResponse result = response.body();
-                if(result.getUserLoginCheck() == 0){
+                Log.d("체크인", "체크인을 통과하는지");
+                if (result.getCode() == 200) {
+//                    String x = Integer.toString(result.getUserLoginCheck());
+//                    String y = Integer.toString(result.getUserNo());
+                    Log.d("체크인", "MainActivity 접속 부분");
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                    startActivity(intent);
-                    finish();
-                } else if (result.getUserLoginCheck() == 1) {
-                    Toast.makeText(LoginActivity.this, "해당 유저가 접속중입니다.", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                     startActivity(intent);
                     finish();
                 }
             }
-
             @Override
             public void onFailure(Call<AccessResponse> call, Throwable t) {
                 Toast.makeText(LoginActivity.this, "접속 에러 발생", Toast.LENGTH_SHORT).show();
