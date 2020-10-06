@@ -208,7 +208,6 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                 LoginResponse result = response.body();
-                Toast.makeText(LoginActivity.this, result.getMessage(), Toast.LENGTH_SHORT).show();
 
                 //싱글톤 패턴에 유저정보 저장
                 UserInformation userInfo = UserInformation.getUserInformation();
@@ -223,14 +222,14 @@ public class LoginActivity extends AppCompatActivity {
 
                 appInfo.S3userID = result.getUserID(); // foreground 서비스에 이용하기 위한 넣기 (가벼운 메모리를 위해)
 
-                Log.d("노노토체크인", Integer.toString(userInfo.getUserLoginCheck()));
-                Log.d("노노토체크인", Integer.toString(userInfo.getUserNo()));
                 int check = userInfo.getUserLoginCheck();
                 int no = userInfo.getUserNo();
-                if(check == 0){ check = 1; }
-                Log.d("변경 후 노노토체크인", Integer.toString(check));
-                Log.d("변경 후 노노토체크인", Integer.toString(no));
-                checkIn(new AccessData(check, no));
+                if(check == 0){
+                    check = 1;
+                    checkIn(new AccessData(check, no));
+                } else if (check == 1){
+                    Toast.makeText(LoginActivity.this, "다른 기기에서 접속중입니다.", Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override
@@ -246,7 +245,6 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                 LoginResponse result = response.body();
-                Toast.makeText(LoginActivity.this, result.getMessage(), Toast.LENGTH_SHORT).show();
 
                 //싱글톤 패턴에 유저정보 저장
                 UserInformation userInfo = UserInformation.getUserInformation();
@@ -268,14 +266,14 @@ public class LoginActivity extends AppCompatActivity {
                 editor.putString("inputPwd", result.getUserPwd());
                 editor.commit();
 
-                Log.d("오토체크인", Integer.toString(userInfo.getUserLoginCheck()));
-                Log.d("오토체크인", Integer.toString(userInfo.getUserNo()));
                 int check = userInfo.getUserLoginCheck();
                 int no = userInfo.getUserNo();
-                if(check == 0){ check = 1; }
-                Log.d("변경 후 오토체크인", Integer.toString(check));
-                Log.d("변경 후 오토체크인", Integer.toString(no));
-                checkIn(new AccessData(check, no));
+                if(check == 0){
+                    check = 1;
+                    checkIn(new AccessData(check, no));
+                } else if (check == 1){
+                    Toast.makeText(LoginActivity.this, "다른 기기에서 접속중입니다.", Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override
@@ -291,11 +289,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<AccessResponse> call, Response<AccessResponse> response) {
                 AccessResponse result = response.body();
-                Log.d("체크인", "체크인을 통과하는지");
                 if (result.getCode() == 200) {
-//                    String x = Integer.toString(result.getUserLoginCheck());
-//                    String y = Integer.toString(result.getUserNo());
-                    Log.d("체크인", "MainActivity 접속 부분");
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                     startActivity(intent);
                     finish();
