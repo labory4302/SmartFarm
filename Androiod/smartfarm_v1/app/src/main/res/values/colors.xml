@@ -6,4 +6,6 @@
     <color name="colorAccent">#03DAC5</color>
     <color name="Black">#000000</color>
     <color name="White">#ffffff</color>
+    <color name="colorPrimaryLight">#cfffd3</color>
+    <color name="colorPrimarySuperLight">#f5faf6</color>
 </resources>

@@ -30,6 +30,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -53,7 +54,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ControlActivity extends Fragment {
-    private LinearLayout autoLayout, manualLayout;
+    private ConstraintLayout autoLayout, manualLayout;
     private EditText show_temp_change, show_humidity_change, show_soil_change;
     private Button temp_up, temp_down, humidity_up, humidity_down, soil_up, soil_down, auto_change_apply;
     private Switch changeMode, manuel_pump_status, manual_fan_status, manual_LED_status, changeFireDetectionMode, changeObjectDetectionMode;
