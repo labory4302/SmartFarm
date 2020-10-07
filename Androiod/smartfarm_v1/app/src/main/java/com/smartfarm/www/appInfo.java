@@ -6,6 +6,8 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.SharedPreferences;
+import android.media.AudioAttributes;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.util.Log;
@@ -30,8 +32,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class appInfo extends Application {
-    
-    public static final String SMARTFARM_CHANNEL_ID = "69981";
+
+    public static final String SMARTFARM_FIRE_CHANNEL_ID = "69981";
+    public static final String SMARTFARM_OBJECT_CHANNEL_ID = "77777";
     public static Map<String,String> weatherMap = null;
     public static String cabbage[] = null;
     public static String rice[] = null;
@@ -73,14 +76,23 @@ public class appInfo extends Application {
             new GetWeatherTask().execute();
         }
 
-        CharSequence channelName  = "smartfarm channel";
-        String description = "camera detection";
+        // fire 채널 만들기
+        CharSequence channelName  = "smartfarm fire channel";
+        String description = "fire detection";
         int importance = NotificationManager.IMPORTANCE_HIGH; // 긴급: 알림음이 울리며 헤드업 알림으로 표시됩니다.
 
         NotificationManager notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
 
+        Uri soundUri= Uri.parse("android.resource://"+getPackageName()+"/"+R.raw.fire); //내가 가져온 음악파일을 넣어준다.
+
+        // 음악을 넣기 위한 설정
+        AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .setUsage(AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
+                .build();
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            channel = new NotificationChannel(SMARTFARM_CHANNEL_ID, channelName, importance);
+            channel = new NotificationChannel(SMARTFARM_FIRE_CHANNEL_ID, channelName, importance);
             channel.enableLights(true);
             channel.enableVibration(true);
             channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
@@ -89,6 +101,25 @@ public class appInfo extends Application {
             assert notificationManager != null;
 
             notificationManager.createNotificationChannel(channel);
+        }
+
+        // object 채널 만들기
+        channelName  = "smartfarm object channel";
+        description = "object detection";
+
+        soundUri= Uri.parse("android.resource://"+getPackageName()+"/"+R.raw.object); //내가 가져온 음악파일을 넣어준다.
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            channel = new NotificationChannel(SMARTFARM_OBJECT_CHANNEL_ID, channelName, importance);
+            channel.enableLights(true);
+            channel.enableVibration(true);
+            channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+            channel.setSound(soundUri, audioAttributes);
+
+            // 노티피케이션 채널을 시스템에 등록
+            assert notificationManager != null;
+            notificationManager.createNotificationChannel(channel);
+
         }
 
         super.onCreate();

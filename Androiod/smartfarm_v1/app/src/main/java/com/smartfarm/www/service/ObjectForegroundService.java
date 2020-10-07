@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.IBinder;
@@ -44,7 +45,7 @@ import java.util.Date;
 
 
 public class ObjectForegroundService extends Service {
-    private final String CHANNEL_ID = appInfo.SMARTFARM_CHANNEL_ID;
+    private final String CHANNEL_ID = appInfo.SMARTFARM_OBJECT_CHANNEL_ID;
     private final String BUCKET_NAME = "hotsix-smartfarm"; // S3 버킷 이름 (저장소 이름)
     private String imgName;  // 저장할 이미지의 이름
 
@@ -299,6 +300,13 @@ public class ObjectForegroundService extends Service {
 
 
         }else builder.setSmallIcon(R.mipmap.ic_launcher_foreground); // Oreo 이하에서 mipmap 사용하지 않으면 Couldn't create icon: StatusBarIcon 에러남
+
+
+        if(notifyID!=222){
+            //알림 사운드 설정
+            Uri soundUri= Uri.parse("android.resource://"+getPackageName()+"/"+R.raw.object); //내가 가져온 음악파일을 넣어준다.
+            builder.setSound(soundUri);
+        }
 
         // null 아니라는걸 확인
         assert notificationManager != null;

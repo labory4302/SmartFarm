@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.IBinder;
@@ -51,7 +53,7 @@ import java.util.Date;
 
 
 public class FireForegroundService extends Service {
-    private final String CHANNEL_ID = appInfo.SMARTFARM_CHANNEL_ID;
+    private final String CHANNEL_ID = appInfo.SMARTFARM_FIRE_CHANNEL_ID;
 
     private final String BUCKET_NAME = "hotsix-smartfarm"; // S3 버킷 이름 (저장소 이름)
     private String imgName;  // 저장할 이미지의 이름
@@ -314,6 +316,13 @@ public class FireForegroundService extends Service {
 
         }else builder.setSmallIcon(R.mipmap.ic_launcher_foreground); // Oreo 이하에서 mipmap 사용하지 않으면 Couldn't create icon: StatusBarIcon 에러남
 
+
+        if(notifyID!=111){
+            //알림 사운드 설정
+            Uri soundUri= Uri.parse("android.resource://"+getPackageName()+"/"+R.raw.fire); //내가 가져온 음악파일을 넣어준다.
+            builder.setSound(soundUri);
+        }
+
         // null 아니라는걸 확인
         assert notificationManager != null;
         notificationManager.notify(notifyID, builder.build()); // 고유숫자로 노티피케이션 동작시킴
@@ -561,25 +570,4 @@ public class FireForegroundService extends Service {
         }
     }
 
-//    //화재 시 임베디드로 화재상황을 알리는 함수
-//    private void call112() {
-//        String ip = "192.168.0.5";  // 서버의 IP 주소
-//        int port = 9999;            // PORT번호를 꼭 라즈베리파이와 맞추어 주어야한다.
-//
-//        try {   //소켓 생성
-//            InetAddress serverAddr = InetAddress.getByName(ip); //IP주소를 가져온다.
-//            Socket socket = new Socket(serverAddr, port);              //소켓에 IP와 포트번호 할당
-//
-//            //데이터 전송
-//            PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())),true);
-//            out.println("6000");
-//            socket.close();
-//        }catch(Exception e){
-//            e.printStackTrace();
-//        }
-//
-//
-//
-//
-//    }
 }
