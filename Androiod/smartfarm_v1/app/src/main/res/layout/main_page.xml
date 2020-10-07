@@ -19,26 +19,27 @@
             android:id="@+id/show_temp"
             android:layout_width="38dp"
             android:layout_height="25dp"
-            android:layout_marginEnd="116dp"
+            android:layout_marginEnd="10dp"
+            android:gravity="center|right"
             android:text="---"
             android:textAlignment="gravity"
+            android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/show_humidity"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.52"
-            android:gravity="center|right"
-            />
+            app:layout_constraintVertical_bias="0.52" />
 
 
         <TextView
             android:id="@+id/show_humidity"
             android:layout_width="38dp"
             android:layout_height="25dp"
-            android:layout_marginStart="10dp"
-            android:text="---"
+            android:layout_marginEnd="10dp"
             android:gravity="center|right"
+            android:text="---"
+            android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="@+id/show_temp"
-            app:layout_constraintStart_toEndOf="@+id/show_temp"
+            app:layout_constraintEnd_toStartOf="@+id/show_soil"
             app:layout_constraintTop_toTopOf="@+id/show_temp"
             app:layout_constraintVertical_bias="0.0" />
 
@@ -46,13 +47,25 @@
             android:id="@+id/show_soil"
             android:layout_width="38dp"
             android:layout_height="25dp"
-            android:layout_marginStart="10dp"
-            android:text="---"
+            android:layout_marginEnd="10dp"
             android:gravity="center|right"
+            android:text="---"
+            android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="@+id/show_humidity"
-            app:layout_constraintStart_toEndOf="@+id/show_humidity"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/show_humidity"
             app:layout_constraintVertical_bias="0.0" />
+
+        <TextView
+            android:id="@+id/title_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:text="홈"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -72,7 +85,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         app:itemBackground="@android:color/white"
-        app:labelVisibilityMode="selected"
+        app:labelVisibilityMode="unlabeled"
         app:itemIconTint="@drawable/bottom_menu_selector"
         app:itemTextColor="@drawable/bottom_menu_selector"
         app:layout_constraintStart_toStartOf="parent"

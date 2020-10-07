@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ServiceApi service; //DB에 접근하기 위한 서비스 인스턴스
 
-    TextView show_temp_live, show_humidity_live, show_soil_live; //현재 온,습,수분 뷰
+    TextView show_temp_live, show_humidity_live, show_soil_live, title_tv; //현재 온,습,수분 뷰
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,8 +64,8 @@ public class MainActivity extends AppCompatActivity {
         show_temp_live = findViewById(R.id.show_temp);
         show_humidity_live = findViewById(R.id.show_humidity);
         show_soil_live = findViewById(R.id.show_soil);
-
-        show_soil_live.setText("토양수분 : 준비중");
+        title_tv = findViewById(R.id.title_tv);
+        show_soil_live.setText("수분\n준비중");
 
         //DB에 접근하여 온습도 수치를 가져와 표시
         settingSensorValue(new EmbeddedData(no));
@@ -82,15 +82,19 @@ public class MainActivity extends AppCompatActivity {
                 {
                     case R.id.tab1:
                         setFrag(0);
+                        title_tv.setText("홈");
                         break;
                     case R.id.tab2:
                         setFrag(1);
+                        title_tv.setText("제어");
                         break;
                     case R.id.tab3:
                         setFrag(2);
+                        title_tv.setText("검색");
                         break;
                     case R.id.tab4:
                         setFrag(3);
+                        title_tv.setText("내정보");
                         break;
                 }
                 return true;
@@ -137,8 +141,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<EmbeddedResponse> call, Response<EmbeddedResponse> response) {
                 EmbeddedResponse result = response.body();
-                show_temp_live.setText("습도 : "+result.getRecentHumi()+"%");
-                show_humidity_live.setText("온도 : "+result.getTemp()+"℃");
+                show_temp_live.setText("습도\n"+result.getRecentHumi()+"%");
+                show_humidity_live.setText("온도\n"+result.getTemp()+"℃");
             }
             @Override
             public void onFailure(Call<EmbeddedResponse> call, Throwable t) {

@@ -18,6 +18,9 @@ public interface LambdaFuncInterface {
     DiseaseResponseclass crop_classification(RequestClass request);
 
     @LambdaFunction
+    DiseaseResponseclass crop_classification_v2(RequestClass request);
+
+    @LambdaFunction
     ResponseClass objectDetection(RequestClass request);
 
     @LambdaFunction
