@@ -34,6 +34,7 @@ public class HomeActivity extends Fragment {
     TextView tb1[] = new TextView[7];
     ImageView tb2[] = new ImageView[7];
     TextView day_tv[] = new TextView[7];
+    TextView dayday_tv[] = new TextView[7];
 
     ImageButton strawberry,rice,beans,chili,cabbage;
     TextView showDate;
@@ -64,6 +65,11 @@ public class HomeActivity extends Fragment {
             int resId = getResources().getIdentifier("day"+i,"id",getContext().getPackageName());
             day_tv[i] = (TextView) view.findViewById(resId);
         }
+        for(int i=0; i<7; i++){
+            int resId = getResources().getIdentifier("dayday"+i,"id", getContext().getPackageName());
+            dayday_tv[i] = (TextView) view.findViewById(resId);
+        }
+
         for(int i=0; i<=6; i++){
             int resId = getResources().getIdentifier("today"+i,"id", getContext().getPackageName());
             tb1[i] = (TextView) view.findViewById(resId);
@@ -73,8 +79,12 @@ public class HomeActivity extends Fragment {
             tb2[i] = (ImageView) view.findViewById(resId);
         }
 
-        for (int i =1; i<7; i++){
-            day_tv[i].setText(appInfo.day[i]+"일");
+
+        for (int i =1; i<7; i++) {
+            day_tv[i].setText(appInfo.day[i] + "일");
+        }
+        for (int i=0; i<7; i++){
+            dayday_tv[i].setText(appInfo.day[i] + "일");
         }
 
         if (appInfo.strawberry==null){
