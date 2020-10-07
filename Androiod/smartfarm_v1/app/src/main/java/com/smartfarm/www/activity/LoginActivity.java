@@ -33,6 +33,7 @@ import com.smartfarm.www.data.RegisterResponse;
 import com.smartfarm.www.data.UserInformation;
 import com.smartfarm.www.network.RetrofitClient;
 import com.smartfarm.www.network.ServiceApi;
+import com.smartfarm.www.service.LogoutService;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -52,6 +53,8 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.login_page);
         service = RetrofitClient.getClient().create(ServiceApi.class);
 
+        //자동로그아웃 활성화
+        startService(new Intent(this, LogoutService.class));
 
         mIdView = (EditText) findViewById(R.id.login_id);
         mPasswordView = (EditText) findViewById(R.id.login_pwd);

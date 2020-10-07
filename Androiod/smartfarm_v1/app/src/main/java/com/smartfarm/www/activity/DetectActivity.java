@@ -1,5 +1,6 @@
 package com.smartfarm.www.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ListView;
 
@@ -7,6 +8,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.smartfarm.www.R;
+import com.smartfarm.www.service.LogoutService;
 
 public class DetectActivity extends AppCompatActivity {
 
@@ -17,6 +19,9 @@ public class DetectActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.detect_page);
+
+        //자동로그아웃 활성화
+        startService(new Intent(this, LogoutService.class));
 
         listViewAdapter = new ListViewAdapter();
 
