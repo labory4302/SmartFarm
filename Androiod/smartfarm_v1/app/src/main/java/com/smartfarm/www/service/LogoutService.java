@@ -36,14 +36,9 @@ public class LogoutService extends Service {
         service = RetrofitClient.getClient().create(ServiceApi.class);
         UserInformation userInfo = UserInformation.getUserInformation();
 
-        Log.d("통행 확인", "확인");
-        Toast.makeText(this, "통행확인", Toast.LENGTH_SHORT).show();
         int check = 0;
         int no = userInfo.getUserNo();
         checkOut(new AccessData(check, no));
-
-        Log.d("통행 확인2", "확인2");
-        Toast.makeText(this, "통행확인2", Toast.LENGTH_SHORT).show();
 
         stopSelf();
     }
