@@ -56,6 +56,7 @@ public class MypageActivity extends Fragment {
         version_button = view.findViewById(R.id.version_button);
         logout_button = view.findViewById(R.id.logout_button);
 
+
         service = RetrofitClient.getClient().create(ServiceApi.class);
         UserInformation userInfo = UserInformation.getUserInformation();
 

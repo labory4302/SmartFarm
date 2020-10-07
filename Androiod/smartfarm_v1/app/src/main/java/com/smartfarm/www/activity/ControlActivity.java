@@ -311,6 +311,7 @@ public class ControlActivity extends Fragment {
                         }
                     });
 
+                    // 불 감지 자동 모드
                     changeFireDetectionMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                         @Override
                         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -319,10 +320,20 @@ public class ControlActivity extends Fragment {
                             } else {
                                 turnOffFireService();
                             }
+
+                            changeFireDetectionMode.setEnabled(false);
+
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    changeFireDetectionMode.setEnabled(true);
+                                }
+                            }, 7000);  // 1 초 후에 실행
                         }
                     });
 
-                    changeObjectDetectionMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    // 객체 감지 자동모드드
+                   changeObjectDetectionMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                         @Override
                         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                             if(isChecked) {
@@ -330,6 +341,15 @@ public class ControlActivity extends Fragment {
                             } else {
                                 turnOffObjectService();
                             }
+
+                            changeObjectDetectionMode.setEnabled(false);
+
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    changeObjectDetectionMode.setEnabled(true);
+                                }
+                            }, 7000);  // 1 초 후에 실행
                         }
                     });
 
@@ -551,23 +571,28 @@ public class ControlActivity extends Fragment {
     public void startFireService() {
         Intent serviceIntent = new Intent(getContext(), FireForegroundService.class);
         ContextCompat.startForegroundService(getContext(), serviceIntent);
+        Log.d("서비스시작","불시작");
     }
 
     // 불 감지 foregroundSercie 끝내기 함수
     public void stopFireService() {
         Intent serviceIntent = new Intent(getContext(), FireForegroundService.class);
         getContext().stopService(serviceIntent);
+        Log.d("서비스끝","불끝");
+
     }
 
     // 객체 감지 foregroundSercie 시작 함수
     public void startObjectService() {
         Intent serviceIntent = new Intent(getContext(), ObjectForegroundService.class);
         ContextCompat.startForegroundService(getContext(), serviceIntent);
+        Log.d("서비스시작","객체시작");
     }
 
     // 객체 감지 foregroundSercie 끝내기 함수
     public void stopObjectService() {
         Intent serviceIntent = new Intent(getContext(), ObjectForegroundService.class);
         getContext().stopService(serviceIntent);
-    }
+        Log.d("서비스끝","객체끝끝");
+   }
 }

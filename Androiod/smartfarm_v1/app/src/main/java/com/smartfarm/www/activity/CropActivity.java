@@ -102,6 +102,7 @@ public class CropActivity extends Fragment {
             public void onClick(View v) {
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);    //카메라 애플리케이션으로 가도록 함
                 Nothing.setText("");
+                Disease_result.setText("");
                 Crop_result.setText("잠시 기다려 주세요");
                 //컴포넌트를 실행하지 못하면 앱 작동이 종료되므로 사전에 컴포넌트가 실행가능한지 여부를 판단
                 //패키지매니저를 불러와 해당 인텐트가 갖는 컴포넌트가 사용가능한지 확인. 사용가능하다면 null이 아닌 값을 반환
@@ -293,15 +294,17 @@ public class CropActivity extends Fragment {
                 // invoke "echo" method. In case it fails, it will throw a
                 // LambdaFunctionException.
                 try {
-                    return myInterface.crop_classification(params[0]);
+                    return myInterface.crop_classification_v2(params[0]);
                 } catch (LambdaFunctionException lfe) {
                     Log.e("Tag", "Failed to invoke echo", lfe);
                     return null;
                 }
             }
 
-            String[] test = {"배추", "고추", "깨"};
-            String[][] test_d = {{"뿌리 혹병", "노균병", "무름병"}, {"탄저병", "칼슘 부족", "고추 역병"}, {"마름병", "식물 역병", "흰가루병"}};
+            String[] test = {"다시 찍어주세요", "콩", "배추", "고추", "벼", "깨", "딸기"};
+            String[][] test_d = {{"다시 찍어주세요"}, {"정상", "콩 탄저병", "콩 불마름병","균핵병"}, {"정상", "뿌리 혹병", "노균병", "무름병"},
+                    {"정상", "탄저병", "칼슘 부족", "고추 역병"},{"정상", "벼 흰잎마름병", "이삭누룩병", "잎집무늬마름병" },
+                    {"정상","마름병", "식물 역병", "흰가루병"}, {"정상", "딸기 탄저병", "잿빛곰팡이병", "잎마름병"}};
 
             @Override
             protected void onPostExecute(DiseaseResponseclass result) {
