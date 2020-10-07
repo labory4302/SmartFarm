@@ -38,7 +38,7 @@ public class HomeActivity extends Fragment {
     View view;
     private ListView listView;
     private ListViewAdapter listViewAdapter;
-    private TextView kind,unit;
+    private TextView kind;
 
     TextView tb1[] = new TextView[7];
     ImageView tb2[] = new ImageView[7];
@@ -63,6 +63,8 @@ public class HomeActivity extends Fragment {
 
         listViewAdapter = new ListViewAdapter();
 
+
+
         listView = (ListView) view.findViewById(R.id.listview);
         cabbage = view.findViewById(R.id.cabbage_bt);
         rice = view.findViewById(R.id.rice_bt);
@@ -70,12 +72,14 @@ public class HomeActivity extends Fragment {
         chili = view.findViewById(R.id.chili_bt);
         strawberry = view.findViewById(R.id.strawberry_bt);
         showDate = view.findViewById(R.id.show_date);
-        kind = view.findViewById(R.id.kind);
-        unit = view.findViewById(R.id.unit);
+
+
 
         getLog();
 
         showDate.setText(appInfo.today[1]+"월"+appInfo.today[2]+"일");
+
+        kind = view.findViewById(R.id.kind);
 
 
         for (int i = 1; i<7; i++){
@@ -135,13 +139,15 @@ public class HomeActivity extends Fragment {
                     return;
                 }
             }).start();
+
         }else{
             getWeather();
 
+
             Log.d("씨발씨발"," : "+appInfo.rice[1]);
 
+
             kind.setText("배추");
-            unit.setText("(1 포기)");
             for(int i=0; i<7; i++){
                 price_day[i].setText(appInfo.cabbage[i]+"원");
             }
@@ -155,7 +161,6 @@ public class HomeActivity extends Fragment {
                 @Override
                 public void onClick(View v) {
                     kind.setText("배추");
-                    unit.setText("(1 포기)");
                     cabbage.setImageResource(R.drawable.cabbage);
                     rice.setImageResource(R.drawable.rice_unclick);
                     beans.setImageResource(R.drawable.beans_unclick);
@@ -170,7 +175,6 @@ public class HomeActivity extends Fragment {
                 @Override
                 public void onClick(View v) {
                     kind.setText("쌀");
-                    unit.setText("(20Kg)");
                     cabbage.setImageResource(R.drawable.cabbage_unclick);
                     rice.setImageResource(R.drawable.rice);
                     beans.setImageResource(R.drawable.beans_unclick);
@@ -185,7 +189,6 @@ public class HomeActivity extends Fragment {
                 @Override
                 public void onClick(View v) {
                     kind.setText("콩");
-                    unit.setText("(500g)");
                     cabbage.setImageResource(R.drawable.cabbage_unclick);
                     rice.setImageResource(R.drawable.rice_unclick);
                     beans.setImageResource(R.drawable.beans);
@@ -200,7 +203,6 @@ public class HomeActivity extends Fragment {
                 @Override
                 public void onClick(View v) {
                     kind.setText("홍고추");
-                    unit.setText("(100g)");
                     cabbage.setImageResource(R.drawable.cabbage_unclick);
                     rice.setImageResource(R.drawable.rice_unclick);
                     beans.setImageResource(R.drawable.beans_unclick);
@@ -215,7 +217,6 @@ public class HomeActivity extends Fragment {
                 @Override
                 public void onClick(View v) {
                     kind.setText("딸기");
-                    unit.setText("(100g)");
                     cabbage.setImageResource(R.drawable.cabbage_unclick);
                     rice.setImageResource(R.drawable.rice_unclick);
                     beans.setImageResource(R.drawable.beans_unclick);
@@ -226,7 +227,13 @@ public class HomeActivity extends Fragment {
                     }
                 }
             });
+
+
         }
+
+
+
+
         return view;
     }
 
@@ -240,8 +247,6 @@ public class HomeActivity extends Fragment {
                     getWeather();
 
 
-                    kind.setText("배추");
-                    unit.setText("(1 포기)");
                     for(int i=0; i<7; i++){
                         price_day[i].setText(appInfo.cabbage[i]+"원");
                     }
@@ -254,8 +259,6 @@ public class HomeActivity extends Fragment {
                     cabbage.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            kind.setText("배추");
-                            unit.setText("(1 포기)");
                             cabbage.setImageResource(R.drawable.cabbage);
                             rice.setImageResource(R.drawable.rice_unclick);
                             beans.setImageResource(R.drawable.beans_unclick);
@@ -269,8 +272,6 @@ public class HomeActivity extends Fragment {
                     rice.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            kind.setText("쌀");
-                            unit.setText("(20Kg)");
                             cabbage.setImageResource(R.drawable.cabbage_unclick);
                             rice.setImageResource(R.drawable.rice);
                             beans.setImageResource(R.drawable.beans_unclick);
@@ -284,8 +285,6 @@ public class HomeActivity extends Fragment {
                     beans.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            kind.setText("콩");
-                            unit.setText("(500g)");
                             cabbage.setImageResource(R.drawable.cabbage_unclick);
                             rice.setImageResource(R.drawable.rice_unclick);
                             beans.setImageResource(R.drawable.beans);
@@ -299,8 +298,6 @@ public class HomeActivity extends Fragment {
                     chili.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            kind.setText("홍고추");
-                            unit.setText("(100g)");
                             cabbage.setImageResource(R.drawable.cabbage_unclick);
                             rice.setImageResource(R.drawable.rice_unclick);
                             beans.setImageResource(R.drawable.beans_unclick);
@@ -314,8 +311,6 @@ public class HomeActivity extends Fragment {
                     strawberry.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            kind.setText("딸기");
-                            unit.setText("(100g)");
                             cabbage.setImageResource(R.drawable.cabbage_unclick);
                             rice.setImageResource(R.drawable.rice_unclick);
                             beans.setImageResource(R.drawable.beans_unclick);
@@ -343,6 +338,8 @@ public class HomeActivity extends Fragment {
         //Map 은 HashMap이 구현 하는 인터페이스
         resultMap = new HashMap();
 
+
+
         // 탐지된 불 로그기록이 있으면 값을 담으라는 뜻
         if (fireMap.size() >=2){
             resultMap.putAll(fireMap);
@@ -355,10 +352,13 @@ public class HomeActivity extends Fragment {
         if (ObjectMap.size() >=2){
             resultMap.putAll(ObjectMap);
         }
+        
 
         Log.d("tag","사이즈 : " + resultMap.size());
 
         // 정렬하기 전에 방해되는 int이면서 필요없는 length 항목 지우기
+
+
 
         resultMap.remove("fireLog_length");
         resultMap.remove("objectLog_length");
@@ -386,15 +386,26 @@ public class HomeActivity extends Fragment {
             }else{
                 listViewAdapter.addItem(time , "물체가 감지되었습니다.");
             }
+
+
             count++;
+
             // 로그 보여줄 최대 갯수
             if(count==11){
                 break;
             }
         }
-        listViewAdapter.addItem(null , "현재 탐지된것이 없습니다.");
+
+        if (fireMap.size() <2 && ObjectMap.size() < 2){
+            listViewAdapter.addItem(null , "현재 위험이 감지되지 않았습니다.");
+        }
+
+
         listView.setAdapter(listViewAdapter);
+
     }
+
+
 
     //날씨값 설정
     public void getWeather(){
@@ -422,6 +433,7 @@ public class HomeActivity extends Fragment {
             rainfall_day[i] = Double.parseDouble(map.get("rainfall" + i));
 
             String temp_temp_hl[] = temp_temp.split("°C");
+
 
             if(i==0 && (time>=18 && time<=24) || (time>=0 && time<=6 )) {
                 float avg_temp = (Float.parseFloat(temp_temp_hl[0]));
@@ -467,4 +479,6 @@ public class HomeActivity extends Fragment {
             }
         }
     }
+
+
 }
