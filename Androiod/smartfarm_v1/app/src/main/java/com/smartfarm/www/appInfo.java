@@ -103,6 +103,9 @@ public class appInfo extends Application {
                 //7일 날짜 가져오기
                 Elements date_em = document.select(".table .today.sevendays .day > .title span");
 
+                //7일 요일 가져오기
+                Elements day_em = document.select(".table .today.sevendays .day .title b");
+
                 //오늘 포함해서 7일 날씨 가져오기
                 Elements test_em = document.select(".table .today.sevendays .day .icon span");
 
@@ -120,6 +123,10 @@ public class appInfo extends Application {
 
                 //일주일 날씨
                 String test_7 = test_em.toString();
+
+                //일주일 요일
+                String day_7day = day_em.text();
+                Log.d("aaaaaaa"," : "+day_7day);
 
                 // 파싱한 문자열에서 온도 빼고 필요없는 부분 지우기
                 temp_7day = temp_7day.replaceAll("최저: ","");

@@ -17,6 +17,7 @@ import com.smartfarm.www.data.RegisterResponse;
 import com.smartfarm.www.data.UserInformation;
 import com.smartfarm.www.network.RetrofitClient;
 import com.smartfarm.www.network.ServiceApi;
+import com.smartfarm.www.service.LogoutService;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -39,6 +40,9 @@ public class ChangeMyInformationChangeActivity extends AppCompatActivity {
         setContentView(R.layout.changemyinformation_change_page);
         service = RetrofitClient.getClient().create(ServiceApi.class);
         UserInformation userInfo = UserInformation.getUserInformation();
+
+        //자동로그아웃 활성화
+        startService(new Intent(this, LogoutService.class));
 
         changemyinformation_change_name = (EditText) findViewById(R.id.changemyinformation_change_name);
         changemyinformation_change_nickname = (EditText) findViewById(R.id.changemyinformation_change_nickname);

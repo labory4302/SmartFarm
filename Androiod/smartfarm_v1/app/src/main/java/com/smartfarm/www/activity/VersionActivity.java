@@ -1,5 +1,6 @@
 package com.smartfarm.www.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
@@ -11,6 +12,7 @@ import com.smartfarm.www.network.RetrofitClient;
 import com.smartfarm.www.network.ServiceApi;
 import com.smartfarm.www.data.VersionData;
 import com.smartfarm.www.data.VersionResponse;
+import com.smartfarm.www.service.LogoutService;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -25,6 +27,9 @@ public class VersionActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.version_page);
+
+        //자동로그아웃 활성화
+        startService(new Intent(this, LogoutService.class));
 
         version_no = findViewById(R.id.version_no);
         version_info = findViewById(R.id.version_info);
