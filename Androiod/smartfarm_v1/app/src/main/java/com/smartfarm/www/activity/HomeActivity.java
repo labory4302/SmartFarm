@@ -72,15 +72,15 @@ public class HomeActivity extends Fragment {
         chili = view.findViewById(R.id.chili_bt);
         strawberry = view.findViewById(R.id.strawberry_bt);
         showDate = view.findViewById(R.id.show_date);
-<<<<<<< HEAD
+
 
 
         getLog();
 
         showDate.setText(appInfo.today[1]+"월"+appInfo.today[2]+"일");
-=======
+
         kind = view.findViewById(R.id.kind);
->>>>>>> 9b886f738383ecd162e329f906da8abac6cd5083
+
 
         for (int i = 1; i<7; i++){
             int resId = getResources().getIdentifier("day"+i,"id",getContext().getPackageName());
@@ -142,12 +142,10 @@ public class HomeActivity extends Fragment {
 
         }else{
             getWeather();
-<<<<<<< HEAD
-        }
-=======
+
 
             Log.d("씨발씨발"," : "+appInfo.rice[1]);
->>>>>>> 9b886f738383ecd162e329f906da8abac6cd5083
+
 
             kind.setText("배추");
             for(int i=0; i<7; i++){
@@ -230,13 +228,6 @@ public class HomeActivity extends Fragment {
                 }
             });
 
-//            listViewAdapter.addItem("양배추",appInfo.cabbage);
-//            listViewAdapter.addItem("쌀",appInfo.rice);
-//            listViewAdapter.addItem("콩",appInfo.bean);
-//            listViewAdapter.addItem("홍고추",appInfo.redPepper);
-//            listViewAdapter.addItem("딸기",appInfo.strawberry);
-//            listView.setAdapter(listViewAdapter);
-
 
         }
 
@@ -252,17 +243,9 @@ public class HomeActivity extends Fragment {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case FINISH :
-                    Log.d("??","dfd 시작");
+
                     getWeather();
-<<<<<<< HEAD
-=======
-                    Log.d("dddddddddd", "홈액티비티"+appInfo.strawberry);
-//                    listViewAdapter.addItem("양배추",appInfo.cabbage);
-//                    listViewAdapter.addItem("쌀",appInfo.rice);
-//                    listViewAdapter.addItem("콩",appInfo.bean);
-//                    listViewAdapter.addItem("홍고추",appInfo.redPepper);
-//                    listViewAdapter.addItem("딸기",appInfo.strawberry);
-//                    listView.setAdapter(listViewAdapter);
+
 
                     for(int i=0; i<7; i++){
                         price_day[i].setText(appInfo.cabbage[i]+"원");
@@ -339,7 +322,7 @@ public class HomeActivity extends Fragment {
                         }
                     });
 
->>>>>>> 9b886f738383ecd162e329f906da8abac6cd5083
+
                     dialog.cancel();
                     break ;
                 // TODO : add case.
