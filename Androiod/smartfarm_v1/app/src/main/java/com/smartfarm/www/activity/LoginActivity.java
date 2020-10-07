@@ -227,7 +227,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 int check = userInfo.getUserLoginCheck();
                 int no = userInfo.getUserNo();
-                if(check == 0){
+                if(/*check == 0*/true){
                     check = 1;
                     checkIn(new AccessData(check, no));
                 } else if (check == 1){
@@ -271,7 +271,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 int check = userInfo.getUserLoginCheck();
                 int no = userInfo.getUserNo();
-                if(check == 0){
+                if(/*check == 0*/true){
                     check = 1;
                     checkIn(new AccessData(check, no));
                 } else if (check == 1){

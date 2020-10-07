@@ -448,9 +448,11 @@ public class ControlActivity extends Fragment {
                 if(result.getAutomode() == 1) {
                     changeMode.setChecked(true);
                     changeMode.setText("자동모드");
+                    autoLayout.setVisibility(View.VISIBLE);
                 } else {
                     changeMode.setChecked(false);
                     changeMode.setText("수동모드");
+                    manualLayout.setVisibility(View.VISIBLE);
                 }
 
                 if(result.getPump() == 1) {
