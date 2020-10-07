@@ -66,7 +66,7 @@ public class appInfo extends Application {
         } else {
             // 오늘 처음 접속할떄
             new GetWeatherTask().execute();
-    }
+        }
 
         CharSequence channelName  = "smartfarm channel";
         String description = "camera detection";
@@ -301,4 +301,6 @@ public class appInfo extends Application {
             return null;
         }
     }
+
+
 }

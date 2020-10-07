@@ -1,10 +1,12 @@
 package com.smartfarm.www.service;
 
+import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -57,7 +59,9 @@ public class FireForegroundService extends Service {
     private String webImg_path; // intent로 넘겨주기 위한 사진 경로 저장 (푸쉬 알림 클릭 이벤트)
     private Date date; // 푸쉬알림 보낼시의 시간
 
-    private Thread fireThread;
+    private Thread fireThread; // 1 분마다 감지 쓰레드
+
+    private int fireLog_length; // 푸쉬알림 로그의 마지막
 
 
 
@@ -74,6 +78,19 @@ public class FireForegroundService extends Service {
 
         webimg_fire.mkdirs();
         webimg_fire_resize.mkdirs();
+
+        // 앱을 켰을때 내부 저장소에 값이 존재하는지 유무 확인하려고 가져옴
+        // 값이 존재하면 존재하는값 가져옴
+        SharedPreferences detectLog = getSharedPreferences("detectLog", Activity.MODE_PRIVATE);
+        fireLog_length = detectLog.getInt("log_length", -1); // 가져왔는데 없으면 기본값 -1
+
+        // 앱에 처음 만드는거면 -1 이므로
+        if(fireLog_length == -1) {
+            // 로그기록 마지막 index 0으로 넣어줌
+            SharedPreferences.Editor editor = detectLog.edit();
+            editor.putInt("log_length",0);
+            editor.apply();
+        }
     }
 
 
@@ -465,6 +482,12 @@ public class FireForegroundService extends Service {
 
                 if(result.getBody().equals("fire")){
                     NotificationSomethings(444, webImg_bitmap, "화재가 감지되었습니다.");
+                    SharedPreferences detectLog = getSharedPreferences("detectLog", Activity.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = detectLog.edit();
+                    editor.putString("imgName"+fireLog_length, imgName);
+                    editor.putString("content"+fireLog_length, "화재가 감지되었습니다.");
+                    editor.apply();
+                    fireLog_length++;
                 }
 
 

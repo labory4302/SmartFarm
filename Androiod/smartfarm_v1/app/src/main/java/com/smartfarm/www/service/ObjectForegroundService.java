@@ -58,6 +58,8 @@ public class ObjectForegroundService extends Service {
 
 
 
+
+
     // 시스템은 서비스가 처음 생성되었을 때(즉 서비스가 onStartCommand() 또는 onBind()를 호출하기 전에)
     // 이 메서드를 호출하여 일회성 설정 절차를 수행합니다. 서비스가 이미 실행 중인 경우, 이 메서드는 호출되지 않음음    @Override
     public void onCreate() {
