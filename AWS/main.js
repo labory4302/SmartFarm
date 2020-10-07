@@ -272,7 +272,7 @@ app.post('/mypage/version', function (req, res) {
     var versionInformation = req.body.versionInformation;
     var params = [version, versionInformation];
 
-    var sql = 'SELECT version, versionInformation FROM Versions';
+    var sql = 'SELECT version, versionInformation FROM Versions;';
 
     connection.query(sql, params, function (err, result) {
         var resultCode = 404;

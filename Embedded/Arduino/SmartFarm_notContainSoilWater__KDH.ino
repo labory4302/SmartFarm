@@ -47,7 +47,7 @@ String data = "";             //온습도, 토양수분량을 블루투스송신
 char sendMessage[100];        //블루투스송신을 위한 문자열(블루투스 송신 시 꼭 char배열에 담아서 보내야 함)
 char receiveData = 0;         //블루투스 수신 데이터 변수(데이터가 바이트단위로 들어오기 때문에 char로 선언)
 String receiveMessage = "";   //바이트단위로 받은 데이터를 저장하는 변수
-
+int checkStatus = 1;
 int inputControlCode      = 0;//안드로이드가 보낸 제어코드의 제어종류부분
 int inputControlBehavior  = 0;//안드로이드가 보낸 제어코드의 제어량부분
 
@@ -64,6 +64,7 @@ void changeAutoMode(int input);               //사용자가 자동모드, 수�
 void androidControlsPump(int input);          //수동모드일 때 사용자가 워터펌프를 제어
 void androidControlsFan(int input);           //수동모드일 때 사용자가 환풍기를 제어
 void androidControlsLED(int input);           //수동모드일 때 사용자가 NeoPixel LED를 제어
+void fireDetect();
 ///////////////////////////////////////////////////////////////////////////////////////void autoMode_checkSoilMoisture(int input);   //자동모드일 때 토양수분량을 측정하여 설정된 기대 토양수분량에 따라 워터펌프 제어
 void autoMode_checkHumidity(int input);       //자동모드일 때 습도를 측정하여 설정된 기대 습도에 따라 환풍기 제어
 ///////////////////////////////////////////////////////////////////////////////////////void setAutoModeSoilMoistureValue(int input); //사용자가 자동모드에서의 기대 토양수분량 설정
@@ -119,14 +120,19 @@ void loop() {
   
   ///////////////////////////////////////////////////////////////////////////////////////data = "  "+(String)convertSoilValue + "," + (String)humidity + "," + (String)temperature + "," + (String)autoMode + "," + (String)pumpStatus + "," + (String)fanStatus + "," + (String)LEDStatus;
 
-  if((humidity != 0)&&(temperature != 0)) {
-    data = "  " + (String)humidity + "," + (String)temperature + "," + (String)autoMode + "," + (String)pumpStatus + "," + (String)fanStatus + "," + (String)LEDStatus;
     //온습도, 토양수분량을 String에 저장
-    //앞뒤로 한칸씩 주는 이유는 라즈베리파이에서 블루투스를 수신할 때
-    //앞 뒤로 한칸씩 잘라야 온전한 데이터가 나오기 때문임. 나중에 더 디버깅할 필요 있음
-    Serial.println(data);
+    //+ ","     //앞뒤로 한칸씩 주는 이유는 라즈베리파이에서 블루투스를 수신할 때
+    //앞DP 한칸씩을 띄워야 온전한 데이터가 나오기 때문임. 나중에 더 디버깅할 필요 있음
+  if((humidity != 0)&&(temperature != 0)) {
+    data = " " + (String)humidity + "," + (String)temperature + ",";
+
     data.toCharArray(sendMessage, data.length()+1); //String에 저장된 데이터를 char배열로 옮김
     BLUETOOTH.write(sendMessage);                   //블루투스 송신
+    delay(100);
+    data = " " + (String)checkStatus+ "," + (String)autoMode + "," + (String)pumpStatus + "," + (String)fanStatus + "," + (String)LEDStatus;
+    data.toCharArray(sendMessage, data.length()+1);
+    BLUETOOTH.write(sendMessage);
+  
   }
   
   changePumpStatusWithSW(); //스위치가 눌리면 워터펌프 상태 변경
@@ -138,7 +144,6 @@ void loop() {
 
   while(BLUETOOTH.available()) {    //라즈베리파이로부터 수신된 블루투스 값이 있을 때
     receiveData = BLUETOOTH.read(); //수신데이터를 받음(바이트단위로 받음)
-
     if((receiveData >= '0' && receiveData <= '9') || receiveData == '\n') { //수신데이터를 String에 저장(수신할 때 이상한 값을 필터링)
       receiveMessage.concat(receiveData);
     }
@@ -153,6 +158,7 @@ void loop() {
       3001:LED 활성화       | 3000:LED 비활성화
       4***:자동모드 토양수분량 설정(10 ~ 99)
       5***:자동모드 습도 조절(10 ~ 99)
+      6000:화재감지시 워터펌프 활성화
       9001:자동모드 ON      | 9000:자동모드 OFF
       */
       switch(inputControlCode) {
@@ -167,9 +173,12 @@ void loop() {
           break;
           ///////////////////////////////////////////////////////////////////////////////////////case 4:
             ///////////////////////////////////////////////////////////////////////////////////////setAutoModeSoilMoistureValue(inputControlBehavior); //자동모드일 때 기대 토양수분량 설정
-            ///////////////////////////////////////////////////////////////////////////////////////break;
+            ///////////////////////////////////////////////////////////////////////////////////////break;          
         case 5:
           setAutoModeHumidityValue(inputControlBehavior);     //자동모드일 때 기대 습도 설정
+          break;
+        case 6:
+          fireDetect();
           break;
         case 9:
           changeAutoMode(inputControlBehavior);       //사용자가 자동모드, 수동모드 설정
@@ -236,6 +245,15 @@ void androidControlsPump(int input) {
     pumpStatus = false;
   }
   digitalWrite(CONTROL_PUMP, !pumpStatus);
+}
+
+//화재감지시 워터펌프 ON
+void fireDetect() {
+    pumpStatus = true;    
+    digitalWrite(CONTROL_PUMP, !pumpStatus);
+    delay(4000);
+    pumpStatus = false;
+    digitalWrite(CONTROL_PUMP, !pumpStatus);
 }
 
 //수동모드일 때 사용자가 환풍기를 제어

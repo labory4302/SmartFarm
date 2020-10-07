@@ -15,8 +15,9 @@
         android:background="@color/White"
         android:elevation="1dp"
         android:text="내 정보 수정"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout4"
-        tools:layout_editor_absoluteX="0dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout4" />
 
     <Button
         android:id="@+id/notification_button"
@@ -26,8 +27,9 @@
         android:background="@color/White"
         android:elevation="1dp"
         android:text="공지사항"
-        app:layout_constraintTop_toBottomOf="@+id/changemyinformation_button"
-        tools:layout_editor_absoluteX="-16dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/changemyinformation_button" />
 
     <Button
         android:id="@+id/event_button"
@@ -37,8 +39,9 @@
         android:background="@color/White"
         android:elevation="1dp"
         android:text="이벤트"
-        app:layout_constraintTop_toBottomOf="@+id/notification_button"
-        tools:layout_editor_absoluteX="0dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/notification_button" />
 
     <Button
         android:id="@+id/inquiry_button"
@@ -48,8 +51,9 @@
         android:background="@color/White"
         android:elevation="1dp"
         android:text="1대1 문의"
-        app:layout_constraintTop_toBottomOf="@+id/event_button"
-        tools:layout_editor_absoluteX="16dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/event_button" />
 
     <Button
         android:id="@+id/version_button"
@@ -59,8 +63,9 @@
         android:background="@color/White"
         android:elevation="1dp"
         android:text="현재 버전"
-        app:layout_constraintTop_toBottomOf="@+id/inquiry_button"
-        tools:layout_editor_absoluteX="0dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/inquiry_button" />
 
     <Button
         android:id="@+id/logout_button"
@@ -70,8 +75,9 @@
         android:background="@color/White"
         android:elevation="1dp"
         android:text="로그아웃"
-        app:layout_constraintTop_toBottomOf="@+id/version_button"
-        tools:layout_editor_absoluteX="-16dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/version_button" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout4"

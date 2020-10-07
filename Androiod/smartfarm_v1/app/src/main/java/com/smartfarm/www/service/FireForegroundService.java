@@ -29,16 +29,22 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.smartfarm.www.R;
+import com.smartfarm.www.activity.ControlActivity;
 import com.smartfarm.www.activity.MainActivity;
 import com.smartfarm.www.appInfo;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.Socket;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -81,14 +87,15 @@ public class FireForegroundService extends Service {
 
         // 앱을 켰을때 내부 저장소에 값이 존재하는지 유무 확인하려고 가져옴
         // 값이 존재하면 존재하는값 가져옴
-        SharedPreferences detectLog = getSharedPreferences("detectLog", Activity.MODE_PRIVATE);
-        fireLog_length = detectLog.getInt("log_length", -1); // 가져왔는데 없으면 기본값 -1
+        SharedPreferences FireLog = getSharedPreferences("FireLog", Activity.MODE_PRIVATE);
+        fireLog_length = FireLog.getInt("fireLog_length", -1); // 가져왔는데 없으면 기본값 -1
 
         // 앱에 처음 만드는거면 -1 이므로
         if(fireLog_length == -1) {
             // 로그기록 마지막 index 0으로 넣어줌
-            SharedPreferences.Editor editor = detectLog.edit();
-            editor.putInt("log_length",0);
+            SharedPreferences.Editor editor = FireLog.edit();
+            fireLog_length=0; // 0부터 시작하게 초기화
+            editor.putInt("fireLog_length",0);
             editor.apply();
         }
     }
@@ -482,12 +489,17 @@ public class FireForegroundService extends Service {
 
                 if(result.getBody().equals("fire")){
                     NotificationSomethings(444, webImg_bitmap, "화재가 감지되었습니다.");
-                    SharedPreferences detectLog = getSharedPreferences("detectLog", Activity.MODE_PRIVATE);
+                    SharedPreferences detectLog = getSharedPreferences("FireLog", Activity.MODE_PRIVATE);
                     SharedPreferences.Editor editor = detectLog.edit();
-                    editor.putString("imgName"+fireLog_length, imgName);
-                    editor.putString("content"+fireLog_length, "화재가 감지되었습니다.");
-                    editor.apply();
+                    editor.putString("fire_imgName"+fireLog_length, imgName.replace(".png",""));
+
+                    // 마지막 인덱스를 체그하기 위해 + 해주고 인풋
                     fireLog_length++;
+                    editor.putInt("fireLog_length",fireLog_length);
+                    editor.apply();
+
+                    ConnectRaspi connectRaspi = new ConnectRaspi();
+                    connectRaspi.start();
                 }
 
 
@@ -530,7 +542,44 @@ public class FireForegroundService extends Service {
         return ImgResize;
     }
 
+    class ConnectRaspi extends Thread {     //소켓통신을 위한 스레드
+        private String ip = "192.168.0.5";  // 서버의 IP 주소
+        private int port = 9999;            // PORT번호를 꼭 라즈베리파이와 맞추어 주어야한다.
 
+        public void run() {
+            try {   //소켓 생성
+                InetAddress serverAddr = InetAddress.getByName(ip); //IP주소를 가져온다.
+                Socket socket = new Socket(serverAddr, port);              //소켓에 IP와 포트번호 할당
 
+                //데이터 전송
+                PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())),true);
+                out.println("6000");
+                socket.close();
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
 
+//    //화재 시 임베디드로 화재상황을 알리는 함수
+//    private void call112() {
+//        String ip = "192.168.0.5";  // 서버의 IP 주소
+//        int port = 9999;            // PORT번호를 꼭 라즈베리파이와 맞추어 주어야한다.
+//
+//        try {   //소켓 생성
+//            InetAddress serverAddr = InetAddress.getByName(ip); //IP주소를 가져온다.
+//            Socket socket = new Socket(serverAddr, port);              //소켓에 IP와 포트번호 할당
+//
+//            //데이터 전송
+//            PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())),true);
+//            out.println("6000");
+//            socket.close();
+//        }catch(Exception e){
+//            e.printStackTrace();
+//        }
+//
+//
+//
+//
+//    }
 }
