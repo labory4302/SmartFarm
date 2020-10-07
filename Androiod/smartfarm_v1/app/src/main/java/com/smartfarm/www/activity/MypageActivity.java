@@ -31,6 +31,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import com.smartfarm.www.data.UserInformation;
+import com.smartfarm.www.service.LogoutService;
 
 public class MypageActivity extends Fragment {
     private View view;
@@ -43,6 +44,7 @@ public class MypageActivity extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
         view = inflater.inflate(R.layout.mypage_page,container,false);
         mypage_nickname = view.findViewById(R.id.mypage_nickname);
 //        mypage_email = view.findViewById(R.id.mypage_email);
@@ -53,6 +55,7 @@ public class MypageActivity extends Fragment {
         inquiry_button = view.findViewById(R.id.inquiry_button);
         version_button = view.findViewById(R.id.version_button);
         logout_button = view.findViewById(R.id.logout_button);
+
 
         service = RetrofitClient.getClient().create(ServiceApi.class);
         UserInformation userInfo = UserInformation.getUserInformation();
@@ -72,8 +75,8 @@ public class MypageActivity extends Fragment {
         notification_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Intent intent = new Intent(getActivity(), NotificationActivity.class);
-//                startActivity(intent);
+                Intent intent = new Intent(getActivity(), NotificationActivity.class);
+                startActivity(intent);
             }
         });
 

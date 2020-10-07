@@ -33,40 +33,45 @@ public class appInfo extends Application {
     
     public static final String SMARTFARM_CHANNEL_ID = "69981";
     public static Map<String,String> weatherMap = null;
-    public static String cabbage = null;
-    public static String rice = null;
-    public static String bean = null;
-    public static String redPepper = null;
-    public static String strawberry = null;
+    public static String cabbage[] = null;
+    public static String rice[] = null;
+    public static String bean[] = null;
+    public static String redPepper[] = null;
+    public static String strawberry[] = null;
     public static String today[] = null;
     public static String day[] = null;
     public static String S3userID = null; // AWS S3 유저 폴더 저장 경로
     NotificationChannel channel; // 푸쉬 알림 채널 객체
 
     @Override
-        public void onCreate() {
-            long now = System.currentTimeMillis();
-            Date date = new Date(now);
-            SimpleDateFormat timeFormat = new SimpleDateFormat("yyyyMMdd");
-            SimpleDateFormat timeFormat1 = new SimpleDateFormat("yyyy-MM-dd");
-            String currentTime = timeFormat.format(date);
-            String currentTime1 = timeFormat1.format(date);
+    public void onCreate() {
+        long now = System.currentTimeMillis();
+        Date date = new Date(now);
+        SimpleDateFormat timeFormat = new SimpleDateFormat("yyyyMMdd");
+        SimpleDateFormat timeFormat1 = new SimpleDateFormat("yyyy-MM-dd");
+        String currentTime = timeFormat.format(date);
+        String currentTime1 = timeFormat1.format(date);
 
-            today = currentTime1.split("-");
+        today = currentTime1.split("-");
 
-            SharedPreferences appInfoPref = getSharedPreferences("appInfoPref", Activity.MODE_PRIVATE);
-            String appInfoPrefTime = appInfoPref.getString("date", null);
+        SharedPreferences appInfoPref = getSharedPreferences("appInfoPref", Activity.MODE_PRIVATE);
+        String appInfoPrefTime = appInfoPref.getString("date", null);
 
 
-            day=new String[7]; // 일주일 날짜 가져올 변수
+        day=new String[7]; // 일주일 날짜 가져올 변수
+        cabbage=new String[7];
+        rice=new String[7];
+        bean=new String[7];
+        redPepper=new String[7];
+        strawberry=new String[7];
 
-            // 오늘 접속 기록이 있을떄 (날짜, 날씨, 소도매)
-            if(currentTime.equals(appInfoPrefTime) == true) {
-                new uplaodSaveAppInfo().execute();
-            } else {
-                // 오늘 처음 접속할떄
-                new GetWeatherTask().execute();
-            }
+        // 오늘 접속 기록이 있을떄 (날짜, 날씨, 소도매)
+        if(currentTime.equals(appInfoPrefTime) == true) {
+            new uplaodSaveAppInfo().execute();
+        } else {
+            // 오늘 처음 접속할떄
+            new GetWeatherTask().execute();
+        }
 
         CharSequence channelName  = "smartfarm channel";
         String description = "camera detection";
@@ -103,6 +108,9 @@ public class appInfo extends Application {
                 //7일 날짜 가져오기
                 Elements date_em = document.select(".table .today.sevendays .day > .title span");
 
+                //7일 요일 가져오기
+                Elements day_em = document.select(".table .today.sevendays .day .title b");
+
                 //오늘 포함해서 7일 날씨 가져오기
                 Elements test_em = document.select(".table .today.sevendays .day .icon span");
 
@@ -120,6 +128,10 @@ public class appInfo extends Application {
 
                 //일주일 날씨
                 String test_7 = test_em.toString();
+
+                //일주일 요일
+                String day_7day = day_em.text();
+                Log.d("aaaaaaa"," : "+day_7day);
 
                 // 파싱한 문자열에서 온도 빼고 필요없는 부분 지우기
                 temp_7day = temp_7day.replaceAll("최저: ","");
@@ -237,11 +249,11 @@ public class appInfo extends Application {
                 Log.d("고추결과", ""+result.getRedPepper_result());
                 Log.d("딸기결과", ""+result.getStrawberry_result());
 
-                cabbage = result.getCabbage_result();
-                rice = result.getRice_result();
-                bean = result.getBean_result();
-                redPepper = result.getRedPepper_result();
-                strawberry = result.getStrawberry_result();
+                cabbage = result.getCabbage_result().split(",");
+                rice = result.getRice_result().split(",");
+                bean = result.getBean_result().split(",");
+                redPepper = result.getRedPepper_result().split(",");
+                strawberry = result.getStrawberry_result().split(",");
 
                 long now = System.currentTimeMillis();
                 Date date = new Date(now);
@@ -250,11 +262,13 @@ public class appInfo extends Application {
 
                 SharedPreferences appInfoPref = getSharedPreferences("appInfoPref", Activity.MODE_PRIVATE);
                 SharedPreferences.Editor editor = appInfoPref.edit();
-                editor.putString("cabbage", cabbage);
-                editor.putString("rice", rice);
-                editor.putString("bean", bean);
-                editor.putString("redPepper", redPepper);
-                editor.putString("strawberry", strawberry);
+                for (int i=0; i<7; i++){
+                    editor.putString("cabbage"+i, cabbage[i]);
+                    editor.putString("rice"+i, rice[i]);
+                    editor.putString("bean"+i, bean[i]);
+                    editor.putString("redPepper"+i, redPepper[i]);
+                    editor.putString("strawberry"+i, strawberry[i]);
+                }
                 editor.putString("date", time);
                 editor.apply();
             }
@@ -283,11 +297,13 @@ public class appInfo extends Application {
                 day[i] = appInfoPref.getString("date"+i, null);
             }
 
-            cabbage = appInfoPref.getString("cabbage", null);
-            rice = appInfoPref.getString("rice", null);
-            bean = appInfoPref.getString("bean", null);
-            redPepper = appInfoPref.getString("redPepper", null);
-            strawberry = appInfoPref.getString("strawberry", null);
+            for (int i=0; i<7; i++){
+                cabbage[i] = appInfoPref.getString("cabbage"+i, null);
+                rice[i] = appInfoPref.getString("rice"+i, null);
+                bean[i] = appInfoPref.getString("bean"+i, null);
+                redPepper[i] = appInfoPref.getString("redPepper"+i, null);
+                strawberry[i] = appInfoPref.getString("strawberry"+i, null);
+            }
 
             Log.d("dddddddddd", "디버그디버그"+strawberry);
 

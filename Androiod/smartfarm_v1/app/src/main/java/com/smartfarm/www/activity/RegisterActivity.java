@@ -27,6 +27,7 @@ import com.smartfarm.www.data.RegisterData;
 import com.smartfarm.www.data.RegisterResponse;
 import com.smartfarm.www.network.RetrofitClient;
 import com.smartfarm.www.network.ServiceApi;
+import com.smartfarm.www.service.LogoutService;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -61,6 +62,9 @@ public class RegisterActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.register_page);
+
+        //자동로그아웃 활성화
+        startService(new Intent(this, LogoutService.class));
 
         mNameView = (EditText) findViewById(R.id.register_name);
         mNickNameView = (EditText) findViewById(R.id.register_nickname);
