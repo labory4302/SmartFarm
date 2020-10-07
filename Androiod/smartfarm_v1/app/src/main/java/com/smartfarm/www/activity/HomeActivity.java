@@ -338,6 +338,8 @@ public class HomeActivity extends Fragment {
         //Map 은 HashMap이 구현 하는 인터페이스
         resultMap = new HashMap();
 
+
+
         // 탐지된 불 로그기록이 있으면 값을 담으라는 뜻
         if (fireMap.size() >=2){
             resultMap.putAll(fireMap);
@@ -350,6 +352,7 @@ public class HomeActivity extends Fragment {
         if (ObjectMap.size() >=2){
             resultMap.putAll(ObjectMap);
         }
+        
 
         Log.d("tag","사이즈 : " + resultMap.size());
 
@@ -393,7 +396,11 @@ public class HomeActivity extends Fragment {
             }
         }
 
-        listViewAdapter.addItem(null , "현재 탐지된것이 없습니다.");
+        if (fireMap.size() <2 && ObjectMap.size() < 2){
+            listViewAdapter.addItem(null , "현재 위험이 감지되지 않았습니다.");
+        }
+
+
         listView.setAdapter(listViewAdapter);
 
     }
