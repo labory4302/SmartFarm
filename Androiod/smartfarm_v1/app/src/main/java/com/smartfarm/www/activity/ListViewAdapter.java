@@ -9,6 +9,8 @@ import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
+
 import com.smartfarm.www.R;
 
 import java.util.ArrayList;
@@ -46,7 +48,7 @@ public class ListViewAdapter extends BaseAdapter {
         titleTextView.setText(listViewItem.getTitle());
         contentTextView.setText(listViewItem.getContent());
 
-        LinearLayout linearLayout = (LinearLayout)convertView.findViewById(R.id.go_detect_page);
+        ConstraintLayout linearLayout = (ConstraintLayout) convertView.findViewById(R.id.go_detect_page);
         linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

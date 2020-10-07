@@ -74,7 +74,7 @@ public class HomeActivity extends Fragment {
         showDate = view.findViewById(R.id.show_date);
 
 
-
+        // 로그기록 가져오기
         getLog();
 
         showDate.setText(appInfo.today[1]+"월"+appInfo.today[2]+"일");
@@ -375,16 +375,20 @@ public class HomeActivity extends Fragment {
 
         // 로그 갯수를 위한 변수
         int count=1;
-        for(String key : keySetList) {
-            String time = resultMap.get(key);
-            String content[] = key.split("_");
 
-            Log.d("결과","과연 : "+time);
+        for(String key : keySetList) {
+            String image_title = resultMap.get(key);
+            String content[] = key.split("_");
+            String time[] = image_title.split("-");
+            StringBuffer time_time = new StringBuffer(time[1]);
+            time_time.insert(2," : ");
+
+//            Log.d("결과","과연 : "+time);
 
             if (content[0].equals("fire")){
-                listViewAdapter.addItem(time , "화재가 감지되었습니다.");
+                listViewAdapter.addItem(time_time.toString(), "화재가 감지되었습니다.");
             }else{
-                listViewAdapter.addItem(time , "물체가 감지되었습니다.");
+                listViewAdapter.addItem(time_time.toString(), "물체가 감지되었습니다.");
             }
 
 

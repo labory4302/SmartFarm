@@ -13,7 +13,7 @@ import com.smartfarm.www.service.LogoutService;
 public class DetectActivity extends AppCompatActivity {
 
     private ListView listView;
-    private ListViewAdapter listViewAdapter;
+    private DetectListViewAdapter listViewAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -23,15 +23,15 @@ public class DetectActivity extends AppCompatActivity {
         //자동로그아웃 활성화
         startService(new Intent(this, LogoutService.class));
 
-        listViewAdapter = new ListViewAdapter();
+        listViewAdapter = new DetectListViewAdapter();
 
         listView = (ListView)findViewById(R.id.detect_listview);
 
-        listViewAdapter.addItem("테스트1","내용1");
-        listViewAdapter.addItem("테스트2","내용2");
-        listViewAdapter.addItem("테스트3","내용3");
-        listViewAdapter.addItem("테스트4","내용4");
-        listViewAdapter.addItem("테스트5","내용5");
+        listViewAdapter.addItem("테스트1","내용1","");
+        listViewAdapter.addItem("테스트2","내용2","");
+        listViewAdapter.addItem("테스트3","내용3","");
+        listViewAdapter.addItem("테스트4","내용4","");
+        listViewAdapter.addItem("테스트5","내용5","");
 
         listView.setAdapter(listViewAdapter);
 
