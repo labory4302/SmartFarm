@@ -36,10 +36,11 @@ public class LogoutService extends Service {
         service = RetrofitClient.getClient().create(ServiceApi.class);
         UserInformation userInfo = UserInformation.getUserInformation();
 
+        Log.d("통행 확인1", "확인");
         int check = 0;
         int no = userInfo.getUserNo();
         checkOut(new AccessData(check, no));
-
+        Log.d("통행 확인2", "확인");
         stopSelf();
     }
     private void checkOut(AccessData data){
