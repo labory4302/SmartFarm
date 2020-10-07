@@ -65,7 +65,6 @@ public class CropActivity extends Fragment {
     private static final int REQUEST_IMAGE_CAPTURE = 672;   //사진파일을  Request코드
     private String imageFilePath;                           //사진이 저장되어있는 파일 경로
     private Uri photoUri;                                   //이미지 자원 식별자
-    private final String CHANNEL_ID = appInfo.SMARTFARM_CHANNEL_ID;
 
     private final String BUCKET_NAME = "hotsix-smartfarm"; // S3 버킷 이름 (저장소 이름)
     private String imgName;  // 저장할 이미지의 이름

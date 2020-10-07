@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -56,10 +57,28 @@ public class HomeActivity extends Fragment {
 
     Map<String, String> resultMap; // 로그를 정렬하기 위한 해쉬맵
 
+    ImageView weather; //easter
+    MediaPlayer easterEgg1;
+    int count=0;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.home_page,container,false);
+
+        // easter
+        weather = (ImageView) view.findViewById(R.id.weather0);
+        weather.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                if(count>=4) {
+                    easterEgg1 = MediaPlayer.create(getContext(), R.raw.easteregg1);
+                    easterEgg1.start();
+                }
+                count++;
+                return false;
+            }
+        });
 
         listViewAdapter = new ListViewAdapter();
 
