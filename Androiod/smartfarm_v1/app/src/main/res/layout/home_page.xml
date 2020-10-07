@@ -22,7 +22,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout2"
         android:layout_width="match_parent"
-        android:layout_height="320dp"
+        android:layout_height="325dp"
         android:background="@color/White"
         android:elevation="1dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -237,7 +237,7 @@
         app:layout_constraintTop_toBottomOf="@+id/constraintLayout2">
 
         <TextView
-            android:id="@+id/textView10"
+            android:id="@+id/price_day0"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -248,7 +248,7 @@
             app:layout_constraintTop_toBottomOf="@+id/dayday0" />
 
         <TextView
-            android:id="@+id/textView12"
+            android:id="@+id/price_day1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -260,7 +260,7 @@
             app:layout_constraintTop_toBottomOf="@+id/dayday1" />
 
         <TextView
-            android:id="@+id/textView13"
+            android:id="@+id/price_day2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -271,7 +271,7 @@
             app:layout_constraintTop_toBottomOf="@+id/dayday2" />
 
         <TextView
-            android:id="@+id/textView14"
+            android:id="@+id/price_day3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -282,7 +282,7 @@
             app:layout_constraintTop_toBottomOf="@+id/dayday3" />
 
         <TextView
-            android:id="@+id/textView16"
+            android:id="@+id/price_day4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -293,7 +293,7 @@
             app:layout_constraintTop_toBottomOf="@+id/dayday4" />
 
         <TextView
-            android:id="@+id/textView31"
+            android:id="@+id/price_day5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -304,7 +304,7 @@
             app:layout_constraintTop_toBottomOf="@+id/dayday5" />
 
         <TextView
-            android:id="@+id/textView32"
+            android:id="@+id/price_day6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -318,9 +318,9 @@
             android:id="@+id/dayday0"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
+            android:layout_marginStart="25dp"
             android:layout_marginTop="10dp"
-            android:text="00일"
+            android:text="오늘"
             android:textAlignment="textEnd"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView40" />
@@ -383,20 +383,21 @@
             android:id="@+id/textView40"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="40dp"
-            android:layout_marginTop="5dp"
+            android:layout_marginStart="5dp"
             android:text="소·도매 예상 가격"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintBottom_toBottomOf="@+id/kind"
+            app:layout_constraintStart_toEndOf="@+id/kind"
+            app:layout_constraintTop_toTopOf="@+id/kind" />
 
         <TextView
             android:id="@+id/kind"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="5dp"
             android:text="딸기 "
-            app:layout_constraintBottom_toBottomOf="@+id/textView40"
-            app:layout_constraintEnd_toStartOf="@+id/textView40"
-            app:layout_constraintTop_toTopOf="@+id/textView40" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout

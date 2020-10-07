@@ -30,11 +30,13 @@ public class HomeActivity extends Fragment {
     View view;
     private ListView listView;
     private ListViewAdapter listViewAdapter;
+    private TextView kind;
 
     TextView tb1[] = new TextView[7];
     ImageView tb2[] = new ImageView[7];
     TextView day_tv[] = new TextView[7];
     TextView dayday_tv[] = new TextView[7];
+    TextView price_day[] = new TextView[7];
 
     ImageButton strawberry,rice,beans,chili,cabbage;
     TextView showDate;
@@ -58,8 +60,7 @@ public class HomeActivity extends Fragment {
         chili = view.findViewById(R.id.chili_bt);
         strawberry = view.findViewById(R.id.strawberry_bt);
         showDate = view.findViewById(R.id.show_date);
-
-        showDate.setText(appInfo.today[1]+"월"+appInfo.today[2]+"일");
+        kind = view.findViewById(R.id.kind);
 
         for (int i = 1; i<7; i++){
             int resId = getResources().getIdentifier("day"+i,"id",getContext().getPackageName());
@@ -78,13 +79,9 @@ public class HomeActivity extends Fragment {
             int resId = getResources().getIdentifier("weather"+i,"id", getContext().getPackageName());
             tb2[i] = (ImageView) view.findViewById(resId);
         }
-
-
-        for (int i =1; i<7; i++) {
-            day_tv[i].setText(appInfo.day[i] + "일");
-        }
-        for (int i=0; i<7; i++){
-            dayday_tv[i].setText(appInfo.day[i] + "일");
+        for (int i = 0; i<7; i++){
+            int resId = getResources().getIdentifier("price_day"+i,"id",getContext().getPackageName());
+            price_day[i] = (TextView) view.findViewById(resId);
         }
 
         if (appInfo.strawberry==null){
@@ -124,72 +121,108 @@ public class HomeActivity extends Fragment {
             }).start();
 
         }else{
-            Log.d("else", "여기 : ");
             getWeather();
 
-            listViewAdapter.addItem("양배추",appInfo.cabbage);
-            listViewAdapter.addItem("쌀",appInfo.rice);
-            listViewAdapter.addItem("콩",appInfo.bean);
-            listViewAdapter.addItem("홍고추",appInfo.redPepper);
-            listViewAdapter.addItem("딸기",appInfo.strawberry);
-            listView.setAdapter(listViewAdapter);
+            Log.d("씨발씨발"," : "+appInfo.rice[1]);
+
+            kind.setText("배추");
+            for(int i=0; i<7; i++){
+                price_day[i].setText(appInfo.cabbage[i]+"원");
+            }
+            cabbage.setImageResource(R.drawable.cabbage);
+            rice.setImageResource(R.drawable.rice_unclick);
+            beans.setImageResource(R.drawable.beans_unclick);
+            chili.setImageResource(R.drawable.chili_unclick);
+            strawberry.setImageResource(R.drawable.strawberry_unclick);
+
+            cabbage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    kind.setText("배추");
+                    cabbage.setImageResource(R.drawable.cabbage);
+                    rice.setImageResource(R.drawable.rice_unclick);
+                    beans.setImageResource(R.drawable.beans_unclick);
+                    chili.setImageResource(R.drawable.chili_unclick);
+                    strawberry.setImageResource(R.drawable.strawberry_unclick);
+                    for(int i=0; i<7; i++){
+                        price_day[i].setText(appInfo.cabbage[i]+"원");
+                    }
+                }
+            });
+            rice.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    kind.setText("쌀");
+                    cabbage.setImageResource(R.drawable.cabbage_unclick);
+                    rice.setImageResource(R.drawable.rice);
+                    beans.setImageResource(R.drawable.beans_unclick);
+                    chili.setImageResource(R.drawable.chili_unclick);
+                    strawberry.setImageResource(R.drawable.strawberry_unclick);
+                    for(int i=0; i<7; i++){
+                        price_day[i].setText(appInfo.rice[i]+"원");
+                    }
+                }
+            });
+            beans.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    kind.setText("콩");
+                    cabbage.setImageResource(R.drawable.cabbage_unclick);
+                    rice.setImageResource(R.drawable.rice_unclick);
+                    beans.setImageResource(R.drawable.beans);
+                    chili.setImageResource(R.drawable.chili_unclick);
+                    strawberry.setImageResource(R.drawable.strawberry_unclick);
+                    for(int i=0; i<7; i++){
+                        price_day[i].setText(appInfo.bean[i]+"원");
+                    }
+                }
+            });
+            chili.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    kind.setText("홍고추");
+                    cabbage.setImageResource(R.drawable.cabbage_unclick);
+                    rice.setImageResource(R.drawable.rice_unclick);
+                    beans.setImageResource(R.drawable.beans_unclick);
+                    chili.setImageResource(R.drawable.chili);
+                    strawberry.setImageResource(R.drawable.strawberry_unclick);
+                    for(int i=0; i<7; i++){
+                        price_day[i].setText(appInfo.redPepper[i]+"원");
+                    }
+                }
+            });
+            strawberry.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    kind.setText("딸기");
+                    cabbage.setImageResource(R.drawable.cabbage_unclick);
+                    rice.setImageResource(R.drawable.rice_unclick);
+                    beans.setImageResource(R.drawable.beans_unclick);
+                    chili.setImageResource(R.drawable.chili_unclick);
+                    strawberry.setImageResource(R.drawable.strawberry);
+                    for(int i=0; i<7; i++){
+                        price_day[i].setText(appInfo.strawberry[i]+"원");
+                    }
+                }
+            });
+
+//            listViewAdapter.addItem("양배추",appInfo.cabbage);
+//            listViewAdapter.addItem("쌀",appInfo.rice);
+//            listViewAdapter.addItem("콩",appInfo.bean);
+//            listViewAdapter.addItem("홍고추",appInfo.redPepper);
+//            listViewAdapter.addItem("딸기",appInfo.strawberry);
+//            listView.setAdapter(listViewAdapter);
+
+
         }
 
-        cabbage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cabbage.setImageResource(R.drawable.cabbage);
-                rice.setImageResource(R.drawable.rice_unclick);
-                beans.setImageResource(R.drawable.beans_unclick);
-                chili.setImageResource(R.drawable.chili_unclick);
-                strawberry.setImageResource(R.drawable.strawberry_unclick);
-            }
-        });
-        rice.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cabbage.setImageResource(R.drawable.cabbage_unclick);
-                rice.setImageResource(R.drawable.rice);
-                beans.setImageResource(R.drawable.beans_unclick);
-                chili.setImageResource(R.drawable.chili_unclick);
-                strawberry.setImageResource(R.drawable.strawberry_unclick);
-            }
-        });
-        beans.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cabbage.setImageResource(R.drawable.cabbage_unclick);
-                rice.setImageResource(R.drawable.rice_unclick);
-                beans.setImageResource(R.drawable.beans);
-                chili.setImageResource(R.drawable.chili_unclick);
-                strawberry.setImageResource(R.drawable.strawberry_unclick);
-            }
-        });
-        chili.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cabbage.setImageResource(R.drawable.cabbage_unclick);
-                rice.setImageResource(R.drawable.rice_unclick);
-                beans.setImageResource(R.drawable.beans_unclick);
-                chili.setImageResource(R.drawable.chili);
-                strawberry.setImageResource(R.drawable.strawberry_unclick);
-            }
-        });
-        strawberry.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cabbage.setImageResource(R.drawable.cabbage_unclick);
-                rice.setImageResource(R.drawable.rice_unclick);
-                beans.setImageResource(R.drawable.beans_unclick);
-                chili.setImageResource(R.drawable.chili_unclick);
-                strawberry.setImageResource(R.drawable.strawberry);
-            }
-        });
+
+
 
         return view;
     }
 
-    // 데이터 전송 롼료시 UI 변경을 위한 핸들러
+    // 데이터 전송 완료시 UI 변경을 위한 핸들러
     private final Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -198,13 +231,88 @@ public class HomeActivity extends Fragment {
                     Log.d("??","dfd 시작");
                     getWeather();
                     Log.d("dddddddddd", "홈액티비티"+appInfo.strawberry);
-                    listViewAdapter.addItem("양배추",appInfo.cabbage);
-                    listViewAdapter.addItem("쌀",appInfo.rice);
-                    listViewAdapter.addItem("콩",appInfo.bean);
-                    listViewAdapter.addItem("홍고추",appInfo.redPepper);
-                    listViewAdapter.addItem("딸기",appInfo.strawberry);
+//                    listViewAdapter.addItem("양배추",appInfo.cabbage);
+//                    listViewAdapter.addItem("쌀",appInfo.rice);
+//                    listViewAdapter.addItem("콩",appInfo.bean);
+//                    listViewAdapter.addItem("홍고추",appInfo.redPepper);
+//                    listViewAdapter.addItem("딸기",appInfo.strawberry);
+//                    listView.setAdapter(listViewAdapter);
 
-                    listView.setAdapter(listViewAdapter);
+                    for(int i=0; i<7; i++){
+                        price_day[i].setText(appInfo.cabbage[i]+"원");
+                    }
+                    cabbage.setImageResource(R.drawable.cabbage);
+                    rice.setImageResource(R.drawable.rice_unclick);
+                    beans.setImageResource(R.drawable.beans_unclick);
+                    chili.setImageResource(R.drawable.chili_unclick);
+                    strawberry.setImageResource(R.drawable.strawberry_unclick);
+
+                    cabbage.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            cabbage.setImageResource(R.drawable.cabbage);
+                            rice.setImageResource(R.drawable.rice_unclick);
+                            beans.setImageResource(R.drawable.beans_unclick);
+                            chili.setImageResource(R.drawable.chili_unclick);
+                            strawberry.setImageResource(R.drawable.strawberry_unclick);
+                            for(int i=0; i<7; i++){
+                                price_day[i].setText(appInfo.cabbage[i]+"원");
+                            }
+                        }
+                    });
+                    rice.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            cabbage.setImageResource(R.drawable.cabbage_unclick);
+                            rice.setImageResource(R.drawable.rice);
+                            beans.setImageResource(R.drawable.beans_unclick);
+                            chili.setImageResource(R.drawable.chili_unclick);
+                            strawberry.setImageResource(R.drawable.strawberry_unclick);
+                            for(int i=0; i<7; i++){
+                                price_day[i].setText(appInfo.rice[i]+"원");
+                            }
+                        }
+                    });
+                    beans.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            cabbage.setImageResource(R.drawable.cabbage_unclick);
+                            rice.setImageResource(R.drawable.rice_unclick);
+                            beans.setImageResource(R.drawable.beans);
+                            chili.setImageResource(R.drawable.chili_unclick);
+                            strawberry.setImageResource(R.drawable.strawberry_unclick);
+                            for(int i=0; i<7; i++){
+                                price_day[i].setText(appInfo.bean[i]+"원");
+                            }
+                        }
+                    });
+                    chili.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            cabbage.setImageResource(R.drawable.cabbage_unclick);
+                            rice.setImageResource(R.drawable.rice_unclick);
+                            beans.setImageResource(R.drawable.beans_unclick);
+                            chili.setImageResource(R.drawable.chili);
+                            strawberry.setImageResource(R.drawable.strawberry_unclick);
+                            for(int i=0; i<7; i++){
+                                price_day[i].setText(appInfo.redPepper[i]+"원");
+                            }
+                        }
+                    });
+                    strawberry.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            cabbage.setImageResource(R.drawable.cabbage_unclick);
+                            rice.setImageResource(R.drawable.rice_unclick);
+                            beans.setImageResource(R.drawable.beans_unclick);
+                            chili.setImageResource(R.drawable.chili_unclick);
+                            strawberry.setImageResource(R.drawable.strawberry);
+                            for(int i=0; i<7; i++){
+                                price_day[i].setText(appInfo.strawberry[i]+"원");
+                            }
+                        }
+                    });
+
                     dialog.cancel();
                     break ;
                 // TODO : add case.
@@ -219,6 +327,15 @@ public class HomeActivity extends Fragment {
         Date date = new Date(now);
         SimpleDateFormat timeFormat = new SimpleDateFormat("HH");
         int time = Integer.valueOf(timeFormat.format(date));
+
+        showDate.setText(appInfo.today[1]+"월"+appInfo.today[2]+"일");
+
+        for (int i =1; i<7; i++) {
+            day_tv[i].setText(appInfo.day[i] + "일");
+        }
+        for (int i=1; i<7; i++){
+            dayday_tv[i].setText(appInfo.day[i] + "일");
+        }
 
         Map<String,String> map = appInfo.weatherMap;
         // 온도/강수량  가져오기
