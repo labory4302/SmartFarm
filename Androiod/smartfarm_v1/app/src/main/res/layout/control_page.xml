@@ -12,8 +12,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout6"
-        tools:visibility="visible">
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout6">
 
         <Button
             android:id="@+id/auto_change_apply"
@@ -41,14 +43,15 @@
 
             <Button
                 android:id="@+id/temp_up"
-                android:layout_width="wrap_content"
+                android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_marginEnd="10dp"
                 android:layout_weight="1"
-                android:text="∧"
+                android:background="@drawable/up_point_icon"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
 
             <TextView
                 android:id="@+id/temp_title"
@@ -63,23 +66,11 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/textView4"
-                android:layout_width="30dp"
-                android:layout_height="50dp"
-                android:layout_weight="1"
-                android:gravity="center|right"
-                android:text="℃"
-                android:textAlignment="center"
-                android:textSize="14sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/temp_up"
-                app:layout_constraintTop_toTopOf="parent" />
-
             <EditText
                 android:id="@+id/show_temp_change"
-                android:layout_width="50dp"
+                android:layout_width="60dp"
                 android:layout_height="50dp"
+                android:layout_marginEnd="20dp"
                 android:layout_weight="1"
                 android:background="@color/White"
                 android:ems="10"
@@ -89,15 +80,16 @@
                 android:text="0"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/textView4"
+                app:layout_constraintEnd_toStartOf="@+id/temp_up"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <Button
                 android:id="@+id/temp_down"
-                android:layout_width="wrap_content"
+                android:layout_width="50dp"
                 android:layout_height="50dp"
+                android:layout_marginEnd="20dp"
                 android:layout_weight="1"
-                android:text="∨"
+                android:background="@drawable/down_point_icon"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/show_temp_change"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -116,11 +108,11 @@
 
             <Button
                 android:id="@+id/humidity_up"
-                android:layout_width="wrap_content"
+                android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_marginEnd="10dp"
                 android:layout_weight="1"
-                android:text="∧"
+                android:background="@drawable/up_point_icon"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -140,17 +132,18 @@
 
             <Button
                 android:id="@+id/humidity_down"
-                android:layout_width="wrap_content"
+                android:layout_width="50dp"
                 android:layout_height="50dp"
+                android:layout_marginEnd="20dp"
                 android:layout_weight="1"
-                android:text="∨"
+                android:background="@drawable/down_point_icon"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/show_humidity_change"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <EditText
                 android:id="@+id/show_humidity_change"
-                android:layout_width="50dp"
+                android:layout_width="40dp"
                 android:layout_height="50dp"
                 android:layout_weight="1"
                 android:background="@color/White"
@@ -166,8 +159,9 @@
 
             <TextView
                 android:id="@+id/textView6"
-                android:layout_width="30dp"
+                android:layout_width="20dp"
                 android:layout_height="50dp"
+                android:layout_marginEnd="20dp"
                 android:layout_weight="1"
                 android:gravity="center|right"
                 android:text="％"
@@ -191,21 +185,22 @@
 
             <Button
                 android:id="@+id/soil_up"
-                android:layout_width="wrap_content"
+                android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_marginEnd="10dp"
                 android:layout_weight="1"
-                android:text="∧"
+                android:background="@drawable/up_point_icon"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <Button
                 android:id="@+id/soil_down"
-                android:layout_width="wrap_content"
+                android:layout_width="50dp"
                 android:layout_height="50dp"
+                android:layout_marginEnd="20dp"
                 android:layout_weight="1"
-                android:text="∨"
+                android:background="@drawable/down_point_icon"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/show_soil_change"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -223,23 +218,11 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/textView5"
-                android:layout_width="30dp"
-                android:layout_height="50dp"
-                android:layout_weight="1"
-                android:gravity="center|right"
-                android:text="％"
-                android:textAlignment="center"
-                android:textSize="14sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/soil_up"
-                app:layout_constraintTop_toTopOf="parent" />
-
             <EditText
                 android:id="@+id/show_soil_change"
-                android:layout_width="50dp"
+                android:layout_width="60dp"
                 android:layout_height="50dp"
+                android:layout_marginEnd="20dp"
                 android:layout_weight="1"
                 android:background="@color/White"
                 android:ems="10"
@@ -249,7 +232,7 @@
                 android:text="0"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/textView5"
+                app:layout_constraintEnd_toStartOf="@+id/soil_up"
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -337,7 +320,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/constraintLayout6"
-        tools:visibility="gone">
+        android:visibility="gone">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout11"

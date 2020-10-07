@@ -45,7 +45,7 @@ app.post('/user/access/in', function (req, res) {
 app.post('/user/access/out', function (req, res) {
 
     var userLoginCheck = req.body.userLoginCheck;
-    var userNo = req.body.userID;
+    var userNo = req.body.userNo;
     
     var sql = 'UPDATE Users SET userLoginCheck = ? WHERE userNo = ?;';
     var params = [userLoginCheck, userNo];

@@ -81,14 +81,15 @@ public class FireForegroundService extends Service {
 
         // 앱을 켰을때 내부 저장소에 값이 존재하는지 유무 확인하려고 가져옴
         // 값이 존재하면 존재하는값 가져옴
-        SharedPreferences detectLog = getSharedPreferences("detectLog", Activity.MODE_PRIVATE);
-        fireLog_length = detectLog.getInt("log_length", -1); // 가져왔는데 없으면 기본값 -1
+        SharedPreferences FireLog = getSharedPreferences("FireLog", Activity.MODE_PRIVATE);
+        fireLog_length = FireLog.getInt("fireLog_length", -1); // 가져왔는데 없으면 기본값 -1
 
         // 앱에 처음 만드는거면 -1 이므로
         if(fireLog_length == -1) {
             // 로그기록 마지막 index 0으로 넣어줌
-            SharedPreferences.Editor editor = detectLog.edit();
-            editor.putInt("log_length",0);
+            SharedPreferences.Editor editor = FireLog.edit();
+            fireLog_length=0; // 0부터 시작하게 초기화
+            editor.putInt("fireLog_length",0);
             editor.apply();
         }
     }
@@ -482,12 +483,14 @@ public class FireForegroundService extends Service {
 
                 if(result.getBody().equals("fire")){
                     NotificationSomethings(444, webImg_bitmap, "화재가 감지되었습니다.");
-                    SharedPreferences detectLog = getSharedPreferences("detectLog", Activity.MODE_PRIVATE);
+                    SharedPreferences detectLog = getSharedPreferences("FireLog", Activity.MODE_PRIVATE);
                     SharedPreferences.Editor editor = detectLog.edit();
-                    editor.putString("imgName"+fireLog_length, imgName);
-                    editor.putString("content"+fireLog_length, "화재가 감지되었습니다.");
-                    editor.apply();
+                    editor.putString("fire_imgName"+fireLog_length, imgName.replace(".png",""));
+
+                    // 마지막 인덱스를 체그하기 위해 + 해주고 인풋
                     fireLog_length++;
+                    editor.putInt("fireLog_length",fireLog_length);
+                    editor.apply();
                 }
 
 

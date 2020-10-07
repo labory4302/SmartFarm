@@ -1,10 +1,12 @@
 package com.smartfarm.www.service;
 
+import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -56,6 +58,9 @@ public class ObjectForegroundService extends Service {
     private Thread objectThread;
 
 
+    private int objectLog_length; // 푸쉬알림 로그의 마지막
+
+
 
 
 
@@ -72,6 +77,20 @@ public class ObjectForegroundService extends Service {
 
         webimg_object.mkdirs();
         webimg_object_detect.mkdirs();
+
+        // 앱을 켰을때 내부 저장소에 값이 존재하는지 유무 확인하려고 가져옴
+        // 값이 존재하면 존재하는값 가져옴
+        SharedPreferences detectLog = getSharedPreferences("ObjectLog", Activity.MODE_PRIVATE);
+        objectLog_length = detectLog.getInt("objectLog_length", -1); // 가져왔는데 없으면 기본값 -1
+
+        // 앱에 처음 만드는거면 -1 이므로
+        if(objectLog_length == -1) {
+            // 로그기록 마지막 index 0으로 넣어줌
+            SharedPreferences.Editor editor = detectLog.edit();
+            objectLog_length=0; // 0부터 시작하게 초기화
+            editor.putInt("objectLog_length",0);
+            editor.apply();
+        }
     }
 
 
@@ -456,6 +475,15 @@ public class ObjectForegroundService extends Service {
                     Bitmap yoloImg = BitmapFactory.decodeFile(S3Downfile.getPath());
                     webImg_path = S3Downfile.getAbsolutePath(); // intent로 넘겨주기 위한 사진 경로 저장 (푸쉬 알림 클릭 이벤트)
                     NotificationSomethings(333, yoloImg, "물체가 감지되었습니다.");
+
+                    SharedPreferences detectLog = getSharedPreferences("ObjectLog", Activity.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = detectLog.edit();
+                    editor.putString("object_imgName"+objectLog_length, imgName.replace(".png",""));
+
+                    // 마지막 인덱스를 체그하기 위해 + 해주고 인풋
+                    objectLog_length++;
+                    editor.putInt("objectLog_length",objectLog_length);
+                    editor.apply();
                 }
             }
 
