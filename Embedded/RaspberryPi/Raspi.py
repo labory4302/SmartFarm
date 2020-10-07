@@ -47,7 +47,7 @@ def sendRDS(humi,temp):
 def arduinoStatus(automode,pump,fan,led):
     try:
         with conn.cursor() as cur:
-            sql = "UPDATE arduinoStatus SET automode  = %s , pump = %s, fan = %s, led = %s WHERE userNo = %s"
+            sql = "UPDATE arduinoStatus SET automode  = %s , pump = %s, fan = %s, led = %s WHERE userNo = %s;"
             #sql = "insert into arduinoStatus values(%s, %s, %s, %s, %s)"
             cur.execute(sql,(automode, pump, fan, led, RASPIID))
             conn.commit()
@@ -59,7 +59,7 @@ def arduinoStatus(automode,pump,fan,led):
 def saveData(saveHumi):
     try:
         with conn.cursor() as cur:
-            sql = "UPDATE saveRaspiData SET recvDate = %s, Humi = %s WHERE userNo = %s"
+            sql = "UPDATE saveRaspiData SET recvDate = %s, Humi = %s WHERE userNo = %s;"
           #  sql = "INSERT INTO saveRaspiData VALUES(%s, %s, %s)"
             cur.execute(sql,(now, saveHumi, RASPIID))
             conn.commit()
@@ -75,25 +75,22 @@ def receiverArduinoData(sock):
 #아두이노에서 값을 수신한뒤 UTP-8로 디코딩 , 디코딩 하지 않을 시 센서값이 제대로 수신되지 않음
             recvArduinoData = sock.recv(4096)
             arduinoData = recvArduinoData.decode('utf-8').strip()
-
 #수신한 데이터가 없을 경우 pass  
             if(arduinoData == ""):
                 pass
             else:
-                print("recived Data : {}\n".format(arduinoData))
-             
+                print("recived Data : {}\n".format(arduinoData))           
 # , 를 기준으로 데이터 파싱
                 passingArduinoData = arduinoData.split(",")
 #파싱된 데이터 RDS에 전송
                 if(passingArduinoData[0] == "1"):
-  #                  arduinoStatus(passingArduinoData[1],passingArduinoData[2],passingArduinoData[3],passingArduinoData[4])
- #                   print("{} , {}".format(passingArduinoData[1], passingArduinoData[2]))
+                    
+                    arduinoStatus(passingArduinoData[1],passingArduinoData[2],passingArduinoData[3],passingArduinoData[4])
+               #     print("{} , {}".format(passingArduinoData[1], passingArduinoData[2]))
                 else:
-   #                 sendRDS(passingArduinoData[0],passingArduinoData[1])
-    #                print("{} , {}".format(passingArduinoData[0],passingArduinoData[1]))
+                    sendRDS(passingArduinoData[0],passingArduinoData[1])
+               #     print("{} , {}".format(passingArduinoData[0],passingArduinoData[1]))
 
-
- 
     except KeyboardInterrupt:
         print("\nFinished\n")
         exit()
@@ -106,11 +103,11 @@ def receiverAndroidRequest(sock):
     try:
         while True:
             recvAndroidData = sock.recv(1024)
-            decodingData = recvAndroidData.decode('utf-8').strip()
+            decodingData = recvAndroidData.decode('utf-8')#.strip()
             print('받은 데이터 : ', decodingData)
             sendArduino(decodingData)    
             passingAndroidData = decodingData.split(",")
-            if(int(int(passingAndroidData[0])/1000) ==4):
+            if(int(int(passingAndroidData[0])/1000) ==5):
                 saveData(int(int(passingAndroidData[0])%1000))
             else:
                 pass
@@ -143,6 +140,3 @@ while True:
     time.sleep(1)
     pass
 
-while True:
-    time.sleep(1)
-    pass
