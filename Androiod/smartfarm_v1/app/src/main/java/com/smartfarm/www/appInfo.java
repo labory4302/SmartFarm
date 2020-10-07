@@ -44,29 +44,29 @@ public class appInfo extends Application {
     NotificationChannel channel; // 푸쉬 알림 채널 객체
 
     @Override
-    public void onCreate() {
-        long now = System.currentTimeMillis();
-        Date date = new Date(now);
-        SimpleDateFormat timeFormat = new SimpleDateFormat("yyyyMMdd");
-        SimpleDateFormat timeFormat1 = new SimpleDateFormat("yyyy-MM-dd");
-        String currentTime = timeFormat.format(date);
-        String currentTime1 = timeFormat1.format(date);
+        public void onCreate() {
+            long now = System.currentTimeMillis();
+            Date date = new Date(now);
+            SimpleDateFormat timeFormat = new SimpleDateFormat("yyyyMMdd");
+            SimpleDateFormat timeFormat1 = new SimpleDateFormat("yyyy-MM-dd");
+            String currentTime = timeFormat.format(date);
+            String currentTime1 = timeFormat1.format(date);
 
-        today = currentTime1.split("-");
+            today = currentTime1.split("-");
 
-        SharedPreferences appInfoPref = getSharedPreferences("appInfoPref", Activity.MODE_PRIVATE);
-        String appInfoPrefTime = appInfoPref.getString("date", null);
+            SharedPreferences appInfoPref = getSharedPreferences("appInfoPref", Activity.MODE_PRIVATE);
+            String appInfoPrefTime = appInfoPref.getString("date", null);
 
 
-        day=new String[7]; // 일주일 날짜 가져올 변수
+            day=new String[7]; // 일주일 날짜 가져올 변수
 
-        // 오늘 접속 기록이 있을떄 (날짜, 날씨, 소도매)
-        if(currentTime.equals(appInfoPrefTime) == true) {
-            new uplaodSaveAppInfo().execute();
-        } else {
-            // 오늘 처음 접속할떄
-            new GetWeatherTask().execute();
-        }
+            // 오늘 접속 기록이 있을떄 (날짜, 날씨, 소도매)
+            if(currentTime.equals(appInfoPrefTime) == true) {
+                new uplaodSaveAppInfo().execute();
+            } else {
+                // 오늘 처음 접속할떄
+                new GetWeatherTask().execute();
+            }
 
         CharSequence channelName  = "smartfarm channel";
         String description = "camera detection";

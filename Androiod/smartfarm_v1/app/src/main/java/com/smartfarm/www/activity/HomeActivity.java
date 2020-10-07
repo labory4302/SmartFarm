@@ -1,6 +1,8 @@
 package com.smartfarm.www.activity;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,7 +25,13 @@ import com.smartfarm.www.R;
 import com.smartfarm.www.appInfo;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public class HomeActivity extends Fragment {
@@ -43,12 +51,16 @@ public class HomeActivity extends Fragment {
 
     private final int FINISH = 999; // 핸들러 메시지 구분 ID
 
+    Map<String, String> resultMap; // 로그를 정렬하기 위한 해쉬맵
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.home_page,container,false);
 
         listViewAdapter = new ListViewAdapter();
+
+
 
         listView = (ListView) view.findViewById(R.id.listview);
         cabbage = view.findViewById(R.id.cabbage_bt);
@@ -57,6 +69,9 @@ public class HomeActivity extends Fragment {
         chili = view.findViewById(R.id.chili_bt);
         strawberry = view.findViewById(R.id.strawberry_bt);
         showDate = view.findViewById(R.id.show_date);
+
+
+        getLog();
 
         showDate.setText(appInfo.today[1]+"월"+appInfo.today[2]+"일");
 
@@ -114,15 +129,7 @@ public class HomeActivity extends Fragment {
             }).start();
 
         }else{
-            Log.d("else", "여기 : ");
             getWeather();
-
-            listViewAdapter.addItem("양배추",appInfo.cabbage);
-            listViewAdapter.addItem("쌀",appInfo.rice);
-            listViewAdapter.addItem("콩",appInfo.bean);
-            listViewAdapter.addItem("홍고추",appInfo.redPepper);
-            listViewAdapter.addItem("딸기",appInfo.strawberry);
-            listView.setAdapter(listViewAdapter);
         }
 
         cabbage.setOnClickListener(new View.OnClickListener() {
@@ -187,20 +194,82 @@ public class HomeActivity extends Fragment {
                 case FINISH :
                     Log.d("??","dfd 시작");
                     getWeather();
-                    Log.d("dddddddddd", "홈액티비티"+appInfo.strawberry);
-                    listViewAdapter.addItem("양배추",appInfo.cabbage);
-                    listViewAdapter.addItem("쌀",appInfo.rice);
-                    listViewAdapter.addItem("콩",appInfo.bean);
-                    listViewAdapter.addItem("홍고추",appInfo.redPepper);
-                    listViewAdapter.addItem("딸기",appInfo.strawberry);
-
-                    listView.setAdapter(listViewAdapter);
                     dialog.cancel();
                     break ;
                 // TODO : add case.
             }
         }
     } ;
+
+    // 탐지된 로그 가져오기
+    private void getLog(){
+        SharedPreferences FireLog = getContext().getSharedPreferences("FireLog", Activity.MODE_PRIVATE);
+        Map fireMap = FireLog.getAll(); // 저장된 값을 다가져오기
+
+        //Map 은 HashMap이 구현 하는 인터페이스
+        resultMap = new HashMap();
+
+        // 탐지된 불 로그기록이 있으면 값을 담으라는 뜻
+        if (fireMap.size() >=2){
+            resultMap.putAll(fireMap);
+        }
+
+        SharedPreferences ObjectLog = getContext().getSharedPreferences("ObjectLog", Activity.MODE_PRIVATE);
+        Map ObjectMap = ObjectLog.getAll(); // 저장된 값을 다가져오기
+
+        // 탐지된 객체 로그기록이 있으면 값을 담으라는 뜻
+        if (ObjectMap.size() >=2){
+            resultMap.putAll(ObjectMap);
+        }
+
+        Log.d("tag","사이즈 : " + resultMap.size());
+
+        // 정렬하기 전에 방해되는 int이면서 필요없는 length 항목 지우기
+
+
+
+        resultMap.remove("fireLog_length");
+        resultMap.remove("objectLog_length");
+
+        List<String> keySetList = new ArrayList<>(resultMap.keySet());
+
+        // 내림차순 정렬하기 제일최근 5가지만 보여주기 위해
+        Collections.sort(keySetList, new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                return resultMap.get(o2).compareTo(resultMap.get(o1));
+            }
+        });
+
+        // 로그 갯수를 위한 변수
+        int count=1;
+        for(String key : keySetList) {
+            String time = resultMap.get(key);
+            String content[] = key.split("_");
+
+            Log.d("결과","과연 : "+time);
+
+            if (content[0].equals("fire")){
+                listViewAdapter.addItem(time , "화재가 감지되었습니다.");
+            }else{
+                listViewAdapter.addItem(time , "물체가 감지되었습니다.");
+            }
+
+
+            count++;
+
+            // 로그 보여줄 최대 갯수
+            if(count==11){
+                break;
+            }
+        }
+
+        listViewAdapter.addItem(null , "현재 탐지된것이 없습니다.");
+        listView.setAdapter(listViewAdapter);
+
+    }
+
+
 
     //날씨값 설정
     public void getWeather(){
