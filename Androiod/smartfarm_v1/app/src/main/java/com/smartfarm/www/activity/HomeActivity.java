@@ -371,7 +371,7 @@ public class HomeActivity extends Fragment {
         if (ObjectMap.size() >=2){
             resultMap.putAll(ObjectMap);
         }
-        
+
 
         Log.d("tag","사이즈 : " + resultMap.size());
 
