@@ -135,7 +135,7 @@ public class CropActivity extends Fragment {
     }
 
     private File createImageFile() throws IOException {
-        String timeStamp = new SimpleDateFormat("yyMMdd_HHmm").format(new Date());      //현재시간을 문자열로 반환
+        String timeStamp = new SimpleDateFormat("yyMMdd_HHmmSS").format(new Date());      //현재시간을 문자열로 반환
         imageFileName = timeStamp;                                           //파일이름의 형식 지정. 끝에 언더바하는 이유는 사진 저장할 때 뒤에 숫자가 더 붙음
         File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);                      //외부저장소 고유영역중 사진디렉토리의 주소를 불러옴
         File image = File.createTempFile(imageFileName, ".png", storageDir);                 //임시파일 생성
