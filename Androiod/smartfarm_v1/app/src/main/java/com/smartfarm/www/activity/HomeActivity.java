@@ -162,10 +162,6 @@ public class HomeActivity extends Fragment {
         }else{
             getWeather();
 
-
-            Log.d("씨발씨발"," : "+appInfo.rice[1]);
-
-
             kind.setText("배추");
             for(int i=0; i<7; i++){
                 price_day[i].setText(appInfo.cabbage[i]+"원");
