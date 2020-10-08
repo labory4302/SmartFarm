@@ -437,7 +437,7 @@ public class ControlActivity extends Fragment {
     };
 
     class ConnectRaspi extends Thread {     //소켓통신을 위한 스레드
-        private String ip = "192.168.0.5";  // 서버의 IP 주소
+        private String ip = "192.168.0.29";  // 서버의 IP 주소
         private int port = 9999;            // PORT번호를 꼭 라즈베리파이와 맞추어 주어야한다.
         private String sendMessage;         //송신할 데이터
 

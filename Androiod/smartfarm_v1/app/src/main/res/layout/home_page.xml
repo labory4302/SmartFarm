@@ -166,7 +166,9 @@
             android:layout_marginTop="10dp"
             android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:fontFamily="@font/my_font_bold"
+            />
 
         <TextView
             android:id="@+id/day1"
@@ -387,7 +389,9 @@
             android:text="소·도매 예상 가격"
             app:layout_constraintBottom_toBottomOf="@+id/kind"
             app:layout_constraintStart_toEndOf="@+id/kind"
-            app:layout_constraintTop_toTopOf="@+id/kind" />
+            app:layout_constraintTop_toTopOf="@+id/kind"
+            android:fontFamily="@font/my_font_bold"
+            />
 
         <TextView
             android:id="@+id/kind"
@@ -397,7 +401,9 @@
             android:layout_marginTop="5dp"
             android:text="딸기 "
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:fontFamily="@font/my_font_bold"
+            />
 
         <TextView
             android:id="@+id/unit"
@@ -504,7 +510,9 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintVertical_bias="0.0"
+            android:fontFamily="@font/my_font_bold"
+            />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

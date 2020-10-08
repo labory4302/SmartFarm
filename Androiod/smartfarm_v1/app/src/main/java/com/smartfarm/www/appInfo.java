@@ -96,6 +96,7 @@ public class appInfo extends Application {
             channel.enableLights(true);
             channel.enableVibration(true);
             channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+            channel.setSound(soundUri, audioAttributes);
 
             // 노티피케이션 채널을 시스템에 등록
             assert notificationManager != null;

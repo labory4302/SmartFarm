@@ -39,7 +39,7 @@ public class HomeActivity extends Fragment {
     View view;
     private ListView listView;
     private ListViewAdapter listViewAdapter;
-    private TextView kind;
+    private TextView kind, unit;
 
     TextView tb1[] = new TextView[7];
     ImageView tb2[] = new ImageView[7];
@@ -91,6 +91,7 @@ public class HomeActivity extends Fragment {
         chili = view.findViewById(R.id.chili_bt);
         strawberry = view.findViewById(R.id.strawberry_bt);
         showDate = view.findViewById(R.id.show_date);
+        unit = view.findViewById(R.id.unit);
 
 
         // 로그기록 가져오기
@@ -163,6 +164,7 @@ public class HomeActivity extends Fragment {
             getWeather();
 
             kind.setText("배추");
+            unit.setText("(1포기)");
             for(int i=0; i<7; i++){
                 price_day[i].setText(appInfo.cabbage[i]+"원");
             }
@@ -176,6 +178,7 @@ public class HomeActivity extends Fragment {
                 @Override
                 public void onClick(View v) {
                     kind.setText("배추");
+                    unit.setText("(1포기)");
                     cabbage.setImageResource(R.drawable.cabbage);
                     rice.setImageResource(R.drawable.rice_unclick);
                     beans.setImageResource(R.drawable.beans_unclick);
@@ -190,6 +193,7 @@ public class HomeActivity extends Fragment {
                 @Override
                 public void onClick(View v) {
                     kind.setText("쌀");
+                    unit.setText("(20Kg)");
                     cabbage.setImageResource(R.drawable.cabbage_unclick);
                     rice.setImageResource(R.drawable.rice);
                     beans.setImageResource(R.drawable.beans_unclick);
@@ -204,6 +208,7 @@ public class HomeActivity extends Fragment {
                 @Override
                 public void onClick(View v) {
                     kind.setText("콩");
+                    unit.setText("(500g)");
                     cabbage.setImageResource(R.drawable.cabbage_unclick);
                     rice.setImageResource(R.drawable.rice_unclick);
                     beans.setImageResource(R.drawable.beans);
@@ -218,6 +223,7 @@ public class HomeActivity extends Fragment {
                 @Override
                 public void onClick(View v) {
                     kind.setText("홍고추");
+                    unit.setText("(100g)");
                     cabbage.setImageResource(R.drawable.cabbage_unclick);
                     rice.setImageResource(R.drawable.rice_unclick);
                     beans.setImageResource(R.drawable.beans_unclick);
@@ -232,6 +238,7 @@ public class HomeActivity extends Fragment {
                 @Override
                 public void onClick(View v) {
                     kind.setText("딸기");
+                    unit.setText("(100g)");
                     cabbage.setImageResource(R.drawable.cabbage_unclick);
                     rice.setImageResource(R.drawable.rice_unclick);
                     beans.setImageResource(R.drawable.beans_unclick);
@@ -274,6 +281,8 @@ public class HomeActivity extends Fragment {
                     cabbage.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            kind.setText("배추");
+                            unit.setText("(1포기)");
                             cabbage.setImageResource(R.drawable.cabbage);
                             rice.setImageResource(R.drawable.rice_unclick);
                             beans.setImageResource(R.drawable.beans_unclick);
@@ -287,6 +296,8 @@ public class HomeActivity extends Fragment {
                     rice.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            kind.setText("쌀");
+                            unit.setText("(20Kg)");
                             cabbage.setImageResource(R.drawable.cabbage_unclick);
                             rice.setImageResource(R.drawable.rice);
                             beans.setImageResource(R.drawable.beans_unclick);
@@ -300,6 +311,8 @@ public class HomeActivity extends Fragment {
                     beans.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            kind.setText("콩");
+                            unit.setText("(500g)");
                             cabbage.setImageResource(R.drawable.cabbage_unclick);
                             rice.setImageResource(R.drawable.rice_unclick);
                             beans.setImageResource(R.drawable.beans);
@@ -313,6 +326,8 @@ public class HomeActivity extends Fragment {
                     chili.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            kind.setText("홍고추");
+                            unit.setText("(100g)");
                             cabbage.setImageResource(R.drawable.cabbage_unclick);
                             rice.setImageResource(R.drawable.rice_unclick);
                             beans.setImageResource(R.drawable.beans_unclick);
@@ -326,6 +341,8 @@ public class HomeActivity extends Fragment {
                     strawberry.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            kind.setText("딸기");
+                            unit.setText("(100g)");
                             cabbage.setImageResource(R.drawable.cabbage_unclick);
                             rice.setImageResource(R.drawable.rice_unclick);
                             beans.setImageResource(R.drawable.beans_unclick);
@@ -367,7 +384,7 @@ public class HomeActivity extends Fragment {
         if (ObjectMap.size() >=2){
             resultMap.putAll(ObjectMap);
         }
-        
+
 
         Log.d("tag","사이즈 : " + resultMap.size());
 

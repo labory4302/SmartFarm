@@ -119,8 +119,9 @@
             android:id="@+id/textView30"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/my_font_bold"
             android:text="내 정보 수정"
-            android:textSize="14sp"
+            android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/changemyinformation_change_button"
             app:layout_constraintStart_toStartOf="parent"
@@ -132,10 +133,10 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_marginStart="10dp"
+            android:background="@drawable/point_left_icon"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:background="@drawable/point_left_icon"/>
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
