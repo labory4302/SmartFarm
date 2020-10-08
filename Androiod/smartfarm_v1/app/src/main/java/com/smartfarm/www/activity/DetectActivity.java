@@ -112,9 +112,9 @@ public class DetectActivity extends AppCompatActivity {
 //            Log.d("결과","과연 : "+time);
 
             if (content[0].equals("fire")){
-                listViewAdapter.addItem("", ""+time_day.toString()+"일 "+time_time.toString()+"분","화재가 감지되었습니다.");
+                listViewAdapter.addItem("/fire/image/" + image_title + ".png", ""+time_day.toString()+"일 "+time_time.toString()+"분","화재가 감지되었습니다.");
             }else{
-                listViewAdapter.addItem("", ""+time_day.toString()+"일 "+time_time.toString()+"분","물체가 감지되었습니다.");
+                listViewAdapter.addItem("/object/detect/" + image_title + ".png", ""+time_day.toString()+"일 "+time_time.toString()+"분","물체가 감지되었습니다.");
             }
 
 
