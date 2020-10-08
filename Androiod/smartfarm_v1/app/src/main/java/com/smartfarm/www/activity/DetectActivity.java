@@ -106,14 +106,15 @@ public class DetectActivity extends AppCompatActivity {
             String content[] = key.split("_");
             String time[] = image_title.split("-");
             StringBuffer time_time = new StringBuffer(time[1]);
-            time_time.insert(2," : ");
-
+            StringBuffer time_day= new StringBuffer(time[0]);
+            time_time.insert(2,"시 ");
+            time_day.insert(2,"월 ");
 //            Log.d("결과","과연 : "+time);
 
             if (content[0].equals("fire")){
-                listViewAdapter.addItem("", ""+time_time.toString(),"화재가 감지되었습니다.");
+                listViewAdapter.addItem("", ""+time_day.toString()+"일 "+time_time.toString()+"분","화재가 감지되었습니다.");
             }else{
-                listViewAdapter.addItem("", ""+time_time.toString(),"물체가 감지되었습니다.");
+                listViewAdapter.addItem("", ""+time_day.toString()+"일 "+time_time.toString()+"분","물체가 감지되었습니다.");
             }
 
 
