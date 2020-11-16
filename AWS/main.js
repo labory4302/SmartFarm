@@ -10,10 +10,10 @@ app.listen(8080, function () {
 });
 
 var connection = mysql.createConnection({
-    host: "dbinstance3.cjytw5i33eqd.us-west-2.rds.amazonaws.com",
-    user: "luck0707",
+    host: "엔드포인트",
+    user: "RDS아이디",
     database: "example",
-    password: "disorder2848",
+    password: "RDS비밀번호",
     port: 3306
 });
 
